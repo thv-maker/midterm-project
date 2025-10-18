@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Dashboard{% endblock %}
+
+{% block body %}
+    <h1>Edit Dashboard</h1>
+
+    {{ include('dashboard/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_dashboard_index') }}">back to list</a>
+
+    {{ include('dashboard/_delete_form.html.twig') }}
+{% endblock %}

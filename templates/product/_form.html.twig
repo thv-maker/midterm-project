@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f1ed;
+        }
+
+        .container {
+            min-height: 100vh;
+            padding: 30px;
+        }
+
+        .header {
+            background: white;
+            padding: 25px 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #4e342e;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            max-width: 800px;
+        }
+
+        /* Form Styles */
+        .form-group,
+        div.form-group {
+            margin-bottom: 25px;
+        }
+
+        label,
+        label.form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4e342e;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        input[type="password"],
+        input[type="url"],
+        textarea,
+        select,
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus,
+        input[type="password"]:focus,
+        input[type="url"]:focus,
+        textarea:focus,
+        select:focus,
+        .form-control:focus {
+            outline: none;
+            border-color: #8d6e63;
+            box-shadow: 0 0 0 3px rgba(141, 110, 99, 0.1);
+        }
+
+        textarea,
+        .form-control[rows] {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Symfony Form Widget Styles */
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .form-check input[type="checkbox"],
+        .form-check input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: #8d6e63;
+        }
+
+        .form-check label {
+            margin-bottom: 0;
+            font-weight: 400;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-check label input {
+            margin-right: 8px;
+        }
+
+        /* Error Styles */
+        .invalid-feedback,
+        .form-error {
+            color: #c62828;
+            font-size: 12px;
+            margin-top: 4px;
+            display: block;
+        }
+
+        input.is-invalid,
+        textarea.is-invalid,
+        select.is-invalid,
+        .form-control.is-invalid {
+            border-color: #c62828;
+        }
+
+        .form-text,
+        .help-text {
+            font-size: 12px;
+            color: #95a5a6;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            background: #6d4c41;
+            color: white;
+        }
+
+        .btn:hover {
+            background: #5d4037;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(93, 64, 55, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #d7ccc8;
+            color: #4e342e;
+        }
+
+        .btn-secondary:hover {
+            background: #bcaaa4;
+        }
+
+        /* Form Collection */
+        .form-collection-item {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 3px solid #8d6e63;
+        }
+
+        /* Fieldset */
+        fieldset {
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        legend {
+            padding: 0 10px;
+            color: #6d4c41;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        /* Required Indicator */
+        .required::after {
+            content: ' *';
+            color: #c62828;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .content-card {
+                padding: 25px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Product Form</h1>
+        </div>
+
+        <div class="content-card">
+            <form method="POST">
+                <!-- Example form groups - these will be generated by Symfony form_widget -->
+                <div class="form-group">
+                    <label for="product_name" class="required">Product Name</label>
+                    <input type="text" id="product_name" name="product[name]" class="form-control" placeholder="Enter product name" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="product_type" class="required">Product Type</label>
+                        <select id="product_type" name="product[type]" class="form-control" required>
+                            <option value="">Select a type</option>
+                            <option value="beverage">Beverage</option>
+                            <option value="food">Food</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product_price" class="required">Price</label>
+                        <input type="number" id="product_price" name="product[price]" class="form-control" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="product_calories" class="required">Calories</label>
+                        <input type="number" id="product_calories" name="product[calories]" class="form-control" placeholder="0" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="product_sugar" class="required">Sugar (grams)</label>
+                        <input type="number" id="product_sugar" name="product[sugarGrams]" class="form-control" placeholder="0" step="0.1" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="product_caffeine" class="required">Caffeine (mg)</label>
+                    <input type="number" id="product_caffeine" name="product[caffeineMg]" class="form-control" placeholder="0" min="0" required>
+                </div>
+
+                <button type="submit" class="btn">Save</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

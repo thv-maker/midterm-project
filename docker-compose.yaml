@@ -1,0 +1,35 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: jim628
+      MYSQL_DATABASE: JimCafeDB
+      MYSQL_USER: dguzman
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - jimzcafe_default
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: dguzman
+      PMA_PASSWORD: 1234
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+      - jimzcafe_default
+
+volumes:
+  mysql_data:
+
+networks:
+  jimzcafe_default:
+    driver: bridge
