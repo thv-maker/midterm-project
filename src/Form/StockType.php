@@ -6,6 +6,8 @@ use App\Entity\Product;
 use App\Entity\Stock;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -16,18 +18,31 @@ class StockType extends AbstractType
         $builder
             ->add('product', EntityType::class, [
                 'class' => Product::class,
-                'choice_label' => 'name', // 👈 show product name instead of ID
+                'choice_label' => 'name',
                 'placeholder' => 'Select a product',
                 'label' => 'Product',
+                'required' => true,
             ])
-            ->add('quantity', null, [
-                'label' => 'Quantity (cups)',
+            ->add('quantity', IntegerType::class, [
+                'label' => 'Quantity',
+                'attr' => [
+                    'min' => 0,
+                    'placeholder' => '0'
+                ],
+                'required' => true,
             ])
-            ->add('reorderLevel', null, [
+            ->add('reorderLevel', IntegerType::class, [
                 'label' => 'Reorder Level',
+                'attr' => [
+                    'min' => 0,
+                    'placeholder' => '0'
+                ],
+                'required' => true,
             ])
-            ->add('lastUpdated', null, [
+            ->add('lastUpdated', DateTimeType::class, [
                 'label' => 'Last Updated',
+                'widget' => 'single_text',
+                'required' => true,
             ]);
     }
 

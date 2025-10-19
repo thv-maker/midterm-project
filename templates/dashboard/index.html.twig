@@ -21,7 +21,6 @@
             min-height: 100vh;
         }
 
-        /* Sidebar Styles */
         .sidebar {
             width: 250px;
             background: linear-gradient(180deg, #5d4037 0%, #6d4c41 100%);
@@ -72,7 +71,6 @@
             height: 20px;
         }
 
-        /* Main Content Styles */
         .main-content {
             flex: 1;
             padding: 30px;
@@ -122,14 +120,8 @@
             text-decoration: none !important;
         }
 
-        .dashboard-card-link:hover {
-            text-decoration: none !important;
-        }
-
-        .dashboard-card-link:visited {
-            text-decoration: none !important;
-        }
-
+        .dashboard-card-link:hover,
+        .dashboard-card-link:visited,
         .dashboard-card-link:active {
             text-decoration: none !important;
         }
@@ -167,7 +159,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h2>Carpe Diem</h2>
@@ -208,7 +199,6 @@
             </ul>
         </aside>
 
-        <!-- Main Content -->
         <main class="main-content">
             <div class="header">
                 <h1>Dashboard</h1>
@@ -228,7 +218,7 @@
                         </div>
                     </a>
                     
-                   <a href="{{ path('app_dashboard_stocks') }}" class="dashboard-card-link">
+                    <a href="{{ path('app_dashboard_stocks') }}" class="dashboard-card-link">
                         <div class="dashboard-card">
                             <svg fill="none" stroke="#6d4c41" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
@@ -251,9 +241,7 @@
     </div>
 
     <script>
-        // Handle sidebar navigation
         const links = document.querySelectorAll('.sidebar-menu a');
-        
         links.forEach(link => {
             link.addEventListener('click', function(e) {
                 links.forEach(l => l.classList.remove('active'));

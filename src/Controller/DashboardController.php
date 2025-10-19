@@ -131,13 +131,5 @@ final class DashboardController extends AbstractController
             'form' => $form,
         ]);
     }
-
-    #[Route('/customers', name: 'app_dashboard_customers')]
-    public function customers(CustomerRepository $customerRepository): Response
-    {
-        return $this->render('customer/index.html.twig', [
-            'customers' => $customerRepository->findAll(),
-        ]);
-    }
     
 }
