@@ -1,0 +1,29 @@
+{{ form_start(form) }}
+    <div class="form-group">
+        {{ form_label(form.product) }}
+        {{ form_widget(form.product, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.product) }}
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            {{ form_label(form.quantity) }}
+            {{ form_widget(form.quantity, {'attr': {'class': 'form-control', 'placeholder': '0'}}) }}
+            {{ form_errors(form.quantity) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.reorderLevel) }}
+            {{ form_widget(form.reorderLevel, {'attr': {'class': 'form-control', 'placeholder': '0'}}) }}
+            {{ form_errors(form.reorderLevel) }}
+        </div>
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.lastUpdated) }}
+        {{ form_widget(form.lastUpdated, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.lastUpdated) }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">{{ button_label|default('Create Stock') }}</button>
+{{ form_end(form) }}

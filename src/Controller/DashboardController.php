@@ -4,10 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Dashboard;
 use App\Entity\Product;
+use App\Entity\Stock;
 use App\Form\DashboardType;
 use App\Form\ProductType;
+use App\Form\StockType;
 use App\Repository\DashboardRepository;
 use App\Repository\ProductRepository;
+use App\Repository\StockRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -80,6 +83,50 @@ final class DashboardController extends AbstractController
             'form' => $form,
         ]);
     }
+
+   #[Route('/stocks', name: 'app_dashboard_stocks')]
+public function stocks(StockRepository $stockRepository): Response
+{
+    $stocks = $stockRepository->findAll();
+
+    return $this->render('stock/index.html.twig', [
+        'stocks' => $stocks,
+    ]);
+}
+
+#[Route('/stocks/new', name: 'app_dashboard_stock_new', methods: ['GET', 'POST'])]
+public function newStock(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $stock = new Stock();
+    $form = $this->createForm(StockType::class, $stock);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->persist($stock);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_dashboard_stocks', [], Response::HTTP_SEE_OTHER);
+    }
+
+    return $this->render('stock/new.html.twig', [
+        'stock' => $stock,
+        'form' => $form,
+    ]);
+}
+
+#[Route('/stocks/{id}', name: 'app_dashboard_stock_show', methods: ['GET'])]
+public function showStock(Stock $stock): Response
+{
+    return $this->render('stock/show.html.twig', [
+        'stock' => $stock,
+    ]);
+}
+
+#[Route('/stocks/{id}/edit', name: 'app_dashboard_stock_edit', methods: ['GET', 'POST'])]
+public function editStock(Request $request, Stock $stock, EntityManagerInterface $entityManager): Response
+{
+    // ...
+}
 
     #[Route('/new', name: 'app_dashboard_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response

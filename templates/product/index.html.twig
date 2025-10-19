@@ -5,218 +5,49 @@
 {% block body %}
     <div class="container">
         <div class="header">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h1>Products</h1>
-                <a href="{{ path('app_dashboard_product_new') }}" class="btn btn-primary">+ Add New Product</a>
-            </div>
+            <h1>Products</h1>
         </div>
 
         <div class="content-card">
-            {% if products is empty %}
-                <div class="no-records" style="padding: 60px 0;">
-                    <svg fill="none" stroke="#95a5a6" viewBox="0 0 24 24" style="width: 80px; height: 80px; margin: 0 auto 20px; display: block;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                    </svg>
-                    <p style="font-size: 18px;">No products found</p>
-                    <p style="color: #95a5a6; margin-top: 10px;">Start by adding your first product!</p>
-                </div>
-            {% else %}
-                <div class="products-grid">
-                    {% for product in products %}
-                        <div class="product-card">
-                            <div class="product-card-header">
-                                <h3 class="product-name">{{ product.name }}</h3>
-                                <span class="product-type">{{ product.type }}</span>
+            <div class="products-grid">
+                {% for product in products %}
+                    <div class="product-card">
+                        <div class="product-header">
+                            <h3>{{ product.name }}</h3>
+                            <span class="product-type">{{ product.type }}</span>
+                        </div>
+
+                        <div class="product-price">
+                            ₱{{ product.price }}
+                        </div>
+
+                        <div class="product-nutrition">
+                            <h4>Nutritional Information</h4>
+                            <div class="nutrition-row">
+                                <span class="nutrition-label">Calories:</span>
+                                <span class="nutrition-value">{{ product.calories }} kcal</span>
                             </div>
-                            
-                            <div class="product-card-body">
-                                <div class="product-detail">
-                                    <span class="detail-label">Price</span>
-                                    <span class="detail-value price">₱{{ product.price }}</span>
-                                </div>
-                                
-                                <div class="product-stats">
-                                    <div class="stat-item">
-                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                                        </svg>
-                                        <span>{{ product.calories }} cal</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                                        </svg>
-                                        <span>{{ product.sugarGrams }}g sugar</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                                        </svg>
-                                        <span>{{ product.caffeineMg }}mg caffeine</span>
-                                    </div>
-                                </div>
+                            <div class="nutrition-row">
+                                <span class="nutrition-label">Sugar:</span>
+                                <span class="nutrition-value">{{ product.sugarGrams }} g</span>
                             </div>
-                            
-                            <div class="product-card-footer">
-                                <a href="{{ path('app_dashboard_product_show', {'id': product.id}) }}" class="card-btn btn-show">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                    </svg>
-                                    View
-                                </a>
-                                <a href="{{ path('app_dashboard_product_edit', {'id': product.id}) }}" class="card-btn btn-edit">
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                    </svg>
-                                    Edit
-                                </a>
+                            <div class="nutrition-row">
+                                <span class="nutrition-label">Caffeine:</span>
+                                <span class="nutrition-value">{{ product.caffeineMg }} mg</span>
                             </div>
                         </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+
+                        <div class="product-actions">
+                            <a href="{{ path('app_dashboard_product_show', {'id': product.id}) }}" class="btn btn-show">View</a>
+                            <a href="{{ path('app_dashboard_product_edit', {'id': product.id}) }}" class="btn btn-edit">Edit</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="no-records">No products found</div>
+                {% endfor %}
+            </div>
+
+            <a href="{{ path('app_dashboard_product_new') }}" class="btn btn-create">+ Add New Coffee</a>
         </div>
     </div>
-
-    <style>
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
-        }
-
-        .product-card {
-            background: #fff;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 20px rgba(93, 64, 55, 0.15);
-            border-color: #8d6e63;
-        }
-
-        .product-card-header {
-            padding: 20px;
-            background: linear-gradient(135deg, #6d4c41 0%, #8d6e63 100%);
-            color: white;
-        }
-
-        .product-name {
-            font-size: 20px;
-            font-weight: 600;
-            margin: 0 0 8px 0;
-        }
-
-        .product-type {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            text-transform: capitalize;
-        }
-
-        .product-card-body {
-            padding: 20px;
-            flex: 1;
-        }
-
-        .product-detail {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .detail-label {
-            color: #666;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .detail-value {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .detail-value.price {
-            color: #6d4c41;
-            font-size: 24px;
-        }
-
-        .product-stats {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .stat-item svg {
-            color: #8d6e63;
-        }
-
-        .product-card-footer {
-            padding: 15px 20px;
-            background: #f8f9fa;
-            display: flex;
-            gap: 10px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .card-btn {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 10px 16px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .card-btn.btn-show {
-            background: #8d6e63;
-            color: white;
-        }
-
-        .card-btn.btn-show:hover {
-            background: #6d4c41;
-        }
-
-        .card-btn.btn-edit {
-            background: #a1887f;
-            color: white;
-        }
-
-        .card-btn.btn-edit:hover {
-            background: #8d6e63;
-        }
-
-        @media (max-width: 768px) {
-            .products-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 {% endblock %}

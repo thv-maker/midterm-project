@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Stock{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="header">
+            <h1>Create New Stock</h1>
+        </div>
+
+        <div class="action-links">
+            <a href="{{ path('app_dashboard_stocks') }}">← Back to list</a>
+        </div>
+
+        <div class="content-card">
+            {{ include('stock/_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}

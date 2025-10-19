@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Stock{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="header">
+            <h1>Stock Details</h1>
+        </div>
+
+        <div class="action-links">
+            <a href="{{ path('app_dashboard_stocks') }}">← Back to list</a>
+        </div>
+
+        <div class="content-card">
+            <table class="table table-detail">
+                <tbody>
+                    <tr>
+                        <th>Id</th>
+                        <td>{{ stock.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Product</th>
+                        <td>{{ stock.product.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Quantity</th>
+                        <td>{{ stock.quantity }}</td>
+                    </tr>
+                    <tr>
+                        <th>Reorder Level</th>
+                        <td>{{ stock.reorderLevel }}</td>
+                    </tr>
+                    <tr>
+                        <th>Last Updated</th>
+                        <td>{{ stock.lastUpdated ? stock.lastUpdated|date('Y-m-d H:i:s') : 'N/A' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="action-buttons">
+                <a href="{{ path('app_dashboard_stock_edit', {'id': stock.id}) }}" class="btn btn-edit">Edit Stock</a>
+            </div>
+        </div>
+
+        <div class="delete-section">
+            <h3>Danger Zone</h3>
+            <p>Once you delete this stock, there is no going back. Please be certain.</p>
+            {{ include('stock/_delete_form.html.twig') }}
+        </div>
+    </div>
+{% endblock %}
