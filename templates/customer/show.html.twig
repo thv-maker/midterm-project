@@ -67,8 +67,8 @@
             </div>
 
             <div class="action-buttons">
-                <a href="{{ path('app_customer_edit', {'id': customer.id}) }}" class="btn btn-edit">Edit Customer</a>
-                <a href="{{ path('app_customer_index') }}" class="btn btn-back">Back to List</a>
+                <a href="{{ path('app_dashboard_customer_edit', {'id': customer.id}) }}" class="btn btn-edit">Edit Customer</a>
+                <a href="{{ path('app_dashboard_customers') }}" class="btn btn-back">Back to List</a>
             </div>
 
             <div class="danger-zone">
@@ -79,7 +79,7 @@
         </div>
 
         <div class="action-links">
-            <a href="{{ path('app_customer_index') }}">← Back to Customers</a>
+            <a href="{{ path('app_dashboard_customers') }}">← Back to Customers</a>
         </div>
     </div>
 

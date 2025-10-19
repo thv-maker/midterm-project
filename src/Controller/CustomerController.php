@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/dashboard/customers')]
 final class CustomerController extends AbstractController
 {
-    #[Route(name: 'app_customer_index', methods: ['GET'])]
+    #[Route('', name: 'app_dashboard_customers', methods: ['GET'])]
     public function index(CustomerRepository $customerRepository): Response
     {
         return $this->render('customer/index.html.twig', [
@@ -22,18 +22,36 @@ final class CustomerController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_customer_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'app_dashboard_customer_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $customer = new Customer();
+
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Set defaults if needed
+            if (!$customer->getDateJoined()) {
+                $customer->setDateJoined(new \DateTime());
+            }
+            if (!$customer->getLoyaltyPoints()) {
+                $customer->setLoyaltyPoints(0);
+            }
+            if (!$customer->getTotalPurchases()) {
+                $customer->setTotalPurchases(0.0);
+            }
+            if (!$customer->getStatus()) {
+                $customer->setStatus('active');
+            }
+
             $entityManager->persist($customer);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_customer_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Customer created successfully!');
+
+            // Redirect to index to see the new customer
+            return $this->redirectToRoute('app_dashboard_customers');
         }
 
         return $this->render('customer/new.html.twig', [
@@ -42,7 +60,7 @@ final class CustomerController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_customer_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_dashboard_customer_show', methods: ['GET'])]
     public function show(Customer $customer): Response
     {
         return $this->render('customer/show.html.twig', [
@@ -50,7 +68,7 @@ final class CustomerController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_customer_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_dashboard_customer_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Customer $customer, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(CustomerType::class, $customer);
@@ -58,8 +76,8 @@ final class CustomerController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
-            return $this->redirectToRoute('app_customer_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Customer updated successfully!');
+            return $this->redirectToRoute('app_dashboard_customers');
         }
 
         return $this->render('customer/edit.html.twig', [
@@ -71,11 +89,12 @@ final class CustomerController extends AbstractController
     #[Route('/{id}', name: 'app_customer_delete', methods: ['POST'])]
     public function delete(Request $request, Customer $customer, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$customer->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$customer->getId(), $request->request->get('_token'))) {
             $entityManager->remove($customer);
             $entityManager->flush();
+            $this->addFlash('success', 'Customer deleted successfully!');
         }
 
-        return $this->redirectToRoute('app_customer_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_dashboard_customers');
     }
 }

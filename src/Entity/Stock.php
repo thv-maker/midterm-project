@@ -14,7 +14,7 @@ class Stock
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'stocks')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]  // 👈 ADD onDelete: 'CASCADE' here!
     private ?Product $product = null;
 
     #[ORM\Column]
@@ -80,16 +80,15 @@ class Stock
     }
 
     public function getStatus(): string
-{
-    if ($this->quantity > $this->reorderLevel) {
-        return '✅ In Stock ('.$this->quantity.' > '.$this->reorderLevel.', okay pa!)';
+    {
+        if ($this->quantity > $this->reorderLevel) {
+            return '✅ In Stock ('.$this->quantity.' > '.$this->reorderLevel.', okay pa!)';
+        }
+
+        if ($this->quantity == 0) {
+            return '❌ Out of Stock';
+        }
+
+        return '⚠️ Low Stock (Reorder now!)';
     }
-
-    if ($this->quantity == 0) {
-        return '❌ Out of Stock';
-    }
-
-    return '⚠️ Low Stock (Reorder now!)';
-}
-
 }
