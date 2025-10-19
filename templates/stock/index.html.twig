@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Stock index{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="header">
+            <h1>Stocks</h1>
+        </div>
+
+        <div class="content-card">
+            <div class="products-grid">
+                {% for stock in stocks %}
+                    <div class="product-card">
+                        <div class="product-header">
+                            <h3>{{ stock.product.name }}</h3>
+                            <span class="product-type">Stock</span>
+                        </div>
+
+                        <div class="product-price">
+                            Qty: {{ stock.quantity }}
+                        </div>
+
+                        <div class="product-nutrition">
+                            <h4>Stock Information</h4>
+                            <div class="nutrition-row">
+                                <span class="nutrition-label">Reorder Level:</span>
+                                <span class="nutrition-value">{{ stock.reorderLevel }}</span>
+                            </div>
+                            <div class="nutrition-row">
+                                <span class="nutrition-label">Last Updated:</span>
+                                <span class="nutrition-value">{{ stock.lastUpdated|date('Y-m-d') }}</span>
+                            </div>
+                        </div>
+
+                        <div class="product-actions">
+                            <a href="{{ path('app_dashboard_stock_show', {'id': stock.id}) }}" class="btn btn-show">View</a>
+                            <a href="{{ path('app_dashboard_stock_edit', {'id': stock.id}) }}" class="btn btn-edit">Edit</a>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="no-records">No stocks found</div>
+                {% endfor %}
+            </div>
+
+            <a href="{{ path('app_dashboard_stock_new') }}" class="btn btn-create">+ Create New Stock</a>
+        </div>
+    </div>
+{% endblock %}
