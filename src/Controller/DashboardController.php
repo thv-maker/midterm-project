@@ -2,15 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\Dashboard;
 use App\Entity\Product;
 use App\Entity\Stock;
-use App\Form\DashboardType;
 use App\Form\ProductType;
 use App\Form\StockType;
-use App\Repository\DashboardRepository;
 use App\Repository\ProductRepository;
 use App\Repository\StockRepository;
+use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,20 +19,16 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DashboardController extends AbstractController
 {
     #[Route(name: 'app_dashboard_index', methods: ['GET'])]
-    public function index(DashboardRepository $dashboardRepository): Response
+    public function index(): Response
     {
-        return $this->render('dashboard/index.html.twig', [
-            'dashboards' => $dashboardRepository->findAll(),
-        ]);
+        return $this->render('dashboard/index.html.twig');
     }
 
     #[Route('/products', name: 'app_dashboard_products')]
     public function products(ProductRepository $productRepository): Response
     {
-        $products = $productRepository->findAll();
-
         return $this->render('product/index.html.twig', [
-            'products' => $products,
+            'products' => $productRepository->findAll(),
         ]);
     }
 
@@ -84,104 +78,66 @@ final class DashboardController extends AbstractController
         ]);
     }
 
-   #[Route('/stocks', name: 'app_dashboard_stocks')]
-public function stocks(StockRepository $stockRepository): Response
-{
-    $stocks = $stockRepository->findAll();
-
-    return $this->render('stock/index.html.twig', [
-        'stocks' => $stocks,
-    ]);
-}
-
-#[Route('/stocks/new', name: 'app_dashboard_stock_new', methods: ['GET', 'POST'])]
-public function newStock(Request $request, EntityManagerInterface $entityManager): Response
-{
-    $stock = new Stock();
-    $form = $this->createForm(StockType::class, $stock);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        $entityManager->persist($stock);
-        $entityManager->flush();
-
-        return $this->redirectToRoute('app_dashboard_stocks', [], Response::HTTP_SEE_OTHER);
+    #[Route('/stocks', name: 'app_dashboard_stocks')]
+    public function stocks(StockRepository $stockRepository): Response
+    {
+        return $this->render('stock/index.html.twig', [
+            'stocks' => $stockRepository->findAll(),
+        ]);
     }
 
-    return $this->render('stock/new.html.twig', [
-        'stock' => $stock,
-        'form' => $form,
-    ]);
-}
-
-#[Route('/stocks/{id}', name: 'app_dashboard_stock_show', methods: ['GET'])]
-public function showStock(Stock $stock): Response
-{
-    return $this->render('stock/show.html.twig', [
-        'stock' => $stock,
-    ]);
-}
-
-#[Route('/stocks/{id}/edit', name: 'app_dashboard_stock_edit', methods: ['GET', 'POST'])]
-public function editStock(Request $request, Stock $stock, EntityManagerInterface $entityManager): Response
-{
-    // ...
-}
-
-    #[Route('/new', name: 'app_dashboard_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route('/stocks/new', name: 'app_dashboard_stock_new', methods: ['GET', 'POST'])]
+    public function newStock(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $dashboard = new Dashboard();
-        $form = $this->createForm(DashboardType::class, $dashboard);
+        $stock = new Stock();
+        $form = $this->createForm(StockType::class, $stock);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($dashboard);
+            $entityManager->persist($stock);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_dashboard_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_dashboard_stocks', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('dashboard/new.html.twig', [
-            'dashboard' => $dashboard,
+        return $this->render('stock/new.html.twig', [
+            'stock' => $stock,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_dashboard_show', methods: ['GET'])]
-    public function show(Dashboard $dashboard): Response
+    #[Route('/stocks/{id}', name: 'app_dashboard_stock_show', methods: ['GET'])]
+    public function showStock(Stock $stock): Response
     {
-        return $this->render('dashboard/show.html.twig', [
-            'dashboard' => $dashboard,
+        return $this->render('stock/show.html.twig', [
+            'stock' => $stock,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_dashboard_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Dashboard $dashboard, EntityManagerInterface $entityManager): Response
+    #[Route('/stocks/{id}/edit', name: 'app_dashboard_stock_edit', methods: ['GET', 'POST'])]
+    public function editStock(Request $request, Stock $stock, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(DashboardType::class, $dashboard);
+        $form = $this->createForm(StockType::class, $stock);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_dashboard_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_dashboard_stocks', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('dashboard/edit.html.twig', [
-            'dashboard' => $dashboard,
+        return $this->render('stock/edit.html.twig', [
+            'stock' => $stock,
             'form' => $form,
         ]);
     }
 
-    #[Route('/{id}', name: 'app_dashboard_delete', methods: ['POST'])]
-    public function delete(Request $request, Dashboard $dashboard, EntityManagerInterface $entityManager): Response
+    #[Route('/customers', name: 'app_dashboard_customers')]
+    public function customers(CustomerRepository $customerRepository): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$dashboard->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($dashboard);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_dashboard_index', [], Response::HTTP_SEE_OTHER);
+        return $this->render('customer/index.html.twig', [
+            'customers' => $customerRepository->findAll(),
+        ]);
     }
+    
 }

@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit {{ customer.name }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="header">
+            <h1>Edit Customer</h1>
+        </div>
+
+        <div class="content-card">
+            {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <button type="submit" class="btn btn-primary">Update Customer</button>
+            {{ form_end(form) }}
+        </div>
+
+        <div class="action-links">
+            <a href="{{ path('app_customer_index') }}">← Back to Customers</a>
+        </div>
+
+        <!-- Delete Section -->
+        <div class="delete-section">
+            <h3>Danger Zone</h3>
+            <p>Once you delete this customer, there is no going back. Please be certain.</p>
+            {{ include('customer/_delete_form.html.twig') }}
+        </div>
+    </div>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f1ed; padding: 30px; }
+        .container { padding: 30px; width: 100%; max-width: 900px; margin: 0 auto; }
+        .header { background: white; padding: 25px 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .header h1 { color: #4e342e; font-size: 28px; font-weight: 600; }
+        .content-card { background: white; border-radius: 10px; padding: 40px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        .btn { display: inline-block; padding: 12px 28px; background: #6d4c41; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500; transition: all 0.3s ease; }
+        .btn:hover { background: #5d4037; transform: translateY(-2px); }
+        .action-links { margin-bottom: 30px; display: flex; gap: 10px; }
+        .action-links a { color: #8d6e63; text-decoration: none; font-size: 14px; font-weight: 500; }
+        .delete-section { background: #ffebee; border: 1px solid #ffcdd2; border-left: 4px solid #c62828; border-radius: 6px; padding: 25px; margin-top: 40px; }
+        .delete-section h3 { color: #c62828; font-size: 16px; margin-bottom: 12px; font-weight: 600; }
+        .delete-section p { color: #ad1d1d; font-size: 13px; margin-bottom: 15px; }
+    </style>
+{% endblock %}

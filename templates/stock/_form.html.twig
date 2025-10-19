@@ -1,29 +1,294 @@
-{{ form_start(form) }}
-    <div class="form-group">
-        {{ form_label(form.product) }}
-        {{ form_widget(form.product, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(form.product) }}
-    </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Form - Carpe Diem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <div class="form-row">
-        <div class="form-group">
-            {{ form_label(form.quantity) }}
-            {{ form_widget(form.quantity, {'attr': {'class': 'form-control', 'placeholder': '0'}}) }}
-            {{ form_errors(form.quantity) }}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f1ed 0%, #e8e0d8 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .page-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            color: #5d4037;
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .page-header p {
+            color: #8d6e63;
+            font-size: 15px;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(101, 67, 56, 0.12);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .form-card:hover {
+            box-shadow: 0 12px 40px rgba(101, 67, 56, 0.18);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #6d4c41 0%, #5d4037 100%);
+            padding: 24px 32px;
+            color: white;
+        }
+
+        .card-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .card-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .card-body {
+            padding: 36px 32px;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #5d4037;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+        }
+
+        .form-group label .required {
+            color: #d32f2f;
+            margin-left: 4px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0d5cc;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            background: #fafafa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #8d6e63;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(141, 110, 99, 0.1);
+        }
+
+        .form-control:hover {
+            border-color: #bcaaa4;
+        }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%235d4037' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px;
+            padding-right: 45px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-errors {
+            color: #d32f2f;
+            font-size: 13px;
+            margin-top: 8px;
+            display: block;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 36px;
+            padding-top: 28px;
+            border-top: 2px solid #f5f1ed;
+        }
+
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6d4c41 0%, #5d4037 100%);
+            color: white;
+            flex: 1;
+            box-shadow: 0 4px 15px rgba(93, 64, 55, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(93, 64, 55, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6d4c41;
+            border: 2px solid #e0d5cc;
+            padding: 12px 28px;
+        }
+
+        .btn-secondary:hover {
+            background: #f5f1ed;
+            border-color: #bcaaa4;
+        }
+
+        .input-help {
+            font-size: 13px;
+            color: #8d6e63;
+            margin-top: 6px;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .card-body {
+                padding: 28px 20px;
+            }
+
+            .card-header {
+                padding: 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .page-header h1 {
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="page-header">
+            <h1>Stock Management</h1>
+            <p>Add or update stock information</p>
         </div>
 
-        <div class="form-group">
-            {{ form_label(form.reorderLevel) }}
-            {{ form_widget(form.reorderLevel, {'attr': {'class': 'form-control', 'placeholder': '0'}}) }}
-            {{ form_errors(form.reorderLevel) }}
+        <div class="form-card">
+            <div class="card-header">
+                <h2>Stock Details</h2>
+                <p>Fill in the stock information below</p>
+            </div>
+
+            <div class="card-body">
+                <form>
+                    <div class="form-group">
+                        <label for="product">Product <span class="required">*</span></label>
+                        <select id="product" name="product" class="form-control" required>
+                            <option value="">Select a product</option>
+                            <option value="1">Coffee Beans - Arabica</option>
+                            <option value="2">Coffee Beans - Robusta</option>
+                            <option value="3">Espresso Cups</option>
+                            <option value="4">Coffee Filters</option>
+                            <option value="5">Milk Frother</option>
+                        </select>
+                        <span class="input-help">Choose the product for this stock entry</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quantity">Quantity <span class="required">*</span></label>
+                            <input 
+                                type="number" 
+                                id="quantity" 
+                                name="quantity" 
+                                class="form-control" 
+                                placeholder="0" 
+                                min="0"
+                                required
+                            >
+                            <span class="input-help">Current stock quantity</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="reorderLevel">Reorder Level <span class="required">*</span></label>
+                            <input 
+                                type="number" 
+                                id="reorderLevel" 
+                                name="reorderLevel" 
+                                class="form-control" 
+                                placeholder="0" 
+                                min="0"
+                                required
+                            >
+                            <span class="input-help">Minimum quantity before reorder</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastUpdated">Last Updated <span class="required">*</span></label>
+                        <input 
+                            type="datetime-local" 
+                            id="lastUpdated" 
+                            name="lastUpdated" 
+                            class="form-control"
+                            required
+                        >
+                        <span class="input-help">Date and time of last stock update</span>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Stock</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-
-    <div class="form-group">
-        {{ form_label(form.lastUpdated) }}
-        {{ form_widget(form.lastUpdated, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(form.lastUpdated) }}
-    </div>
-
-    <button type="submit" class="btn btn-primary">{{ button_label|default('Create Stock') }}</button>
-{{ form_end(form) }}
+</body>
+</html>
