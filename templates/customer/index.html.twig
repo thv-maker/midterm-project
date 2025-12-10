@@ -5,10 +5,7 @@
 {% block body %}
     <div class="container">
         <div class="header">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h1>Customers</h1>
-                <a href="{{ path('app_dashboard_customer_new') }}" class="btn btn-primary">+ Add New Customer</a>
-            </div>
+            <h1>Customers</h1>
         </div>
 
         <div class="content-card">
@@ -94,6 +91,8 @@
                     {% endfor %}
                 </div>
             {% endif %}
+            
+            <a href="{{ path('app_dashboard_customer_new') }}" class="btn btn-primary" style="margin-top: 20px;">+ Add New Customer</a>
         </div>
     </div>
 
