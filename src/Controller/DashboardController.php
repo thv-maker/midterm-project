@@ -9,6 +9,7 @@ use App\Form\StockType;
 use App\Repository\ProductRepository;
 use App\Repository\StockRepository;
 use App\Repository\CustomerRepository;
+use App\Repository\OrderRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,9 +20,63 @@ use Symfony\Component\Routing\Attribute\Route;
 final class DashboardController extends AbstractController
 {
     #[Route(name: 'app_dashboard_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(
+        ProductRepository $productRepository,
+        StockRepository $stockRepository,
+        CustomerRepository $customerRepository,
+        OrderRepository $orderRepository
+    ): Response
     {
-        return $this->render('dashboard/index.html.twig');
+        // Count total products
+        $totalProducts = $productRepository->count([]);
+        
+        // Count total stocks
+        $totalStocks = $stockRepository->count([]);
+        
+        // Count total customers
+        $totalCustomers = $customerRepository->count([]);
+        
+        // Get total revenue
+        $totalRevenue = $orderRepository->getTotalRevenue();
+        
+        // Get today's and yesterday's revenue for percentage change
+        $todayRevenue = $orderRepository->getTodayRevenue();
+        $yesterdayRevenue = $orderRepository->getYesterdayRevenue();
+        $revenueChange = $orderRepository->calculatePercentageChange($todayRevenue, $yesterdayRevenue);
+        
+        // Get sales data for chart (last 7 days)
+        $salesData = $orderRepository->getSalesDataLast7Days();
+        
+        // Get recent orders
+        $recentOrders = $orderRepository->getRecentOrders(5);
+        
+        // Get recent products (last 5)
+        $recentProducts = $productRepository->findBy(
+            [],
+            ['id' => 'DESC'],
+            5
+        );
+        
+        // Get low stock items (quantity <= reorder level)
+        $lowStockItems = $stockRepository->createQueryBuilder('s')
+            ->where('s.quantity <= s.reorderLevel')
+            ->orderBy('s.quantity', 'ASC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getResult();
+        
+        return $this->render('dashboard/index.html.twig', [
+            'totalProducts' => $totalProducts,
+            'totalStocks' => $totalStocks,
+            'totalCustomers' => $totalCustomers,
+            'totalRevenue' => $totalRevenue,
+            'todayRevenue' => $todayRevenue,
+            'revenueChange' => $revenueChange,
+            'salesData' => $salesData,
+            'recentOrders' => $recentOrders,
+            'recentProducts' => $recentProducts,
+            'lowStockItems' => $lowStockItems,
+        ]);
     }
 
     #[Route('/products', name: 'app_dashboard_products')]
@@ -131,5 +186,4 @@ final class DashboardController extends AbstractController
             'form' => $form,
         ]);
     }
-    
 }
