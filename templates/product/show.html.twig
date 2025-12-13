@@ -1,58 +1,379 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Product - {{ product.name }}{% endblock %}
+{% block title %}{{ product.name }} - Carpe Diem{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="header">
-            <h1>{{ product.name }}</h1>
+<style>
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #8d6e63;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 20px;
+        padding: 8px 16px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(93, 64, 55, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+        color: #6d4037;
+        background: #f8f5f2;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(93, 64, 55, 0.15);
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 25px 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+        margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+        color: #5d4037;
+        font-size: 28px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        margin-bottom: 30px;
+    }
+
+    .product-card:hover {
+        border-color: #8d6e63;
+        box-shadow: 0 8px 20px rgba(93, 64, 55, 0.15);
+    }
+
+    .product-title-section {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .product-title-section h2 {
+        color: #5d4037;
+        font-size: 24px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .product-type {
+        background: #6d4c41;
+        color: white;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .product-id {
+        font-size: 14px;
+        color: #8d6e63;
+        background: #f8f5f2;
+        padding: 4px 12px;
+        border-radius: 15px;
+        margin-top: 8px;
+        display: inline-block;
+    }
+
+    .product-price {
+        font-size: 36px;
+        font-weight: 700;
+        color: #6d4c41;
+        margin: 30px 0;
+        text-align: center;
+        padding: 25px;
+        background: #f8f5f2;
+        border-radius: 12px;
+        border-left: 5px solid #8d6e63;
+        border-right: 5px solid #8d6e63;
+    }
+
+    .product-details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+    }
+
+    .detail-section {
+        background: #f8f5f2;
+        border-radius: 10px;
+        padding: 25px;
+        height: 100%;
+    }
+
+    .detail-section h3 {
+        font-size: 16px;
+        color: #8d6e63;
+        margin: 0 0 20px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        color: #666;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .detail-value {
+        color: #5d4037;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .product-actions {
+        display: flex;
+        gap: 15px;
+        padding-top: 25px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        gap: 8px;
+    }
+
+    .btn-edit {
+        background: #6d4c41;
+        color: white;
+        box-shadow: 0 4px 12px rgba(93, 64, 55, 0.3);
+        width: 100%;
+    }
+
+    .btn-edit:hover {
+        background: #5d4037;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(93, 64, 55, 0.4);
+    }
+
+    .danger-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+        border: 2px solid #ffcdd2;
+    }
+
+    .danger-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .danger-header svg {
+        color: #c62828;
+        width: 24px;
+        height: 24px;
+    }
+
+    .danger-title {
+        color: #c62828;
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .danger-text {
+        color: #666;
+        margin: 0 0 20px 0;
+        line-height: 1.6;
+        font-size: 14px;
+    }
+
+    .delete-button-container form {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    .delete-button-container button {
+        background: #c62828;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: auto;
+        text-decoration: none;
+    }
+
+    .delete-button-container button:hover {
+        background: #b71c1c;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(198, 40, 40, 0.3);
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .product-details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .btn {
+            width: 100%;
+        }
+        
+        .delete-button-container button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h1>Product Details</h1>
+    </div>
+
+    <!-- Main Product Card -->
+    <div class="product-card">
+        <!-- Product Title and Type -->
+        <div class="product-title-section">
+            <div>
+                <h2>{{ product.name }}</h2>
+                <span class="product-id">ID: #{{ product.id }}</span>
+            </div>
+            <span class="product-type">{{ product.type|capitalize }}</span>
         </div>
 
-        
+        <!-- Product Price -->
+        <div class="product-price">
+            ₱{{ product.price|number_format(2) }}
+        </div>
 
-        <div class="content-card">
-            <table class="table table-detail">
-                <tbody>
-                    <tr>
-                        <th>Id</th>
-                        <td>{{ product.id }}</td>
-                    </tr>
-                    <tr>
-                        <th>Name</th>
-                        <td>{{ product.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Type</th>
-                        <td>{{ product.type }}</td>
-                    </tr>
-                    <tr>
-                        <th>Price</th>
-                        <td>${{ product.price }}</td>
-                    </tr>
-                    <tr>
-                        <th>Calories</th>
-                        <td>{{ product.calories }} kcal</td>
-                    </tr>
-                    <tr>
-                        <th>Sugar Grams</th>
-                        <td>{{ product.sugarGrams }} g</td>
-                    </tr>
-                    <tr>
-                        <th>Caffeine (Mg)</th>
-                        <td>{{ product.caffeineMg }} mg</td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Product Information Grid -->
+        <div class="product-details-grid">
+            <!-- Product Information -->
+            <div class="detail-section">
+                <h3>Product Information</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Product Name</span>
+                    <span class="detail-value">{{ product.name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Product Type</span>
+                    <span class="detail-value">{{ product.type|capitalize }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Product ID</span>
+                    <span class="detail-value">#{{ product.id }}</span>
+                </div>
+            </div>
 
-            <div class="action-buttons">
-                <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn btn-edit">Edit Product</a>
+            <!-- Nutritional Information -->
+            <div class="detail-section">
+                <h3>Nutritional Information</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Calories</span>
+                    <span class="detail-value">{{ product.calories }} kcal</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Sugar</span>
+                    <span class="detail-value">{{ product.sugarGrams }} g</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Caffeine</span>
+                    <span class="detail-value">{{ product.caffeineMg }} mg</span>
+                </div>
             </div>
         </div>
 
-        <div class="delete-section">
-            <h3>Danger Zone</h3>
-            <p>Once you delete this product, there is no going back. Please be certain.</p>
+        <!-- Edit Product Button Only -->
+        <div class="product-actions">
+            <a href="{{ path('app_dashboard_product_edit', {'id': product.id}) }}" class="btn btn-edit">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                Edit Product
+            </a>
+        </div>
+    </div>
+
+    <!-- Danger Zone Card -->
+    <div class="danger-card">
+        <div class="danger-header">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <h3 class="danger-title">Danger Zone</h3>
+        </div>
+        <p class="danger-text">
+            Once you delete this product, there is no going back. This action cannot be undone.
+            All associated data will be permanently removed from the system.
+        </p>
+        
+        <div class="delete-button-container">
             {{ include('product/_delete_form.html.twig') }}
         </div>
     </div>
+</div>
 {% endblock %}

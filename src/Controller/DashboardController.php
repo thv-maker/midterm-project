@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+
 #[Route('/dashboard')]
 final class DashboardController extends AbstractController
 {
@@ -30,8 +31,9 @@ final class DashboardController extends AbstractController
         // Count total products
         $totalProducts = $productRepository->count([]);
         
-        // Count total stocks
-        $totalStocks = $stockRepository->count([]);
+        // Get stock summary
+        $stockSummary = $stockRepository->getStockSummary();
+        $totalStocks = $stockSummary['totalItems'];
         
         // Count total customers
         $totalCustomers = $customerRepository->count([]);
@@ -39,16 +41,21 @@ final class DashboardController extends AbstractController
         // Get total revenue
         $totalRevenue = $orderRepository->getTotalRevenue();
         
-        // Get today's and yesterday's revenue for percentage change
-        $todayRevenue = $orderRepository->getTodayRevenue();
-        $yesterdayRevenue = $orderRepository->getYesterdayRevenue();
-        $revenueChange = $orderRepository->calculatePercentageChange($todayRevenue, $yesterdayRevenue);
+        // Get revenue change data
+        $revenueChangeData = $orderRepository->getRevenueChangePercentage();
+        $todayRevenue = $revenueChangeData['today'];
+        $yesterdayRevenue = $revenueChangeData['yesterday'];
+        $revenueChange = $revenueChangeData['change'];
+        $isRevenueIncrease = $revenueChangeData['isIncrease'];
         
         // Get sales data for chart (last 7 days)
         $salesData = $orderRepository->getSalesDataLast7Days();
         
         // Get recent orders
         $recentOrders = $orderRepository->getRecentOrders(5);
+        
+        // Get today's orders count
+        $todayOrdersCount = $orderRepository->countTodayOrders();
         
         // Get recent products (last 5)
         $recentProducts = $productRepository->findBy(
@@ -58,12 +65,10 @@ final class DashboardController extends AbstractController
         );
         
         // Get low stock items (quantity <= reorder level)
-        $lowStockItems = $stockRepository->createQueryBuilder('s')
-            ->where('s.quantity <= s.reorderLevel')
-            ->orderBy('s.quantity', 'ASC')
-            ->setMaxResults(5)
-            ->getQuery()
-            ->getResult();
+        $lowStockItems = $stockRepository->findLowStockItems(5);
+        
+        // Get out of stock items
+        $outOfStockItems = $stockRepository->findOutOfStockItems(5);
         
         return $this->render('dashboard/index.html.twig', [
             'totalProducts' => $totalProducts,
@@ -72,14 +77,18 @@ final class DashboardController extends AbstractController
             'totalRevenue' => $totalRevenue,
             'todayRevenue' => $todayRevenue,
             'revenueChange' => $revenueChange,
+            'isRevenueIncrease' => $isRevenueIncrease,
             'salesData' => $salesData,
             'recentOrders' => $recentOrders,
             'recentProducts' => $recentProducts,
             'lowStockItems' => $lowStockItems,
+            'outOfStockItems' => $outOfStockItems,
+            'stockSummary' => $stockSummary,
+            'todayOrdersCount' => $todayOrdersCount,
         ]);
     }
 
-    #[Route('/products', name: 'app_dashboard_products')]
+    #[Route('/products', name: 'app_dashboard_products', methods: ['GET'])]
     public function products(ProductRepository $productRepository): Response
     {
         return $this->render('product/index.html.twig', [
@@ -133,7 +142,7 @@ final class DashboardController extends AbstractController
         ]);
     }
 
-    #[Route('/stocks', name: 'app_dashboard_stocks')]
+    #[Route('/stocks', name: 'app_dashboard_stocks', methods: ['GET'])]
     public function stocks(StockRepository $stockRepository): Response
     {
         return $this->render('stock/index.html.twig', [

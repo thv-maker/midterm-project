@@ -1,14 +1,234 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Product index{% endblock %}
+{% block title %}Products - Carpe Diem{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="header">
-            <h1>Products</h1>
-        </div>
+<style>
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
 
-        <div class="content-card">
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: white;
+        padding: 25px 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+        margin-bottom: 30px;
+    }
+
+    .page-header h1 {
+        color: #5d4037;
+        font-size: 28px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-create {
+        background: linear-gradient(135deg, #6d4c41 0%, #8d6e63 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(93, 64, 55, 0.3);
+    }
+
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(93, 64, 55, 0.4);
+    }
+
+    .content-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 25px;
+        margin-bottom: 30px;
+    }
+
+    .product-card {
+        background: #f8f5f2;
+        border-radius: 12px;
+        padding: 25px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(93, 64, 55, 0.15);
+        border-color: #8d6e63;
+    }
+
+    .product-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 15px;
+    }
+
+    .product-header h3 {
+        color: #5d4037;
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0;
+        flex: 1;
+    }
+
+    .product-type {
+        background: #6d4c41;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .product-price {
+        font-size: 24px;
+        font-weight: 700;
+        color: #6d4c41;
+        margin-bottom: 20px;
+    }
+
+    .product-nutrition {
+        background: white;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .product-nutrition h4 {
+        font-size: 13px;
+        color: #8d6e63;
+        margin: 0 0 12px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
+    }
+
+    .nutrition-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .nutrition-row:last-child {
+        border-bottom: none;
+    }
+
+    .nutrition-label {
+        color: #666;
+        font-size: 13px;
+    }
+
+    .nutrition-value {
+        color: #5d4037;
+        font-weight: 600;
+        font-size: 13px;
+    }
+
+    .product-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-show,
+    .btn-edit {
+        flex: 1;
+        text-align: center;
+        padding: 10px 16px;
+        font-size: 13px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-show {
+        background: white;
+        color: #6d4c41;
+        border: 2px solid #6d4c41;
+    }
+
+    .btn-show:hover {
+        background: #6d4c41;
+        color: white;
+    }
+
+    .btn-edit {
+        background: #6d4c41;
+        color: white;
+    }
+
+    .btn-edit:hover {
+        background: #5d4037;
+    }
+
+    .no-records {
+        text-align: center;
+        padding: 60px 20px;
+        color: #8d6e63;
+        font-size: 16px;
+    }
+
+    .add-button-container {
+        text-align: center;
+        padding-top: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .products-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="page-header">
+        <h1>Products</h1>
+        <a href="{{ path('app_dashboard_product_new') }}" class="btn btn-create">+ Add New Product</a>
+    </div>
+
+    <div class="content-card">
+        {% if products is empty %}
+            <div class="no-records">
+                <svg fill="none" stroke="#8d6e63" viewBox="0 0 24 24" style="width: 60px; height: 60px; margin: 0 auto 20px; display: block;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                <p>No products found. Start by adding your first product!</p>
+                <div style="margin-top: 20px;">
+                    <a href="{{ path('app_dashboard_product_new') }}" class="btn btn-create">+ Add First Product</a>
+                </div>
+            </div>
+        {% else %}
             <div class="products-grid">
                 {% for product in products %}
                     <div class="product-card">
@@ -18,7 +238,7 @@
                         </div>
 
                         <div class="product-price">
-                            ₱{{ product.price }}
+                            ₱{{ product.price|number_format(2) }}
                         </div>
 
                         <div class="product-nutrition">
@@ -38,16 +258,13 @@
                         </div>
 
                         <div class="product-actions">
-                            <a href="{{ path('app_dashboard_product_show', {'id': product.id}) }}" class="btn btn-show">View</a>
-                            <a href="{{ path('app_dashboard_product_edit', {'id': product.id}) }}" class="btn btn-edit">Edit</a>
+                            <a href="{{ path('app_dashboard_product_show', {'id': product.id}) }}" class="btn-show">View</a>
+                            <a href="{{ path('app_dashboard_product_edit', {'id': product.id}) }}" class="btn-edit">Edit</a>
                         </div>
                     </div>
-                {% else %}
-                    <div class="no-records">No products found</div>
                 {% endfor %}
             </div>
-
-            <a href="{{ path('app_dashboard_product_new') }}" class="btn btn-create">+ Add New Coffee</a>
-        </div>
+        {% endif %}
     </div>
+</div>
 {% endblock %}

@@ -19,31 +19,19 @@ class Customer
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 180)]
     private ?string $email = null;
 
     #[ORM\Column(length: 20)]
-    private ?string $phoneNumber = null;
+    private ?string $phone = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $dateJoined = null;
-
-    #[ORM\Column]
-    private ?int $loyaltyPoints = null;
-
-    #[ORM\Column]
-    private ?float $totalPurchases = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTime $lastPurchaseDate = null;
-
-    #[ORM\Column(length: 50)]
-    private ?string $status = null;
+    #[ORM\Column(type: Types::TEXT)]
+    private ?string $address = null;
 
     /**
      * @var Collection<int, Order>
      */
-    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'customer')]
     private Collection $orders;
 
     public function __construct()
@@ -80,74 +68,26 @@ class Customer
         return $this;
     }
 
-    public function getPhoneNumber(): ?string
+    public function getPhone(): ?string
     {
-        return $this->phoneNumber;
+        return $this->phone;
     }
 
-    public function setPhoneNumber(string $phoneNumber): static
+    public function setPhone(string $phone): static
     {
-        $this->phoneNumber = $phoneNumber;
+        $this->phone = $phone;
 
         return $this;
     }
 
-    public function getDateJoined(): ?\DateTime
+    public function getAddress(): ?string
     {
-        return $this->dateJoined;
+        return $this->address;
     }
 
-    public function setDateJoined(\DateTime $dateJoined): static
+    public function setAddress(string $address): static
     {
-        $this->dateJoined = $dateJoined;
-
-        return $this;
-    }
-
-    public function getLoyaltyPoints(): ?int
-    {
-        return $this->loyaltyPoints;
-    }
-
-    public function setLoyaltyPoints(int $loyaltyPoints): static
-    {
-        $this->loyaltyPoints = $loyaltyPoints;
-
-        return $this;
-    }
-
-    public function getTotalPurchases(): ?float
-    {
-        return $this->totalPurchases;
-    }
-
-    public function setTotalPurchases(float $totalPurchases): static
-    {
-        $this->totalPurchases = $totalPurchases;
-
-        return $this;
-    }
-
-    public function getLastPurchaseDate(): ?\DateTime
-    {
-        return $this->lastPurchaseDate;
-    }
-
-    public function setLastPurchaseDate(?\DateTime $lastPurchaseDate): static
-    {
-        $this->lastPurchaseDate = $lastPurchaseDate;
-
-        return $this;
-    }
-
-    public function getStatus(): ?string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(string $status): static
-    {
-        $this->status = $status;
+        $this->address = $address;
 
         return $this;
     }
