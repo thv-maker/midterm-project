@@ -1,0 +1,320 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Order{% endblock %}
+
+{% block body %}
+<style>
+    .pos-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .pos-header {
+        background: white;
+        padding: 25px 30px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+    }
+
+    .pos-header h1 {
+        color: #5d4037;
+        font-size: 24px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .pos-content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+    }
+
+    .products-section, .order-summary {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #5d4037;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        color: #5d4037;
+        font-weight: 500;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-select, .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 15px;
+        max-height: 500px;
+        overflow-y: auto;
+    }
+
+    .product-card {
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .product-card:hover {
+        border-color: #6d4c41;
+        background: #f8f5f2;
+    }
+
+    .product-card.selected {
+        border-color: #6d4c41;
+        background: #fff3e0;
+    }
+
+    .product-name {
+        font-weight: 600;
+        color: #5d4037;
+        margin-bottom: 5px;
+    }
+
+    .product-price {
+        color: #8d6e63;
+        font-size: 14px;
+    }
+
+    .product-qty {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .qty-input {
+        width: 60px;
+        padding: 5px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    .order-items {
+        margin: 20px 0;
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    .order-item {
+        padding: 10px;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .order-total {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 2px solid #f0f0f0;
+        font-size: 20px;
+        font-weight: 700;
+        color: #5d4037;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+
+    .btn-primary {
+        background: #6d4c41;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5d4037;
+    }
+
+    .btn-secondary {
+        background: #e0e0e0;
+        color: #5d4037;
+    }
+
+    .alert-error {
+        background: #ffebee;
+        color: #c62828;
+        border-left: 4px solid #f44336;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+</style>
+
+{% for message in app.flashes('error') %}
+    <div class="alert-error">{{ message }}</div>
+{% endfor %}
+
+<div class="pos-container">
+    <div class="pos-header">
+        <h1>🛒 Create New Order (POS)</h1>
+    </div>
+
+    <form method="post" id="orderForm">
+        <div class="pos-content">
+            <div class="products-section">
+                <h3 class="section-title">Select Products</h3>
+                
+                <div class="form-group">
+                    <label class="form-label">Customer</label>
+                    <select name="customer_id" class="form-select" required>
+                        <option value="">-- Select Customer --</option>
+                        {% for customer in customers %}
+                            <option value="{{ customer.id }}">{{ customer.name }} ({{ customer.email }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="products-grid" id="productsGrid">
+                    {% for product in products %}
+                        <div class="product-card" data-id="{{ product.id }}" data-name="{{ product.name }}" data-price="{{ product.price }}">
+                            <div class="product-name">{{ product.name }}</div>
+                            <div class="product-price">₱{{ product.price|number_format(2) }}</div>
+                            <div class="product-qty" style="display: none;">
+                                <label>Qty:</label>
+                                <input type="number" class="qty-input" min="1" value="1" data-product="{{ product.id }}">
+                                <input type="hidden" name="products[{{ loop.index0 }}][id]" value="">
+                                <input type="hidden" name="products[{{ loop.index0 }}][quantity]" value="">
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="order-summary">
+                <h3 class="section-title">Order Summary</h3>
+                
+                <div class="order-items" id="orderItems">
+                    <p style="color: #95a5a6; text-align: center; padding: 20px;">No items selected</p>
+                </div>
+
+                <div class="order-total">
+                    <span>Total:</span>
+                    <span id="totalAmount">₱0.00</span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Complete Order</button>
+                <a href="{{ path('app_order_index') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    let selectedProducts = [];
+    
+    document.querySelectorAll('.product-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const productId = this.dataset.id;
+            const productName = this.dataset.name;
+            const productPrice = parseFloat(this.dataset.price);
+            
+            if (this.classList.contains('selected')) {
+                // Remove product
+                this.classList.remove('selected');
+                this.querySelector('.product-qty').style.display = 'none';
+                selectedProducts = selectedProducts.filter(p => p.id !== productId);
+            } else {
+                // Add product
+                this.classList.add('selected');
+                this.querySelector('.product-qty').style.display = 'flex';
+                selectedProducts.push({
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    quantity: 1
+                });
+            }
+            
+            updateOrderSummary();
+        });
+        
+        // Quantity change
+        const qtyInput = card.querySelector('.qty-input');
+        if (qtyInput) {
+            qtyInput.addEventListener('input', function() {
+                const productId = card.dataset.id;
+                const product = selectedProducts.find(p => p.id === productId);
+                if (product) {
+                    product.quantity = parseInt(this.value) || 1;
+                    updateOrderSummary();
+                }
+            });
+        }
+    });
+    
+    function updateOrderSummary() {
+        const orderItems = document.getElementById('orderItems');
+        const totalAmount = document.getElementById('totalAmount');
+        
+        if (selectedProducts.length === 0) {
+            orderItems.innerHTML = '<p style="color: #95a5a6; text-align: center; padding: 20px;">No items selected</p>';
+            totalAmount.textContent = '₱0.00';
+            return;
+        }
+        
+        let html = '';
+        let total = 0;
+        
+        selectedProducts.forEach((product, index) => {
+            const itemTotal = product.price * product.quantity;
+            total += itemTotal;
+            
+            html += `
+                <div class="order-item">
+                    <div>
+                        <strong>${product.name}</strong><br>
+                        <small>₱${product.price.toFixed(2)} x ${product.quantity}</small>
+                    </div>
+                    <div>₱${itemTotal.toFixed(2)}</div>
+                </div>
+            `;
+            
+            // Update hidden form fields
+            document.querySelector(`input[name="products[${index}][id]"]`).value = product.id;
+            document.querySelector(`input[name="products[${index}][quantity]"]`).value = product.quantity;
+        });
+        
+        orderItems.innerHTML = html;
+        totalAmount.textContent = '₱' + total.toFixed(2);
+    }
+</script>
+{% endblock %}

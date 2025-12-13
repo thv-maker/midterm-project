@@ -255,8 +255,18 @@
             </div>
             <div class="user-profile">
                 <div class="user-profile-text">
-                    <div class="user-role">Admin</div>
-                    <div class="user-name">Administrator</div>
+                    <div class="user-role">
+                        {% if is_granted('ROLE_ADMIN') %}
+                            Administrator
+                        {% elseif is_granted('ROLE_STAFF') %}
+                            Staff
+                        {% elseif is_granted('ROLE_USER') %}
+                            User
+                        {% else %}
+                            Guest
+                        {% endif %}
+                    </div>
+                    <div class="user-name">{{ app.user.email }}</div>
                 </div>
                 <div class="avatar">
                     <svg fill="currentColor" viewBox="0 0 24 24" style="width: 24px; height: 24px;">
@@ -301,7 +311,7 @@
                 </div>
                 <div class="stat-content">
                     <div class="stat-label">Total Revenue</div>
-                    <div class="stat-value">â‚±{{ totalRevenue|number_format(2) }}</div>
+                    <div class="stat-value">₱{{ totalRevenue|number_format(2) }}</div>
                     <div class="stat-change {% if revenueChange >= 0 %}positive{% else %}negative{% endif %}">
                         {% if revenueChange >= 0 %}+{% endif %}{{ revenueChange|number_format(1) }}% from yesterday
                     </div>
@@ -355,7 +365,7 @@
                                 data: {
                                     labels: labels,
                                     datasets: [{
-                                        label: 'Daily Sales (â‚±)',
+                                        label: 'Daily Sales (₱)',
                                         data: data,
                                         borderColor: '#8d6e63',
                                         backgroundColor: 'rgba(141, 110, 99, 0.1)',
@@ -382,7 +392,7 @@
                                             bodyFont: { size: 13 },
                                             callbacks: {
                                                 label: function(context) {
-                                                    return 'â‚±' + context.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                                                    return '₱' + context.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                                                 }
                                             }
                                         }
@@ -392,7 +402,7 @@
                                             beginAtZero: true,
                                             ticks: {
                                                 callback: function(value) {
-                                                    return 'â‚±' + value.toLocaleString('en-US');
+                                                    return '₱' + value.toLocaleString('en-US');
                                                 },
                                                 color: '#8d6e63'
                                             },
@@ -419,7 +429,9 @@
             <div class="trending-card">
                 <div class="card-header">
                     <h3>Recent Products</h3>
-                    <a href="{{ path('app_dashboard_products') }}">See all</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_dashboard_products') }}">See all</a>
+                    {% endif %}
                 </div>
                 <div class="quick-links">
                     {% if recentProducts is empty %}
@@ -436,7 +448,7 @@
                                 </div>
                                 <div class="quick-link-content">
                                     <div class="quick-link-title">{{ product.name }}</div>
-                                    <div class="quick-link-subtitle">â‚±{{ product.price }}</div>
+                                    <div class="quick-link-subtitle">₱{{ product.price }}</div>
                                 </div>
                             </a>
                         {% endfor %}
@@ -448,7 +460,9 @@
         <div class="recent-orders-card">
             <div class="card-header">
                 <h3>Low Stock Alert</h3>
-                <a href="{{ path('app_dashboard_stocks') }}">See all</a>
+                {% if is_granted('ROLE_STAFF') %}
+                    <a href="{{ path('app_dashboard_stocks') }}">See all</a>
+                {% endif %}
             </div>
             {% if lowStockItems is empty %}
                 <div class="no-data">

@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home - Carpe Diem Cafe{% endblock %}
+
+{% block body %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #6d4c41 0%, #8d6e63 100%);
+        color: white;
+        padding: 80px 30px;
+        text-align: center;
+        border-radius: 16px;
+        margin-bottom: 40px;
+    }
+
+    .hero-section h1 {
+        font-size: 48px;
+        margin-bottom: 20px;
+        font-weight: 700;
+    }
+
+    .hero-section p {
+        font-size: 20px;
+        opacity: 0.9;
+        margin-bottom: 30px;
+    }
+
+    .btn {
+        padding: 15px 40px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s;
+        display: inline-block;
+    }
+
+    .btn-light {
+        background: white;
+        color: #6d4c41;
+    }
+
+    .btn-light:hover {
+        background: #f5f5f5;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 40px;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+        transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(93, 64, 55, 0.15);
+    }
+
+    .feature-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(109, 76, 65, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        color: #6d4c41;
+    }
+
+    .feature-card h3 {
+        color: #5d4037;
+        font-size: 22px;
+        margin-bottom: 15px;
+    }
+
+    .feature-card p {
+        color: #8d6e63;
+        line-height: 1.6;
+    }
+</style>
+
+<div class="hero-section">
+    <h1>☕ Welcome to Carpe Diem Cafe</h1>
+    <p>Seize the day with our premium coffee and pastries</p>
+    {% if app.user %}
+        <a href="{{ path('app_profile') }}" class="btn btn-light">My Profile</a>
+    {% else %}
+        <a href="{{ path('app_login') }}" class="btn btn-light">Login</a>
+    {% endif %}
+</div>
+
+<div class="features">
+    <div class="feature-card">
+        <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 40px; height: 40px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+        </div>
+        <h3>Fresh Products</h3>
+        <p>We source the finest ingredients to bring you the best quality coffee and pastries every day.</p>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 40px; height: 40px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+        </div>
+        <h3>Fast Service</h3>
+        <p>Quick and efficient service to make sure you get your coffee fix without the wait.</p>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 40px; height: 40px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+        </div>
+        <h3>Made with Love</h3>
+        <p>Every cup is crafted with care and passion to ensure the perfect taste experience.</p>
+    </div>
+</div>
+{% endblock %}
