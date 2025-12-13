@@ -71,17 +71,24 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
         if ($user instanceof User) {
             $roles = $user->getRoles();
             
+            // Admin goes to dashboard
             if (in_array('ROLE_ADMIN', $roles)) {
                 return new RedirectResponse($this->urlGenerator->generate('app_dashboard_index'));
             }
             
+            // Staff goes to dashboard
             if (in_array('ROLE_STAFF', $roles)) {
                 return new RedirectResponse($this->urlGenerator->generate('app_dashboard_index'));
             }
+            
+            // Customer goes to home page
+            if (in_array('ROLE_USER', $roles)) {
+                return new RedirectResponse('/');
+            }
         }
 
-        // Default redirect to dashboard
-        return new RedirectResponse($this->urlGenerator->generate('app_dashboard_index'));
+        // Default fallback to home
+        return new RedirectResponse('/');
     }
 
     protected function getLoginUrl(Request $request): string

@@ -1,0 +1,227 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Order{% endblock %}
+
+{% block body %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+    }
+
+    .form-header {
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .form-header h1 {
+        color: #5d4037;
+        font-size: 24px;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .order-info {
+        background: #f8f5f2;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+    }
+
+    .order-info-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .order-info-label {
+        color: #8d6e63;
+        font-weight: 500;
+    }
+
+    .order-info-value {
+        color: #5d4037;
+        font-weight: 600;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        color: #5d4037;
+        font-weight: 500;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: #6d4c41;
+        box-shadow: 0 0 0 3px rgba(109, 76, 65, 0.1);
+    }
+
+    .form-help {
+        font-size: 12px;
+        color: #8d6e63;
+        margin-top: 5px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        background: #6d4c41;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5d4037;
+    }
+
+    .btn-secondary {
+        background: #e0e0e0;
+        color: #5d4037;
+    }
+
+    .btn-secondary:hover {
+        background: #bdbdbd;
+    }
+
+    .alert-error {
+        background: #ffebee;
+        color: #c62828;
+        border-left: 4px solid #f44336;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .alert-success {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border-left: 4px solid #4caf50;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .status-option {
+        padding: 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .status-option:hover {
+        border-color: #6d4c41;
+        background: #f8f5f2;
+    }
+
+    .status-option input[type="radio"] {
+        margin-right: 10px;
+    }
+</style>
+
+{% for message in app.flashes('error') %}
+    <div class="alert-error">{{ message }}</div>
+{% endfor %}
+
+{% for message in app.flashes('success') %}
+    <div class="alert-success">{{ message }}</div>
+{% endfor %}
+
+<div class="form-container">
+    <div class="form-header">
+        <h1>✏️ Edit Order</h1>
+    </div>
+
+    <div class="order-info">
+        <div class="order-info-item">
+            <span class="order-info-label">Order Number:</span>
+            <span class="order-info-value">{{ order.orderNumber }}</span>
+        </div>
+        <div class="order-info-item">
+            <span class="order-info-label">Customer:</span>
+            <span class="order-info-value">{{ order.customer.name }}</span>
+        </div>
+        <div class="order-info-item">
+            <span class="order-info-label">Total:</span>
+            <span class="order-info-value">₱{{ order.total|number_format(2) }}</span>
+        </div>
+        <div class="order-info-item">
+            <span class="order-info-label">Date:</span>
+            <span class="order-info-value">{{ order.createdAt|date('M d, Y h:i A') }}</span>
+        </div>
+    </div>
+
+    <form method="post">
+        <div class="form-group">
+            <label class="form-label">Update Order Status</label>
+            
+            <label class="status-option">
+                <input type="radio" name="status" value="pending" {% if order.status == 'pending' %}checked{% endif %}>
+                <strong>Pending</strong> - Order is waiting to be processed
+            </label>
+
+            <label class="status-option">
+                <input type="radio" name="status" value="completed" {% if order.status == 'completed' %}checked{% endif %}>
+                <strong>Completed</strong> - Order has been fulfilled
+            </label>
+
+            <label class="status-option">
+                <input type="radio" name="status" value="cancelled" {% if order.status == 'cancelled' %}checked{% endif %}>
+                <strong>Cancelled</strong> - Order has been cancelled
+            </label>
+
+            <div class="form-help">Select the new status for this order</div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Update Order
+            </button>
+            <a href="{{ path('app_order_show', {'id': order.id}) }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

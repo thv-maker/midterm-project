@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
@@ -12,9 +13,15 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // If user is already logged in
+        // If user is already logged in, redirect based on role
         if ($this->getUser()) {
-            return $this->redirectToRoute('app_dashboard');
+            // Admin and Staff go to dashboard
+            if ($this->isGranted('ROLE_STAFF')) {
+                return $this->redirectToRoute('app_dashboard_index');
+            }
+            
+            // Customer goes to profile (temporary fix)
+            return $this->redirectToRoute('app_profile');
         }
 
         // Get the login error if there is one

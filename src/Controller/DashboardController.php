@@ -15,11 +15,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/dashboard')]
 final class DashboardController extends AbstractController
 {
+    #[IsGranted('ROLE_STAFF')]
     #[Route(name: 'app_dashboard_index', methods: ['GET'])]
     public function index(
         ProductRepository $productRepository,
@@ -88,6 +89,7 @@ final class DashboardController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_STAFF')]
     #[Route('/products', name: 'app_dashboard_products', methods: ['GET'])]
     public function products(ProductRepository $productRepository): Response
     {
@@ -96,6 +98,7 @@ final class DashboardController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/products/new', name: 'app_dashboard_product_new', methods: ['GET', 'POST'])]
     public function newProduct(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -116,6 +119,7 @@ final class DashboardController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_STAFF')]
     #[Route('/products/{id}', name: 'app_dashboard_product_show', methods: ['GET'])]
     public function showProduct(Product $product): Response
     {
@@ -124,6 +128,7 @@ final class DashboardController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/products/{id}/edit', name: 'app_dashboard_product_edit', methods: ['GET', 'POST'])]
     public function editProduct(Request $request, Product $product, EntityManagerInterface $entityManager): Response
     {
@@ -142,6 +147,7 @@ final class DashboardController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_STAFF')]
     #[Route('/stocks', name: 'app_dashboard_stocks', methods: ['GET'])]
     public function stocks(StockRepository $stockRepository): Response
     {
@@ -150,6 +156,7 @@ final class DashboardController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_STAFF')]
     #[Route('/stocks/new', name: 'app_dashboard_stock_new', methods: ['GET', 'POST'])]
     public function newStock(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -170,6 +177,7 @@ final class DashboardController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_STAFF')]
     #[Route('/stocks/{id}', name: 'app_dashboard_stock_show', methods: ['GET'])]
     public function showStock(Stock $stock): Response
     {
@@ -178,6 +186,7 @@ final class DashboardController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_STAFF')]
     #[Route('/stocks/{id}/edit', name: 'app_dashboard_stock_edit', methods: ['GET', 'POST'])]
     public function editStock(Request $request, Stock $stock, EntityManagerInterface $entityManager): Response
     {

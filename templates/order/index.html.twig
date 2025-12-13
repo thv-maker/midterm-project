@@ -1,0 +1,237 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Orders Management{% endblock %}
+
+{% block body %}
+<style>
+    .page-header {
+        background: white;
+        padding: 25px 30px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .page-header h1 {
+        color: #5d4037;
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: #6d4c41;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5d4037;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    .btn-info {
+        background: #2196F3;
+        color: white;
+    }
+
+    .btn-info:hover {
+        background: #1976D2;
+    }
+
+    .btn-warning {
+        background: #FF9800;
+        color: white;
+    }
+
+    .btn-warning:hover {
+        background: #F57C00;
+    }
+
+    .btn-danger {
+        background: #f44336;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #d32f2f;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table thead {
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .table th {
+        padding: 12px;
+        text-align: left;
+        color: #8d6e63;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .table td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #f8f8f8;
+        color: #5d4037;
+    }
+
+    .table tbody tr:hover {
+        background: #f8f5f2;
+    }
+
+    .badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-pending {
+        background: #fff3e0;
+        color: #f57c00;
+    }
+
+    .badge-completed {
+        background: #e8f5e9;
+        color: #388e3c;
+    }
+
+    .badge-cancelled {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .alert-success {
+        background: #e8f5e9;
+        color: #2e7d32;
+        border-left: 4px solid #4caf50;
+    }
+
+    .alert-error {
+        background: #ffebee;
+        color: #c62828;
+        border-left: 4px solid #f44336;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 40px;
+        color: #95a5a6;
+    }
+</style>
+
+<div class="page-header">
+    <h1>🛒 Orders Management</h1>
+    <a href="{{ path('app_order_new') }}" class="btn btn-primary">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Create New Order
+    </a>
+</div>
+
+{% for message in app.flashes('success') %}
+    <div class="alert alert-success">{{ message }}</div>
+{% endfor %}
+
+{% for message in app.flashes('error') %}
+    <div class="alert alert-error">{{ message }}</div>
+{% endfor %}
+
+<div class="table-container">
+    {% if orders is empty %}
+        <div class="no-data">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 60px; height: 60px; margin: 0 auto 15px; display: block; color: #bdc3c7;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            <p>No orders found</p>
+        </div>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                    <tr>
+                        <td><strong>{{ order.orderNumber }}</strong></td>
+                        <td>{{ order.customer.name }}</td>
+                        <td>₱{{ order.total|number_format(2) }}</td>
+                        <td>
+                            {% if order.status == 'pending' %}
+                                <span class="badge badge-pending">Pending</span>
+                            {% elseif order.status == 'completed' %}
+                                <span class="badge badge-completed">Completed</span>
+                            {% else %}
+                                <span class="badge badge-cancelled">Cancelled</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ order.createdAt|date('M d, Y h:i A') }}</td>
+                        <td>
+                            <div class="actions">
+                                <a href="{{ path('app_order_show', {'id': order.id}) }}" class="btn btn-sm btn-info">View</a>
+                                {% if order.status == 'pending' %}
+                                    <a href="{{ path('app_order_edit', {'id': order.id}) }}" class="btn btn-sm btn-warning">Edit</a>
+                                    <form method="post" action="{{ path('app_order_delete', {'id': order.id}) }}" onsubmit="return confirm('Are you sure you want to delete this order?');" style="display: inline;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ order.id) }}">
+                                        <button class="btn btn-sm btn-danger">Delete</button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>
+{% endblock %}
