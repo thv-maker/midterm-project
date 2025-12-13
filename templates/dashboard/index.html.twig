@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+﻿{% extends 'base.html.twig' %}
 
 {% block title %}Dashboard{% endblock %}
 
@@ -301,7 +301,7 @@
                 </div>
                 <div class="stat-content">
                     <div class="stat-label">Total Revenue</div>
-                    <div class="stat-value">₱{{ totalRevenue|number_format(2) }}</div>
+                    <div class="stat-value">â‚±{{ totalRevenue|number_format(2) }}</div>
                     <div class="stat-change {% if revenueChange >= 0 %}positive{% else %}negative{% endif %}">
                         {% if revenueChange >= 0 %}+{% endif %}{{ revenueChange|number_format(1) }}% from yesterday
                     </div>
@@ -355,7 +355,7 @@
                                 data: {
                                     labels: labels,
                                     datasets: [{
-                                        label: 'Daily Sales (₱)',
+                                        label: 'Daily Sales (â‚±)',
                                         data: data,
                                         borderColor: '#8d6e63',
                                         backgroundColor: 'rgba(141, 110, 99, 0.1)',
@@ -382,7 +382,7 @@
                                             bodyFont: { size: 13 },
                                             callbacks: {
                                                 label: function(context) {
-                                                    return '₱' + context.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                                                    return 'â‚±' + context.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                                                 }
                                             }
                                         }
@@ -392,7 +392,7 @@
                                             beginAtZero: true,
                                             ticks: {
                                                 callback: function(value) {
-                                                    return '₱' + value.toLocaleString('en-US');
+                                                    return 'â‚±' + value.toLocaleString('en-US');
                                                 },
                                                 color: '#8d6e63'
                                             },
@@ -436,7 +436,7 @@
                                 </div>
                                 <div class="quick-link-content">
                                     <div class="quick-link-title">{{ product.name }}</div>
-                                    <div class="quick-link-subtitle">₱{{ product.price }}</div>
+                                    <div class="quick-link-subtitle">â‚±{{ product.price }}</div>
                                 </div>
                             </a>
                         {% endfor %}
