@@ -105,4 +105,25 @@ class UserController extends AbstractController
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/{id}/toggle-status', name: 'app_user_toggle_status', methods: ['POST'])]
+    public function toggleStatus(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('toggle'.$user->getId(), $request->request->get('_token'))) {
+            // Prevent deactivating yourself
+            if ($user->getId() === $this->getUser()->getId()) {
+                $this->addFlash('error', 'You cannot deactivate your own account!');
+                return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+            }
+
+            // Toggle active status
+            $user->setIsActive(!$user->isActive());
+            $entityManager->flush();
+
+            $status = $user->isActive() ? 'activated' : 'deactivated';
+            $this->addFlash('success', "User {$status} successfully!");
+        }
+
+        return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+    }
 }
