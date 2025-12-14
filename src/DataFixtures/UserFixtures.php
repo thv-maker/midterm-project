@@ -21,14 +21,11 @@ class UserFixtures extends Fixture
         // Create ADMIN user
         $admin = new User();
         $admin->setEmail('admin@carpediem.com');
-        $admin->setUsername('admin'); // ADD THIS
-        $admin->setFirstName('Admin');
-        $admin->setLastName('User');
-        $admin->setRoles(['ROLE_ADMIN', 'ROLE_USER']);
+        $admin->setRoles(['ROLE_ADMIN']);
         $admin->setIsActive(true);
         $hashedPassword = $this->passwordHasher->hashPassword(
             $admin,
-            'Admin123!'  // Using EXCLAMATION mark, NOT number 1
+            'Admin123!'
         );
         $admin->setPassword($hashedPassword);
         $manager->persist($admin);
@@ -36,14 +33,11 @@ class UserFixtures extends Fixture
         // Create STAFF user
         $staff = new User();
         $staff->setEmail('staff@carpediem.com');
-        $staff->setUsername('staff');
-        $staff->setFirstName('Staff');
-        $staff->setLastName('Member');
-        $staff->setRoles(['ROLE_STAFF', 'ROLE_USER']);
+        $staff->setRoles(['ROLE_STAFF']);
         $staff->setIsActive(true);
         $hashedPassword = $this->passwordHasher->hashPassword(
             $staff,
-            'Staff123!'  // Using EXCLAMATION mark
+            'Staff123!'
         );
         $staff->setPassword($hashedPassword);
         $manager->persist($staff);
@@ -51,14 +45,11 @@ class UserFixtures extends Fixture
         // Create CUSTOMER user
         $customer = new User();
         $customer->setEmail('customer@carpediem.com');
-        $customer->setUsername('customer');
-        $customer->setFirstName('Customer');
-        $customer->setLastName('Guest');
-        $customer->setRoles(['ROLE_CUSTOMER', 'ROLE_USER']);
+        $customer->setRoles(['ROLE_USER']);
         $customer->setIsActive(true);
         $hashedPassword = $this->passwordHasher->hashPassword(
             $customer,
-            'Customer123!'  // Using EXCLAMATION mark
+            'Customer123!'
         );
         $customer->setPassword($hashedPassword);
         $manager->persist($customer);
