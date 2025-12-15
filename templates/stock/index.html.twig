@@ -1,49 +1,198 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Stock index{% endblock %}
+{% block title %}Stock Management{% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="header">
-            <h1>Stocks</h1>
-        </div>
+<style>
+    .page-header {
+        background: white;
+        padding: 25px 30px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-        <div class="content-card">
-            <div class="products-grid">
+    .page-header h1 {
+        color: #5d4037;
+        margin: 0;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: #6d4c41;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5d4037;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    .btn-info {
+        background: #2196F3;
+        color: white;
+    }
+
+    .btn-info:hover {
+        background: #1976D2;
+    }
+
+    .btn-warning {
+        background: #FF9800;
+        color: white;
+    }
+
+    .btn-warning:hover {
+        background: #F57C00;
+    }
+
+    .table-container {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table thead {
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .table th {
+        padding: 12px;
+        text-align: left;
+        color: #8d6e63;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .table td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #f8f8f8;
+        color: #5d4037;
+    }
+
+    .table tbody tr:hover {
+        background: #f8f5f2;
+    }
+
+    .badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-healthy {
+        background: #e8f5e9;
+        color: #388e3c;
+    }
+
+    .badge-low {
+        background: #fff3e0;
+        color: #f57c00;
+    }
+
+    .badge-out {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 40px;
+        color: #95a5a6;
+    }
+</style>
+
+<div class="page-header">
+    <h1>📦 Stock Management</h1>
+    <a href="{{ path('app_dashboard_stock_new') }}" class="btn btn-primary">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Add New Stock
+    </a>
+</div>
+
+<div class="table-container">
+    {% if stocks is empty %}
+        <div class="no-data">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 60px; height: 60px; margin: 0 auto 15px; display: block; color: #bdc3c7;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+            <p>No stocks found</p>
+        </div>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Reorder Level</th>
+                    <th>Status</th>
+                    <th>Last Updated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
                 {% for stock in stocks %}
-                    <div class="product-card">
-                        <div class="product-header">
-                            <h3>{{ stock.product.name }}</h3>
-                            <span class="product-type">Stock</span>
-                        </div>
-
-                        <div class="product-price">
-                            Qty: {{ stock.quantity }}
-                        </div>
-
-                        <div class="product-nutrition">
-                            <h4>Stock Information</h4>
-                            <div class="nutrition-row">
-                                <span class="nutrition-label">Reorder Level:</span>
-                                <span class="nutrition-value">{{ stock.reorderLevel }}</span>
+                    <tr>
+                        <td>#{{ stock.id }}</td>
+                        <td><strong>{{ stock.product.name }}</strong></td>
+                        <td><strong>{{ stock.quantity }}</strong></td>
+                        <td>{{ stock.reorderLevel }}</td>
+                        <td>
+                            {% if stock.quantity == 0 %}
+                                <span class="badge badge-out">Out of Stock</span>
+                            {% elseif stock.quantity <= stock.reorderLevel %}
+                                <span class="badge badge-low">Low Stock</span>
+                            {% else %}
+                                <span class="badge badge-healthy">Healthy</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ stock.lastUpdated|date('M d, Y') }}</td>
+                        <td>
+                            <div class="actions">
+                                <a href="{{ path('app_dashboard_stock_show', {'id': stock.id}) }}" class="btn btn-sm btn-info">View</a>
+                                <a href="{{ path('app_dashboard_stock_edit', {'id': stock.id}) }}" class="btn btn-sm btn-warning">Edit</a>
                             </div>
-                            <div class="nutrition-row">
-                                <span class="nutrition-label">Last Updated:</span>
-                                <span class="nutrition-value">{{ stock.lastUpdated|date('Y-m-d') }}</span>
-                            </div>
-                        </div>
-
-                        <div class="product-actions">
-                            <a href="{{ path('app_dashboard_stock_show', {'id': stock.id}) }}" class="btn btn-show">View</a>
-                            <a href="{{ path('app_dashboard_stock_edit', {'id': stock.id}) }}" class="btn btn-edit">Edit</a>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="no-records">No stocks found</div>
+                        </td>
+                    </tr>
                 {% endfor %}
-            </div>
-
-            <a href="{{ path('app_dashboard_stock_new') }}" class="btn btn-create">+ Create New Stock</a>
-        </div>
-    </div>
+            </tbody>
+        </table>
+    {% endif %}
+</div>
 {% endblock %}

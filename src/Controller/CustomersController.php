@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\CustomerRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,10 +12,10 @@ class CustomersController extends AbstractController
 {
     #[Route('/dashboard/customers', name: 'app_dashboard_customers')]
     #[IsGranted('ROLE_STAFF')]
-    public function index(): Response
+    public function index(CustomerRepository $customerRepository): Response
     {
         return $this->render('customers/index.html.twig', [
-            'controller_name' => 'CustomersController',
+            'customers' => $customerRepository->findAll(),
         ]);
     }
     
