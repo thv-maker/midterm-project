@@ -131,7 +131,12 @@ class OrderRepository extends ServiceEntityRepository
             // Find matching result
             $dayTotal = 0;
             foreach ($results as $result) {
-                if ($result['date']->format('Y-m-d') === $dateString) {
+                // Convert string date to DateTime object for comparison
+                $resultDateString = is_string($result['date']) 
+                    ? $result['date'] 
+                    : $result['date']->format('Y-m-d');
+                
+                if ($resultDateString === $dateString) {
                     $dayTotal = (float) $result['total'];
                     break;
                 }

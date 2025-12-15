@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Create New User{% endblock %}
+{% block title %}Create New Stock{% endblock %}
 
 {% block body %}
 <style>
     .form-container {
-        max-width: 600px;
+        max-width: 800px;
         margin: 0 auto;
         background: white;
         padding: 30px;
@@ -30,7 +30,13 @@
         margin-bottom: 20px;
     }
 
-    .form-label {
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-label, label {
         display: block;
         color: #5d4037;
         font-weight: 500;
@@ -38,7 +44,7 @@
         font-size: 14px;
     }
 
-    .form-control, .form-select {
+    .form-control, select, input[type="text"], input[type="number"], input[type="datetime-local"] {
         width: 100%;
         padding: 12px 15px;
         border: 1px solid #e0e0e0;
@@ -47,16 +53,17 @@
         transition: all 0.3s;
     }
 
-    .form-control:focus, .form-select:focus {
+    .form-control:focus, select:focus, input:focus {
         outline: none;
         border-color: #6d4c41;
         box-shadow: 0 0 0 3px rgba(109, 76, 65, 0.1);
     }
 
-    .form-help {
+    .input-help {
         font-size: 12px;
         color: #8d6e63;
         margin-top: 5px;
+        display: block;
     }
 
     .form-actions {
@@ -108,30 +115,38 @@
 
 <div class="form-container">
     <div class="form-header">
-        <h1>➕ Create New User</h1>
+        <h1>➕ Create New Stock</h1>
     </div>
 
     {{ form_start(form) }}
         <div class="form-group">
-            {{ form_label(form.email, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.email) }}
-            {{ form_errors(form.email, {'attr': {'class': 'form-error'}}) }}
+            {{ form_label(form.product) }}
+            {{ form_widget(form.product, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.product) }}
+            <span class="input-help">Choose the product for this stock entry</span>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                {{ form_label(form.quantity) }}
+                {{ form_widget(form.quantity, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.quantity) }}
+                <span class="input-help">Current stock quantity</span>
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.reorderLevel) }}
+                {{ form_widget(form.reorderLevel, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.reorderLevel) }}
+                <span class="input-help">Minimum quantity before reorder</span>
+            </div>
         </div>
 
         <div class="form-group">
-            {{ form_label(form.password, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.password) }}
-            {{ form_errors(form.password, {'attr': {'class': 'form-error'}}) }}
-            <div class="form-help">Password must be at least 6 characters</div>
-        </div>
-
-        <div class="form-group">
-            {{ form_label(form.roles, null, {'label_attr': {'class': 'form-label'}}) }}
-            {{ form_widget(form.roles) }}
-            {{ form_errors(form.roles, {'attr': {'class': 'form-error'}}) }}
-            {% if form.roles.vars.help %}
-                <div class="form-help">{{ form.roles.vars.help }}</div>
-            {% endif %}
+            {{ form_label(form.lastUpdated) }}
+            {{ form_widget(form.lastUpdated, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.lastUpdated) }}
+            <span class="input-help">Date and time of last stock update</span>
         </div>
 
         <div class="form-actions">
@@ -139,9 +154,9 @@
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
-                Create User
+                Create Stock
             </button>
-            <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Cancel</a>
+            <a href="{{ path('app_dashboard_stocks') }}" class="btn btn-secondary">Cancel</a>
         </div>
     {{ form_end(form) }}
 </div>

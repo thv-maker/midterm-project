@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Service\ActivityLoggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +18,13 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 #[IsGranted('ROLE_ADMIN')]
 class UserController extends AbstractController
 {
+    private ActivityLoggerService $activityLogger;
+
+    public function __construct(ActivityLoggerService $activityLogger)
+    {
+        $this->activityLogger = $activityLogger;
+    }
+
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
@@ -40,6 +48,9 @@ class UserController extends AbstractController
 
             $entityManager->persist($user);
             $entityManager->flush();
+
+            // Log: Admin creates a user
+            $this->activityLogger->logUserCreate($user);
 
             $this->addFlash('success', 'User created successfully!');
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
@@ -77,6 +88,9 @@ class UserController extends AbstractController
 
             $entityManager->flush();
 
+            // Log: Admin updates a user
+            $this->activityLogger->logUserUpdate($user);
+
             $this->addFlash('success', 'User updated successfully!');
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -97,8 +111,15 @@ class UserController extends AbstractController
                 return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
             }
 
+            // Store info before deletion
+            $deletedUserId = $user->getId();
+            $deletedUserEmail = $user->getEmail();
+
             $entityManager->remove($user);
             $entityManager->flush();
+
+            // Log: Admin deletes a user
+            $this->activityLogger->logUserDelete($deletedUserId, $deletedUserEmail);
 
             $this->addFlash('success', 'User deleted successfully!');
         }
@@ -120,7 +141,10 @@ class UserController extends AbstractController
             $user->setIsActive(!$user->isActive());
             $entityManager->flush();
 
+            // Log the status change as UPDATE
             $status = $user->isActive() ? 'activated' : 'deactivated';
+            $this->activityLogger->logUserUpdate($user);
+
             $this->addFlash('success', "User {$status} successfully!");
         }
 

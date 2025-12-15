@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}User Management{% endblock %}
+{% block title %}Stock Management{% endblock %}
 
 {% block body %}
 <style>
@@ -67,15 +67,6 @@
         background: #F57C00;
     }
 
-    .btn-danger {
-        background: #f44336;
-        color: white;
-    }
-
-    .btn-danger:hover {
-        background: #d32f2f;
-    }
-
     .table-container {
         background: white;
         border-radius: 12px;
@@ -117,61 +108,24 @@
         font-weight: 600;
     }
 
-    .badge-admin {
-        background: #e3f2fd;
-        color: #1976d2;
+    .badge-healthy {
+        background: #e8f5e9;
+        color: #388e3c;
     }
 
-    .badge-staff {
+    .badge-low {
         background: #fff3e0;
         color: #f57c00;
     }
 
-    .badge-user {
-        background: #e8f5e9;
-        color: #388e3c;
-    }
-
-    .badge-active {
-        background: #e8f5e9;
-        color: #388e3c;
-    }
-
-    .badge-inactive {
+    .badge-out {
         background: #ffebee;
         color: #c62828;
-    }
-
-    .btn-success {
-        background: #4caf50;
-        color: white;
-    }
-
-    .btn-success:hover {
-        background: #388e3c;
     }
 
     .actions {
         display: flex;
         gap: 8px;
-    }
-
-    .alert {
-        padding: 15px 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-    }
-
-    .alert-success {
-        background: #e8f5e9;
-        color: #2e7d32;
-        border-left: 4px solid #4caf50;
-    }
-
-    .alert-error {
-        background: #ffebee;
-        color: #c62828;
-        border-left: 4px solid #f44336;
     }
 
     .no-data {
@@ -182,83 +136,57 @@
 </style>
 
 <div class="page-header">
-    <h1>👥 User Management</h1>
-    <a href="{{ path('app_user_new') }}" class="btn btn-primary">
+    <h1>📦 Stock Management</h1>
+    <a href="{{ path('app_dashboard_stock_new') }}" class="btn btn-primary">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
-        Add New User
+        Add New Stock
     </a>
 </div>
 
-{% for message in app.flashes('success') %}
-    <div class="alert alert-success">{{ message }}</div>
-{% endfor %}
-
-{% for message in app.flashes('error') %}
-    <div class="alert alert-error">{{ message }}</div>
-{% endfor %}
-
 <div class="table-container">
-    {% if users is empty %}
+    {% if stocks is empty %}
         <div class="no-data">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 60px; height: 60px; margin: 0 auto 15px; display: block; color: #bdc3c7;">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
             </svg>
-            <p>No users found</p>
+            <p>No stocks found</p>
         </div>
     {% else %}
         <table class="table">
             <thead>
                 <tr>
                     <th>ID</th>
-                    <th>Email</th>
-                    <th>Roles</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Reorder Level</th>
                     <th>Status</th>
+                    <th>Last Updated</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                {% for user in users %}
+                {% for stock in stocks %}
                     <tr>
-                        <td>#{{ user.id }}</td>
-                        <td>{{ user.email }}</td>
+                        <td>#{{ stock.id }}</td>
+                        <td><strong>{{ stock.product.name }}</strong></td>
+                        <td><strong>{{ stock.quantity }}</strong></td>
+                        <td>{{ stock.reorderLevel }}</td>
                         <td>
-                            {% for role in user.roles %}
-                                {% if role == 'ROLE_ADMIN' %}
-                                    <span class="badge badge-admin">Admin</span>
-                                {% elseif role == 'ROLE_STAFF' %}
-                                    <span class="badge badge-staff">Staff</span>
-                                {% elseif role == 'ROLE_USER' %}
-                                    <span class="badge badge-user">Customer</span>
-                                {% endif %}
-                            {% endfor %}
-                        </td>
-                        <td>
-                            {% if user.isActive %}
-                                <span class="badge badge-active">Active</span>
+                            {% if stock.quantity == 0 %}
+                                <span class="badge badge-out">Out of Stock</span>
+                            {% elseif stock.quantity <= stock.reorderLevel %}
+                                <span class="badge badge-low">Low Stock</span>
                             {% else %}
-                                <span class="badge badge-inactive">Inactive</span>
+                                <span class="badge badge-healthy">Healthy</span>
                             {% endif %}
                         </td>
+                        <td>{{ stock.lastUpdated|date('M d, Y') }}</td>
                         <td>
                             <div class="actions">
-                                <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-sm btn-info">View</a>
-                                <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-warning">Edit</a>
-                                {% if user.id != app.user.id %}
-                                    <form method="post" action="{{ path('app_user_toggle_status', {'id': user.id}) }}" style="display: inline;">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('toggle-status' ~ user.id) }}">
-                                        {% if user.isActive %}
-                                            <button class="btn btn-sm btn-danger" onclick="return confirm('Deactivate this user account?');">Deactivate</button>
-                                        {% else %}
-                                            <button class="btn btn-sm btn-success" onclick="return confirm('Activate this user account?');">Activate</button>
-                                        {% endif %}
-                                    </form>
-                                    <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" onsubmit="return confirm('Are you sure you want to delete this user?');" style="display: inline;">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                        <button class="btn btn-sm btn-danger">Delete</button>
-                                    </form>
-                                {% endif %}
+                                <a href="{{ path('app_dashboard_stock_show', {'id': stock.id}) }}" class="btn btn-sm btn-info">View</a>
+                                <a href="{{ path('app_dashboard_stock_edit', {'id': stock.id}) }}" class="btn btn-sm btn-warning">Edit</a>
                             </div>
                         </td>
                     </tr>

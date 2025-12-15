@@ -89,7 +89,7 @@ final class DashboardController extends AbstractController
         ]);
     }
 
-    #[IsGranted('ROLE_STAFF')]
+    #[IsGranted('ROLE_ADMIN')]
     #[Route('/products', name: 'app_dashboard_products', methods: ['GET'])]
     public function products(ProductRepository $productRepository): Response
     {

@@ -1,10 +1,12 @@
 <?php
+// src/Controller/ProductController.php
 
 namespace App\Controller;
 
 use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
+use App\Service\ActivityLoggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,6 +16,13 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/product')]
 final class ProductController extends AbstractController
 {
+    private ActivityLoggerService $activityLogger;
+
+    public function __construct(ActivityLoggerService $activityLogger)
+    {
+        $this->activityLogger = $activityLogger;
+    }
+
     #[Route(name: 'app_product_index', methods: ['GET'])]
     public function index(ProductRepository $productRepository): Response
     {
@@ -33,6 +42,14 @@ final class ProductController extends AbstractController
             $entityManager->persist($product);
             $entityManager->flush();
 
+            // Log: Staff creates a record
+            $this->activityLogger->logCreate(
+                'Product',
+                $product->getId(),
+                $product->getName()
+            );
+
+            $this->addFlash('success', 'Product created successfully!');
             return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -59,6 +76,14 @@ final class ProductController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
+            // Log: Staff/Admin edits a record
+            $this->activityLogger->logUpdate(
+                'Product',
+                $product->getId(),
+                $product->getName()
+            );
+
+            $this->addFlash('success', 'Product updated successfully!');
             return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -72,8 +97,21 @@ final class ProductController extends AbstractController
     public function delete(Request $request, Product $product, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->getPayload()->getString('_token'))) {
+            // Store info before deletion
+            $productName = $product->getName();
+            $productId = $product->getId();
+            
             $entityManager->remove($product);
             $entityManager->flush();
+
+            // Log: Staff/Admin deletes a record
+            $this->activityLogger->logDelete(
+                'Product',
+                $productId,
+                $productName
+            );
+
+            $this->addFlash('success', 'Product deleted successfully!');
         }
 
         return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);

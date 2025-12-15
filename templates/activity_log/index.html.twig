@@ -1,0 +1,351 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Activity Logs{% endblock %}
+
+{% block body %}
+<style>
+    .activity-header {
+        background: linear-gradient(135deg, #6d4c41 0%, #5d4037 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+    }
+    
+    .stat-card.primary::before { background: linear-gradient(90deg, #6d4c41, #8d6e63); }
+    .stat-card.success::before { background: linear-gradient(90deg, #a1887f, #bcaaa4); }
+    .stat-card.info::before { background: linear-gradient(90deg, #5d4037, #6d4c41); }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+    
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .stat-card.primary .stat-icon { background: linear-gradient(135deg, #6d4c41 0%, #5d4037 100%); color: white; }
+    .stat-card.success .stat-icon { background: linear-gradient(135deg, #a1887f 0%, #8d6e63 100%); color: white; }
+    .stat-card.info .stat-icon { background: linear-gradient(135deg, #795548 0%, #6d4c41 100%); color: white; }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        color: #2d3748;
+    }
+    
+    .stat-label {
+        color: #718096;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .logs-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        overflow: hidden;
+        border: none;
+    }
+    
+    .logs-card-header {
+        background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+        padding: 1.5rem;
+        border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .filter-buttons .btn {
+        border-radius: 25px;
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        margin: 0.25rem;
+        transition: all 0.3s ease;
+    }
+    
+    .filter-buttons .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .table-modern {
+        margin: 0;
+    }
+    
+    .table-modern thead th {
+        background: #f7fafc;
+        color: #4a5568;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        border: none;
+        padding: 1rem;
+    }
+    
+    .table-modern tbody tr {
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #e2e8f0;
+    }
+    
+    .table-modern tbody tr:hover {
+        background: #f7fafc;
+        transform: scale(1.01);
+    }
+    
+    .table-modern td {
+        padding: 1rem;
+        vertical-align: middle;
+        border: none;
+    }
+    
+    .badge-modern {
+        padding: 0.4rem 0.9rem;
+        border-radius: 20px;
+        font-weight: 500;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .badge-role {
+        background: linear-gradient(135deg, #6d4c41 0%, #5d4037 100%);
+        color: white;
+    }
+    
+    .badge-action-login { background: linear-gradient(135deg, #8d6e63 0%, #a1887f 100%); color: white; }
+    .badge-action-logout { background: linear-gradient(135deg, #bcaaa4 0%, #d7ccc8 100%); color: #4a5568; }
+    .badge-action-create { background: linear-gradient(135deg, #795548 0%, #8d6e63 100%); color: white; }
+    .badge-action-update { background: linear-gradient(135deg, #a1887f 0%, #bcaaa4 100%); color: white; }
+    .badge-action-delete { background: linear-gradient(135deg, #d84315 0%, #ff6f00 100%); color: white; }
+    
+    .user-link {
+        color: #6d4c41;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+    
+    .user-link:hover {
+        color: #5d4037;
+        text-decoration: underline;
+    }
+    
+    .timestamp {
+        color: #718096;
+        font-size: 0.85rem;
+    }
+    
+    .ip-address {
+        font-family: 'Courier New', monospace;
+        color: #a0aec0;
+        font-size: 0.8rem;
+    }
+    
+    .empty-state {
+        padding: 3rem;
+        text-align: center;
+        color: #a0aec0;
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+</style>
+
+<div class="container-fluid px-4 py-4">
+    {# Header Section #}
+    <div class="activity-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="mb-2">
+                    <i class="fas fa-history"></i> Activity Logs
+                </h1>
+                <p class="mb-0 opacity-75">Monitor all system activities and user actions</p>
+            </div>
+            <a href="{{ path('app_dashboard_index') }}" class="btn btn-light btn-lg">
+                <i class="fas fa-arrow-left me-2"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    {# Statistics Cards #}
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="stat-card primary">
+                <div class="stat-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h2 class="stat-number">{{ statistics.total }}</h2>
+                <p class="stat-label mb-0">Total Logs</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card success">
+                <div class="stat-icon">
+                    <i class="fas fa-calendar-day"></i>
+                </div>
+                <h2 class="stat-number">{{ statistics.today }}</h2>
+                <p class="stat-label mb-0">Today's Activity</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card info">
+                <div class="stat-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h2 class="stat-number">{{ logs|length }}</h2>
+                <p class="stat-label mb-0">Recent Actions</p>
+            </div>
+        </div>
+    </div>
+
+    {# Filter Buttons #}
+    <div class="logs-card mb-4">
+        <div class="logs-card-header">
+            <h5 class="mb-3">
+                <i class="fas fa-filter me-2"></i> Filter by Action
+            </h5>
+            <div class="filter-buttons">
+                <a href="{{ path('app_activity_log_index') }}" class="btn btn-outline-dark">
+                    <i class="fas fa-list me-1"></i> All
+                </a>
+                <a href="{{ path('app_activity_log_by_action', {action: 'login'}) }}" class="btn btn-outline-success">
+                    <i class="fas fa-sign-in-alt me-1"></i> Login
+                </a>
+                <a href="{{ path('app_activity_log_by_action', {action: 'logout'}) }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-sign-out-alt me-1"></i> Logout
+                </a>
+                <a href="{{ path('app_activity_log_by_action', {action: 'create'}) }}" class="btn btn-outline-primary">
+                    <i class="fas fa-plus me-1"></i> Create
+                </a>
+                <a href="{{ path('app_activity_log_by_action', {action: 'update'}) }}" class="btn btn-outline-warning">
+                    <i class="fas fa-edit me-1"></i> Update
+                </a>
+                <a href="{{ path('app_activity_log_by_action', {action: 'delete'}) }}" class="btn btn-outline-danger">
+                    <i class="fas fa-trash me-1"></i> Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# Activity Logs Table #}
+    <div class="logs-card">
+        <div class="logs-card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-clipboard-list me-2"></i> Recent Activity
+            </h5>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-modern">
+                <thead>
+                    <tr>
+                        <th>User ID</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                        <th>Target Data</th>
+                        <th>Date & Time</th>
+                        <th>IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td>
+                            <strong class="text-muted">#{{ log.userId }}</strong>
+                        </td>
+                        <td>
+                            <a href="{{ path('app_activity_log_by_user', {userId: log.userId}) }}" class="user-link">
+                                <i class="fas fa-user me-1"></i>
+                                {{ log.username }}
+                            </a>
+                        </td>
+                        <td>
+                            <span class="badge badge-modern badge-role">
+                                {{ log.formattedRole }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge badge-modern badge-action-{{ log.action|lower }}">
+                                {% if log.action == 'LOGIN' %}
+                                    <i class="fas fa-sign-in-alt me-1"></i>
+                                {% elseif log.action == 'LOGOUT' %}
+                                    <i class="fas fa-sign-out-alt me-1"></i>
+                                {% elseif log.action == 'CREATE' %}
+                                    <i class="fas fa-plus me-1"></i>
+                                {% elseif log.action == 'UPDATE' %}
+                                    <i class="fas fa-edit me-1"></i>
+                                {% elseif log.action == 'DELETE' %}
+                                    <i class="fas fa-trash me-1"></i>
+                                {% endif %}
+                                {{ log.action }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="text-dark">{{ log.targetData }}</span>
+                        </td>
+                        <td>
+                            <span class="timestamp">
+                                <i class="far fa-clock me-1"></i>
+                                {{ log.dateTime|date('M d, Y') }}<br>
+                                <small>{{ log.dateTime|date('h:i:s A') }}</small>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="ip-address">
+                                <i class="fas fa-globe me-1"></i>
+                                {{ log.ipAddress ?? 'N/A' }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7">
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <h5>No Activity Logs Found</h5>
+                                <p class="text-muted">There are no recorded activities yet.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
