@@ -124,6 +124,14 @@
             color: #4caf50;
         }
 
+        .stat-change.negative {
+            color: #f44336;
+        }
+
+        .stat-change.positive {
+            color: #4caf50;
+        }
+
         .content-grid {
             display: grid;
             grid-template-columns: 2fr 1fr;
@@ -326,7 +334,11 @@
                     <a href="#">See all</a>
                 </div>
                 <div class="chart-placeholder">
-                    {% if salesData is empty %}
+                    {% if salesData is not empty %}
+                        <div style="padding: 20px;">
+                            <canvas id="salesChart" style="width: 100%; height: 250px;"></canvas>
+                        </div>
+                    {% else %}
                         <svg viewBox="0 0 400 200" style="width: 100%; height: 200px;">
                             <path d="M 0 150 Q 50 120 100 140 T 200 100 T 300 130 T 400 90" 
                                   fill="none" 
@@ -344,84 +356,6 @@
                             </defs>
                         </svg>
                         <p style="text-align: center; color: #95a5a6; margin-top: 20px;">No sales data available yet</p>
-                    {% else %}
-                        <div style="padding: 20px;">
-                            <canvas id="salesChart" style="width: 100%; height: 250px;"></canvas>
-                        </div>
-                        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-                        <script>
-                            const ctx = document.getElementById('salesChart');
-                            const salesData = {{ salesData|json_encode|raw }};
-                            
-                            const labels = salesData.map(item => {
-                                const date = new Date(item.date.date);
-                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            });
-                            
-                            const data = salesData.map(item => parseFloat(item.total));
-                            
-                            new Chart(ctx, {
-                                type: 'line',
-                                data: {
-                                    labels: labels,
-                                    datasets: [{
-                                        label: 'Daily Sales (₱)',
-                                        data: data,
-                                        borderColor: '#8d6e63',
-                                        backgroundColor: 'rgba(141, 110, 99, 0.1)',
-                                        tension: 0.4,
-                                        fill: true,
-                                        pointBackgroundColor: '#6d4c41',
-                                        pointBorderColor: '#fff',
-                                        pointBorderWidth: 2,
-                                        pointRadius: 5,
-                                        pointHoverRadius: 7
-                                    }]
-                                },
-                                options: {
-                                    responsive: true,
-                                    maintainAspectRatio: false,
-                                    plugins: {
-                                        legend: {
-                                            display: false
-                                        },
-                                        tooltip: {
-                                            backgroundColor: '#5d4037',
-                                            padding: 12,
-                                            titleFont: { size: 14, weight: 'bold' },
-                                            bodyFont: { size: 13 },
-                                            callbacks: {
-                                                label: function(context) {
-                                                    return '₱' + context.parsed.y.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-                                                }
-                                            }
-                                        }
-                                    },
-                                    scales: {
-                                        y: {
-                                            beginAtZero: true,
-                                            ticks: {
-                                                callback: function(value) {
-                                                    return '₱' + value.toLocaleString('en-US');
-                                                },
-                                                color: '#8d6e63'
-                                            },
-                                            grid: {
-                                                color: 'rgba(141, 110, 99, 0.1)'
-                                            }
-                                        },
-                                        x: {
-                                            ticks: {
-                                                color: '#8d6e63'
-                                            },
-                                            grid: {
-                                                display: false
-                                            }
-                                        }
-                                    }
-                                }
-                            });
-                        </script>
                     {% endif %}
                 </div>
             </div>
@@ -506,4 +440,90 @@
             {% endif %}
         </div>
     </div>
+
+    {% if salesData is not empty %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+    try {
+        const ctx = document.getElementById('salesChart');
+        if (!ctx) {
+            console.error('Canvas element #salesChart not found');
+            return;
+        }
+        
+        const rawData = {{ salesData|json_encode|raw }};
+        
+        if (!Array.isArray(rawData) || rawData.length === 0) {
+            console.warn('No sales data available');
+            return;
+        }
+        
+        const labels = [];
+        const data = [];
+        
+        rawData.forEach((item, index) => {
+            labels.push(item.day || 'Day ' + (index + 1));
+            data.push(parseFloat(item.total) || 0);
+        });
+        
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Daily Sales (₱)',
+                    data: data,
+                    borderColor: '#8d6e63',
+                    backgroundColor: 'rgba(141, 110, 99, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#6d4c41',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '₱' + context.parsed.y.toLocaleString('en-US', {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                });
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return '₱' + value.toLocaleString();
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error creating chart:', error);
+    }
+})();
+</script>
+{% endif %}
 {% endblock %}

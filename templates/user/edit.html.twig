@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Stock{% endblock %}
+{% block title %}Edit User{% endblock %}
 
 {% block body %}
 <style>
@@ -45,13 +45,18 @@
         font-size: 14px;
     }
 
-    .form-control, select, input[type="text"], input[type="number"], input[type="datetime-local"] {
+    .form-control, select, input[type="text"], input[type="email"], input[type="password"], input[type="checkbox"] {
         width: 100%;
         padding: 12px 15px;
         border: 1px solid #e0e0e0;
         border-radius: 8px;
         font-size: 14px;
         transition: all 0.3s;
+    }
+
+    input[type="checkbox"] {
+        width: auto;
+        margin-right: 8px;
     }
 
     .form-control:focus, select:focus, input:focus {
@@ -142,42 +147,64 @@
         font-size: 12px;
         margin-top: 5px;
     }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+    }
+
+    .roles-section {
+        background: #f8f5f2;
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .role-checkbox {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .role-checkbox input {
+        width: auto;
+        margin-right: 10px;
+    }
 </style>
 
 <div class="form-container">
     <div class="form-header">
-        <h1>✏️ Edit Stock</h1>
+        <h1>✏️ Edit User</h1>
     </div>
 
     {{ form_start(form) }}
         <div class="form-group">
-            {{ form_label(form.product) }}
-            {{ form_widget(form.product, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.product) }}
-            <span class="input-help">Choose the product for this stock entry</span>
-        </div>
-
-        <div class="form-row">
-            <div class="form-group">
-                {{ form_label(form.quantity) }}
-                {{ form_widget(form.quantity, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.quantity) }}
-                <span class="input-help">Current stock quantity</span>
-            </div>
-
-            <div class="form-group">
-                {{ form_label(form.reorderLevel) }}
-                {{ form_widget(form.reorderLevel, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.reorderLevel) }}
-                <span class="input-help">Minimum quantity before reorder</span>
-            </div>
+            {{ form_label(form.email) }}
+            {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.email) }}
+            <span class="input-help">User's email address (used for login)</span>
         </div>
 
         <div class="form-group">
-            {{ form_label(form.lastUpdated) }}
-            {{ form_widget(form.lastUpdated, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.lastUpdated) }}
-            <span class="input-help">Date and time of last stock update</span>
+            {{ form_label(form.plainPassword, 'New Password (leave blank to keep current)') }}
+            {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Leave blank to keep current password'}}) }}
+            {{ form_errors(form.plainPassword) }}
+            <span class="input-help">Only fill this if you want to change the password</span>
+        </div>
+
+        <div class="form-group roles-section">
+            {{ form_label(form.roles, 'User Roles') }}
+            {{ form_widget(form.roles) }}
+            {{ form_errors(form.roles) }}
+            <span class="input-help">Select one or more roles for this user</span>
+        </div>
+
+        <div class="form-group">
+            <div class="checkbox-group">
+                {{ form_widget(form.isActive, {'attr': {'class': ''}}) }}
+                {{ form_label(form.isActive) }}
+            </div>
+            {{ form_errors(form.isActive) }}
+            <span class="input-help">Inactive users cannot log in</span>
         </div>
 
         <div class="form-actions">
@@ -185,19 +212,19 @@
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                 </svg>
-                Update Stock
+                Update User
             </button>
-            <a href="{{ path('app_dashboard_stocks') }}" class="btn btn-secondary">Cancel</a>
+            <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Cancel</a>
         </div>
     {{ form_end(form) }}
 </div>
 
 <div class="delete-section">
     <h3>⚠️ Danger Zone</h3>
-    <p>Once you delete this stock, there is no going back. Please be certain.</p>
-    <form method="post" action="{{ path('app_stock_delete', {'id': stock.id}) }}" onsubmit="return confirm('Are you sure you want to delete this stock entry?');">
-        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ stock.id) }}">
-        <button class="btn btn-danger">Delete Stock</button>
+    <p>Once you delete this user, there is no going back. Please be certain.</p>
+    <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" onsubmit="return confirm('Are you sure you want to delete this user?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+        <button class="btn btn-danger">Delete User</button>
     </form>
 </div>
 {% endblock %}

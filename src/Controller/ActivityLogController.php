@@ -41,7 +41,7 @@ class ActivityLogController extends AbstractController
     {
         $logs = $activityLogRepository->findByAction(strtoupper($action));
 
-        return $this->render('activity_log/by_action.html.twig', [
+        return $this->render('activity_log/byaction.html.twig', [
             'logs' => $logs,
             'action' => $action,
         ]);

@@ -2,6 +2,233 @@
 
 {% block title %}New Product{% endblock %}
 
+{% block stylesheets %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: #f5f5f5;
+        min-height: 100vh;
+        padding: 2rem;
+    }
+
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .header {
+        background: linear-gradient(135deg, #6b4423 0%, #8b5a3c 100%);
+        padding: 2rem;
+        border-radius: 15px 15px 0 0;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .header h1 {
+        color: white;
+        font-size: 2rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .header h1::before {
+        content: "🛍️";
+        font-size: 2.5rem;
+    }
+
+    .action-links {
+        background: white;
+        padding: 1rem 2rem;
+        border-bottom: 2px solid #e8d4c4;
+    }
+
+    .action-links a {
+        color: #6b4423;
+        text-decoration: none;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+    }
+
+    .action-links a:hover {
+        background: #f9f3ee;
+        transform: translateX(-5px);
+    }
+
+    .content-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 0 0 15px 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-section {
+        margin-bottom: 2.5rem;
+        padding: 2rem;
+        background: linear-gradient(135deg, #faf8f6 0%, #ffffff 100%);
+        border-radius: 12px;
+        border-left: 4px solid #6b4423;
+    }
+
+    .section-title {
+        color: #6b4423;
+        font-size: 1.3rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .form-section:first-child .section-title::before {
+        content: "📝";
+    }
+
+    .form-section:last-of-type .section-title::before {
+        content: "🥤";
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    label {
+        display: block;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    .form-control,
+    select {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .form-control:focus,
+    select:focus {
+        outline: none;
+        border-color: #6b4423;
+        box-shadow: 0 0 0 3px rgba(107, 68, 35, 0.1);
+        transform: translateY(-2px);
+    }
+
+    .form-control:hover,
+    select:hover {
+        border-color: #8b5a3c;
+    }
+
+    select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b4423' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        padding-right: 2.5rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #6b4423 0%, #8b5a3c 100%);
+        color: white;
+        padding: 1rem 2.5rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(107, 68, 35, 0.4);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        width: 100%;
+        justify-content: center;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(107, 68, 35, 0.5);
+        background: linear-gradient(135deg, #8b5a3c 0%, #6b4423 100%);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0);
+    }
+
+    .form-error {
+        color: #ef4444;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .form-error::before {
+        content: "⚠️";
+    }
+
+    /* Input type number styling */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        opacity: 1;
+    }
+
+    /* Placeholder styling */
+    ::placeholder {
+        color: #a0aec0;
+        opacity: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        body {
+            padding: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+        }
+
+        .content-card {
+            padding: 1.5rem;
+        }
+
+        .form-section {
+            padding: 1.5rem;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <div class="header">
@@ -19,20 +246,20 @@
 
                     <div class="form-group">
                         {{ form_label(form.name) }}
-                        {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Enter product name'}}) }}
+                        {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Enter product name (e.g., Caramel Macchiato)'}}) }}
                         {{ form_errors(form.name) }}
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            {{ form_label(form.type) }}
-                            {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.type) }}
+                            {{ form_label(form.category) }}
+                            {{ form_widget(form.category, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.category) }}
                         </div>
 
                         <div class="form-group">
                             {{ form_label(form.price) }}
-                            {{ form_widget(form.price, {'attr': {'class': 'form-control', 'placeholder': '0.00', 'step': '0.01'}}) }}
+                            {{ form_widget(form.price, {'attr': {'class': 'form-control', 'placeholder': '₱0.00', 'step': '0.01'}}) }}
                             {{ form_errors(form.price) }}
                         </div>
                     </div>
@@ -44,25 +271,27 @@
                     <div class="form-row">
                         <div class="form-group">
                             {{ form_label(form.calories) }}
-                            {{ form_widget(form.calories, {'attr': {'class': 'form-control', 'placeholder': '0'}}) }}
+                            {{ form_widget(form.calories, {'attr': {'class': 'form-control', 'placeholder': 'Enter calories (e.g., 250)'}}) }}
                             {{ form_errors(form.calories) }}
                         </div>
 
                         <div class="form-group">
                             {{ form_label(form.sugarGrams) }}
-                            {{ form_widget(form.sugarGrams, {'attr': {'class': 'form-control', 'placeholder': '0', 'step': '0.1'}}) }}
+                            {{ form_widget(form.sugarGrams, {'attr': {'class': 'form-control', 'placeholder': 'Enter sugar in grams (e.g., 25.5)', 'step': '0.1'}}) }}
                             {{ form_errors(form.sugarGrams) }}
                         </div>
                     </div>
 
                     <div class="form-group">
                         {{ form_label(form.caffeineMg) }}
-                        {{ form_widget(form.caffeineMg, {'attr': {'class': 'form-control', 'placeholder': '0'}}) }}
+                        {{ form_widget(form.caffeineMg, {'attr': {'class': 'form-control', 'placeholder': 'Enter caffeine in mg (e.g., 75)'}}) }}
                         {{ form_errors(form.caffeineMg) }}
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary">+ Create Product</button>
+                <button type="submit" class="btn-primary">
+                     Create Product
+                </button>
             {{ form_end(form) }}
         </div>
     </div>

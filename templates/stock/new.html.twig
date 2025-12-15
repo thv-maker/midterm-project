@@ -2,21 +2,235 @@
 
 {% block title %}Create New Stock{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --coffee-dark: #2C1810;
+            --coffee-medium: #6F4E37;
+            --coffee-light: #A67C52;
+            --cream: #F5E6D3;
+            --latte: #E8D5C4;
+            --espresso: #3E2723;
+            --foam: #FFF8F0;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--latte) 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--coffee-dark) 0%, var(--coffee-medium) 100%);
+            padding: 2.5rem 2rem;
+            border-radius: 20px 20px 0 0;
+            box-shadow: 0 10px 40px rgba(44, 24, 16, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "☕";
+            position: absolute;
+            font-size: 120px;
+            right: -20px;
+            top: -30px;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+        }
+
+        .header h1 {
+            color: var(--foam);
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .action-links {
+            background: var(--foam);
+            padding: 1.25rem 2rem;
+            border-left: 5px solid var(--coffee-medium);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .action-links a {
+            color: var(--coffee-medium);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .action-links a:hover {
+            background: var(--coffee-medium);
+            color: var(--foam);
+            transform: translateX(-5px);
+        }
+
+        .content-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 10px 40px rgba(44, 24, 16, 0.15);
+            position: relative;
+        }
+
+        .content-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, 
+                var(--coffee-dark) 0%, 
+                var(--coffee-medium) 50%, 
+                var(--coffee-light) 100%);
+        }
+
+        .content-card h2 {
+            color: var(--coffee-dark);
+            font-size: 1.8rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .content-card h2::before {
+            content: "☕";
+            font-size: 1.5rem;
+        }
+
+        .content-card > p {
+            color: var(--coffee-medium);
+            margin: 0 0 2rem 0;
+            font-size: 1.05rem;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+
+        label {
+            display: block;
+            color: var(--coffee-dark);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            border: 2px solid var(--latte);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--foam);
+            color: var(--coffee-dark);
+            box-sizing: border-box;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--coffee-medium);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(111, 78, 55, 0.1);
+        }
+
+        button[type="submit"],
+        .btn-primary {
+            background: linear-gradient(135deg, var(--coffee-medium) 0%, var(--coffee-dark) 100%);
+            color: var(--foam);
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(111, 78, 55, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button[type="submit"]:hover,
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(111, 78, 55, 0.4);
+        }
+
+        button[type="submit"]:active,
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Coffee steam animation */
+        @keyframes steam {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-30px) scale(1.5);
+                opacity: 0;
+            }
+        }
+
+        .steam {
+            position: absolute;
+            color: var(--coffee-light);
+            opacity: 0.3;
+            animation: steam 2s infinite;
+        }
+
+        .steam:nth-child(1) { left: 30%; animation-delay: 0s; }
+        .steam:nth-child(2) { left: 45%; animation-delay: 0.5s; }
+        .steam:nth-child(3) { left: 60%; animation-delay: 1s; }
+    </style>
+{% endblock %}
+
 {% block body %}
     <div class="container">
         <div class="header">
+            <span class="steam">~</span>
+            <span class="steam">~</span>
+            <span class="steam">~</span>
             <h1>Create New Stock</h1>
-        </div>
-
-        <div class="action-links">
-            <a href="{{ path('app_dashboard_stocks') }}">← Back to list</a>
         </div>
 
         <div class="content-card">
             <h2>Stock Details</h2>
-            <p>Fill in the stock information below</p>
+            <p>Fill in your coffee inventory information below</p>
             
-            {{ include('stock/_form.html.twig', {'button_label': 'Create Stock'}) }}
+            {{ include('stock/_form.html.twig', {'button_label': 'Add to Inventory'}) }}
         </div>
     </div>
 {% endblock %}

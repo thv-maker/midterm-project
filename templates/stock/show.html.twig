@@ -1,51 +1,335 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Stock{% endblock %}
+{% block title %}Stock Details{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --coffee-dark: #6F4E37;
+            --coffee-medium: #8B6F47;
+            --bg-light: #FAF7F4;
+            --text-dark: #2C1810;
+            --border-color: #E8DDD1;
+            --shadow: rgba(111, 78, 55, 0.1);
+        }
+
+        body {
+            background: var(--bg-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            color: var(--text-dark);
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Product Header Section */
+        .product-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .product-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .product-category {
+            background: var(--bg-light);
+            color: var(--coffee-dark);
+            padding: 0.5rem 1.25rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .product-id {
+            color: #999;
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Price Section */
+        .price-section {
+            background: #FAFAFA;
+            padding: 2.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--coffee-dark);
+            margin: 0;
+        }
+
+        /* Information Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .info-card h3 {
+            color: var(--text-dark);
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin: 0 0 1.5rem 0;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .info-label {
+            color: #666;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .info-value {
+            color: var(--text-dark);
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 0.35rem 0.9rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        .status-low {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+
+        .status-good {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        /* Edit Button Section */
+        .edit-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-edit {
+            width: 100%;
+            padding: 1rem;
+            background: var(--coffee-dark);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-edit:hover {
+            background: var(--text-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        /* Danger Zone */
+        .danger-zone {
+            background: #FFF5F5;
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 4px solid #C62828;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .danger-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .danger-zone h3 {
+            color: #C62828;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .danger-zone p {
+            color: #666;
+            margin: 0 0 1.5rem 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .btn-delete {
+            padding: 0.875rem 1.75rem;
+            background: #C62828;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #B71C1C;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
     <div class="container">
-        <div class="header">
+        <!-- Page Header -->
+        <div class="page-header">
             <h1>Stock Details</h1>
         </div>
 
-        <div class="action-links">
-            <a href="{{ path('app_dashboard_stocks') }}">← Back to list</a>
-        </div>
+        <!-- Product Header -->
+        <div class="product-header">
+            <div class="product-title-row">
+                <h2 class="product-title">{{ stock.product.name }}</h2>
+                <span class="product-category">{{ stock.product.category ?? 'Frappe' }}</span>
+            </div>
+            <div class="product-id">ID: #{{ stock.id }}</div>
 
-        <div class="content-card">
-            <table class="table table-detail">
-                <tbody>
-                    <tr>
-                        <th>Id</th>
-                        <td>{{ stock.id }}</td>
-                    </tr>
-                    <tr>
-                        <th>Product</th>
-                        <td>{{ stock.product.name }}</td>
-                    </tr>
-                    <tr>
-                        <th>Quantity</th>
-                        <td>{{ stock.quantity }}</td>
-                    </tr>
-                    <tr>
-                        <th>Reorder Level</th>
-                        <td>{{ stock.reorderLevel }}</td>
-                    </tr>
-                    <tr>
-                        <th>Last Updated</th>
-                        <td>{{ stock.lastUpdated ? stock.lastUpdated|date('Y-m-d H:i:s') : 'N/A' }}</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <div class="action-buttons">
-                <a href="{{ path('app_dashboard_stock_edit', {'id': stock.id}) }}" class="btn btn-edit">Edit Stock</a>
+            <!-- Price Display -->
+            <div class="price-section">
+                <div class="price">₱120.00</div>
             </div>
         </div>
 
-        <div class="delete-section">
-            <h3>Danger Zone</h3>
-            <p>Once you delete this stock, there is no going back. Please be certain.</p>
+        <!-- Information Grid -->
+        <div class="info-grid">
+            <!-- Product Information -->
+            <div class="info-card">
+                <h3>Product Information</h3>
+                <div class="info-row">
+                    <span class="info-label">Product Name</span>
+                    <span class="info-value">{{ stock.product.name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Product Category</span>
+                    <span class="info-value">{{ stock.product.category ?? 'Frappe' }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Product ID</span>
+                    <span class="info-value">#{{ stock.id }}</span>
+                </div>
+            </div>
+
+            <!-- Stock Information -->
+            <div class="info-card">
+                <h3>Stock Information</h3>
+                <div class="info-row">
+                    <span class="info-label">Quantity</span>
+                    <span class="info-value">
+                        {{ stock.quantity }} units
+                        {% if stock.quantity <= stock.reorderLevel %}
+                            <span class="status-badge status-low">⚠️ Low Stock</span>
+                        {% else %}
+                            <span class="status-badge status-good">✓ In Stock</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Reorder Level</span>
+                    <span class="info-value">{{ stock.reorderLevel }} units</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Last Updated</span>
+                    <span class="info-value">{{ stock.lastUpdated ? stock.lastUpdated|date('M d, Y - h:i A') : 'N/A' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Button -->
+        <div class="edit-section">
+            <a href="{{ path('app_dashboard_stock_edit', {'id': stock.id}) }}" class="btn-edit">
+                ✏️ Edit Product
+            </a>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="danger-zone">
+            <div class="danger-header">
+                <span>⚠️</span>
+                <h3>Danger Zone</h3>
+            </div>
+            <p>Once you delete this product, there is no going back. This action cannot be undone. All associated data will be permanently removed from the system.</p>
             {{ include('stock/_delete_form.html.twig') }}
         </div>
     </div>
