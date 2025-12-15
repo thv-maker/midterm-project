@@ -2,25 +2,234 @@
 
 {% block title %}Edit Stock{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --coffee-dark: #6F4E37;
+            --coffee-medium: #8B6F47;
+            --bg-light: #FAF7F4;
+            --text-dark: #2C1810;
+            --border-color: #E8DDD1;
+            --shadow: rgba(111, 78, 55, 0.1);
+        }
+
+        body {
+            background: var(--bg-light);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: white;
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            color: var(--text-dark);
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Content Card */
+        .content-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .content-card h2 {
+            color: var(--text-dark);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .content-card > p {
+            color: #666;
+            margin: 0 0 2rem 0;
+            font-size: 0.95rem;
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+
+        label {
+            display: block;
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="email"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.875rem 1.25rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            background: white;
+            color: var(--text-dark);
+            box-sizing: border-box;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--coffee-dark);
+            box-shadow: 0 0 0 3px rgba(111, 78, 55, 0.1);
+        }
+
+        /* Button Container */
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        button[type="submit"],
+        .btn-primary {
+            flex: 1;
+            background: var(--coffee-dark);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button[type="submit"]:hover,
+        .btn-primary:hover {
+            background: var(--text-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        button[type="submit"]:active,
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-cancel {
+            flex: 1;
+            background: #E0E0E0;
+            color: #666;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-cancel:hover {
+            background: #D0D0D0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Danger Zone */
+        .danger-zone {
+            background: #FFF5F5;
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 4px solid #C62828;
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        .danger-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .danger-zone h3 {
+            color: #C62828;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .danger-zone p {
+            color: #666;
+            margin: 0 0 1.5rem 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .btn-delete {
+            padding: 0.875rem 1.75rem;
+            background: #C62828;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #B71C1C;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
     <div class="container">
-        <div class="header">
+        <!-- Page Header -->
+        <div class="page-header">
             <h1>Edit Stock</h1>
         </div>
 
-        <div class="action-links">
-            <a href="{{ path('app_dashboard_stocks') }}">← Back to list</a>
-        </div>
-
+        <!-- Content Card -->
         <div class="content-card">
             <h2>Stock Details</h2>
-            <p>Fill in the stock information below</p>
+            <p>Update the stock information below</p>
             
             {{ include('stock/_form.html.twig', {'button_label': 'Update Stock'}) }}
         </div>
 
-        <div class="delete-section">
-            <h3>Danger Zone</h3>
+        <!-- Danger Zone -->
+        <div class="danger-zone">
+            <div class="danger-header">
+                <span>⚠️</span>
+                <h3>Danger Zone</h3>
+            </div>
             <p>Once you delete this stock, there is no going back. Please be certain.</p>
             {{ include('stock/_delete_form.html.twig') }}
         </div>
