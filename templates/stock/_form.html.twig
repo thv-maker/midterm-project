@@ -24,7 +24,7 @@
 
     <div class="form-group">
         {{ form_label(form.lastUpdated) }}
-        {{ form_widget(form.lastUpdated, {'attr': {'class': 'form-control'}}) }}
+        {{ form_widget(form.lastUpdated, {'attr': {'class': 'form-control', 'readonly': true}}) }}
         {{ form_errors(form.lastUpdated) }}
         <span class="input-help">Date and time of last stock update</span>
     </div>
