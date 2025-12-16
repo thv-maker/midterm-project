@@ -43,6 +43,10 @@ class StockType extends AbstractType
                 'label' => 'Last Updated',
                 'widget' => 'single_text',
                 'required' => true,
+                'data' => new \DateTime(), // Automatically set to current date/time
+                'attr' => [
+                    'readonly' => true // Make it readonly
+                ]
             ]);
     }
 
