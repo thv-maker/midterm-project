@@ -2,223 +2,253 @@
 
 {% block title %}My Profile{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    .profile-container {
-        max-width: 800px;
-        margin: 0 auto;
+    :root {
+        --brown-dark:  #3e1f0d;
+        --brown-mid:   #6d4c41;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
     }
 
-    .profile-header {
-        background: white;
-        padding: 30px;
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
+
+    .pf-wrap { padding: 32px 36px; }
+
+    /* ── ALERTS ── */
+    .pf-alert {
+        padding: 14px 20px;
         border-radius: 12px;
-        margin-bottom: 25px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-        text-align: center;
-    }
-
-    .profile-avatar {
-        width: 120px;
-        height: 120px;
-        background: linear-gradient(135deg, #6d4c41 0%, #8d6e63 100%);
-        border-radius: 50%;
+        margin-bottom: 20px;
+        font-size: 14px;
+        font-weight: 500;
         display: flex;
         align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 48px;
-        margin: 0 auto 20px;
+        gap: 10px;
+    }
+    .pf-alert.success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #4caf50; }
+    .pf-alert.error   { background: #ffebee; color: #c62828; border-left: 4px solid #f44336; }
+
+    /* ── HEADER CARD ── */
+    .pf-header {
+        background: var(--brown-dark);
+        border-radius: 18px;
+        padding: 36px 32px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        position: relative;
+        overflow: hidden;
+    }
+    .pf-header::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 220px; height: 220px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.04);
+    }
+    .pf-avatar {
+        width: 90px; height: 90px; min-width: 90px;
+        background: rgba(255,255,255,.12);
+        border: 3px solid rgba(255,255,255,.2);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: #fff;
+        position: relative; z-index: 1;
+    }
+    .pf-avatar svg { width: 44px; height: 44px; }
+    .pf-header-text { position: relative; z-index: 1; }
+    .pf-header-text h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 24px;
+        color: #fff;
+        margin: 0 0 6px;
+        font-weight: 700;
+    }
+    .pf-header-text .pf-role {
+        font-size: 12px;
+        color: var(--brown-light);
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+    .pf-header-text .pf-email {
+        font-size: 14px;
+        color: rgba(255,255,255,.65);
     }
 
-    .profile-header h1 {
-        color: #5d4037;
-        font-size: 28px;
-        margin-bottom: 5px;
-    }
-
-    .profile-role {
-        color: #8d6e63;
-        font-size: 16px;
-    }
-
-    .profile-card {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+    /* ── INFO CARD ── */
+    .pf-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 28px 30px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
         margin-bottom: 20px;
     }
-
-    .card-title {
+    .pf-card-title {
+        font-family: 'Playfair Display', serif;
         font-size: 18px;
-        font-weight: 600;
-        color: #5d4037;
+        font-weight: 700;
+        color: var(--text);
         margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 14px;
+        border-bottom: 1.5px solid var(--cream2);
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
+    .pf-card-title i { color: var(--brown-acc); font-size: 16px; }
 
-    .info-row {
+    .pf-info-row {
         display: flex;
         justify-content: space-between;
-        padding: 15px 0;
-        border-bottom: 1px solid #f8f8f8;
+        align-items: center;
+        padding: 14px 0;
+        border-bottom: 1.5px solid var(--cream2);
     }
-
-    .info-label {
-        color: #8d6e63;
-        font-weight: 500;
+    .pf-info-row:last-child { border-bottom: none; }
+    .pf-info-label {
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
-
-    .info-value {
-        color: #5d4037;
+    .pf-info-label i { color: var(--brown-light); width: 16px; }
+    .pf-info-value {
+        font-size: 14px;
+        color: var(--text);
         font-weight: 600;
     }
 
-    .badge {
-        padding: 4px 12px;
+    /* role badges */
+    .pf-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 14px;
         border-radius: 20px;
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 700;
+        letter-spacing: .5px;
     }
+    .pf-badge.admin  { background: var(--cream2); color: var(--brown-dark); }
+    .pf-badge.staff  { background: #fff3e0; color: #e65100; }
+    .pf-badge.user   { background: #e8f5e9; color: #2e7d32; }
 
-    .badge-admin {
-        background: #e3f2fd;
-        color: #1976d2;
-    }
-
-    .badge-staff {
-        background: #fff3e0;
-        color: #f57c00;
-    }
-
-    .badge-user {
-        background: #e8f5e9;
-        color: #388e3c;
-    }
-
-    .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s;
-        border: none;
-        cursor: pointer;
+    /* ── ACTIONS ── */
+    .pf-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+    .pf-btn {
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        padding: 12px 26px;
+        border-radius: 40px;
         font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background .2s, transform .2s;
+        border: none;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
     }
-
-    .btn-primary {
-        background: #6d4c41;
-        color: white;
+    .pf-btn.primary {
+        background: var(--brown-dark);
+        color: #fff;
     }
-
-    .btn-primary:hover {
-        background: #5d4037;
+    .pf-btn.primary:hover { background: var(--brown-acc); color: #fff; transform: translateY(-2px); }
+    .pf-btn.outline {
+        background: transparent;
+        color: var(--brown-dark);
+        border: 2px solid var(--brown-dark);
     }
-
-    .btn-warning {
-        background: #FF9800;
-        color: white;
-    }
-
-    .btn-warning:hover {
-        background: #F57C00;
-    }
-
-    .actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 20px;
-    }
-
-    .alert {
-        padding: 15px 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-    }
-
-    .alert-success {
-        background: #e8f5e9;
-        color: #2e7d32;
-        border-left: 4px solid #4caf50;
-    }
-
-    .alert-error {
-        background: #ffebee;
-        color: #c62828;
-        border-left: 4px solid #f44336;
-    }
+    .pf-btn.outline:hover { background: var(--brown-dark); color: #fff; transform: translateY(-2px); }
 </style>
+{% endblock %}
 
-{% for message in app.flashes('success') %}
-    <div class="alert alert-success">{{ message }}</div>
-{% endfor %}
+{% block body %}
+<div class="pf-wrap">
 
-{% for message in app.flashes('error') %}
-    <div class="alert alert-error">{{ message }}</div>
-{% endfor %}
+    {# ── ALERTS ── #}
+    {% for message in app.flashes('success') %}
+        <div class="pf-alert success"><i class="fas fa-check-circle"></i> {{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="pf-alert error"><i class="fas fa-exclamation-circle"></i> {{ message }}</div>
+    {% endfor %}
 
-<div class="profile-container">
-    <div class="profile-header">
-        <div class="profile-avatar">
-            <svg fill="currentColor" viewBox="0 0 24 24" style="width: 60px; height: 60px;">
+    {# ── HEADER ── #}
+    <div class="pf-header">
+        <div class="pf-avatar">
+            <svg fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
             </svg>
         </div>
-        <h1>{{ user.email }}</h1>
-        <div class="profile-role">
-            {% if is_granted('ROLE_ADMIN') %}
-                Administrator
-            {% elseif is_granted('ROLE_STAFF') %}
-                Staff Member
-            {% else %}
-                Customer
-            {% endif %}
+        <div class="pf-header-text">
+            <div class="pf-role">
+                {% if is_granted('ROLE_ADMIN') %}Administrator
+                {% elseif is_granted('ROLE_STAFF') %}Staff Member
+                {% else %}Customer{% endif %}
+            </div>
+            <h1>{{ user.email }}</h1>
+            <div class="pf-email"><i class="fas fa-envelope" style="margin-right:6px;opacity:.6;"></i>{{ user.email }}</div>
         </div>
     </div>
 
-    <div class="profile-card">
-        <h3 class="card-title">Account Information</h3>
-        
-        <div class="info-row">
-            <span class="info-label">Email Address</span>
-            <span class="info-value">{{ user.email }}</span>
+    {# ── ACCOUNT INFO ── #}
+    <div class="pf-card">
+        <div class="pf-card-title">
+            <i class="fas fa-id-card"></i> Account Information
         </div>
 
-        <div class="info-row">
-            <span class="info-label">Account Role</span>
-            <div class="info-value">
+        <div class="pf-info-row">
+            <span class="pf-info-label"><i class="fas fa-envelope"></i> Email Address</span>
+            <span class="pf-info-value">{{ user.email }}</span>
+        </div>
+
+        <div class="pf-info-row">
+            <span class="pf-info-label"><i class="fas fa-shield-alt"></i> Account Role</span>
+            <div class="pf-info-value">
                 {% for role in user.roles %}
                     {% if role == 'ROLE_ADMIN' %}
-                        <span class="badge badge-admin">Administrator</span>
+                        <span class="pf-badge admin"><i class="fas fa-crown"></i> Administrator</span>
                     {% elseif role == 'ROLE_STAFF' %}
-                        <span class="badge badge-staff">Staff</span>
+                        <span class="pf-badge staff"><i class="fas fa-user-tie"></i> Staff</span>
                     {% elseif role == 'ROLE_USER' %}
-                        <span class="badge badge-user">Customer</span>
+                        <span class="pf-badge user"><i class="fas fa-user"></i> Customer</span>
                     {% endif %}
                 {% endfor %}
             </div>
         </div>
 
-        <div class="actions">
-            <a href="{{ path('app_profile_edit') }}" class="btn btn-primary">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-                Edit Profile
-            </a>
-            <a href="{{ path('app_profile_change_password') }}" class="btn btn-warning">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-                </svg>
-                Change Password
-            </a>
+        <div class="pf-info-row">
+            <span class="pf-info-label"><i class="fas fa-circle"></i> Account Status</span>
+            <span class="pf-info-value">
+                <span class="pf-badge user"><i class="fas fa-check-circle"></i> Active</span>
+            </span>
+        </div>
+
+        <div style="margin-top:24px;">
+            <div class="pf-actions">
+                <a href="{{ path('app_profile_edit') }}" class="pf-btn primary">
+                    <i class="fas fa-pen"></i> Edit Profile
+                </a>
+                <a href="{{ path('app_profile_change_password') }}" class="pf-btn outline">
+                    <i class="fas fa-lock"></i> Change Password
+                </a>
+            </div>
         </div>
     </div>
+
 </div>
 {% endblock %}

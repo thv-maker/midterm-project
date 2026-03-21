@@ -2,273 +2,339 @@
 
 {% block title %}User Details{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    .detail-container {
-        max-width: 800px;
-        margin: 0 auto;
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-        margin-bottom: 20px;
+    :root {
+        --brown-dark:  #3e1f0d;
+        --brown-mid:   #6d4c41;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
     }
 
-    .detail-header {
-        margin-bottom: 25px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f0f0f0;
-    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
 
-    .detail-header h1 {
-        color: #5d4037;
-        font-size: 24px;
-        font-weight: 600;
-        margin: 0;
-    }
+    .ud-wrap { padding: 32px 36px; }
 
-    .user-card {
-        background: #f8f5f2;
-        padding: 25px;
-        border-radius: 12px;
-        margin-bottom: 25px;
-    }
-
-    .user-header {
+    /* ── HEADER ── */
+    .ud-header {
+        background: var(--brown-dark);
+        border-radius: 18px;
+        padding: 28px 32px;
+        margin-bottom: 24px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
     }
-
-    .user-name {
-        font-size: 28px;
-        font-weight: 700;
-        color: #5d4037;
+    .ud-header::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 200px; height: 200px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.04);
     }
-
-    .badge {
-        padding: 6px 16px;
-        border-radius: 20px;
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .badge-active {
-        background: #e8f5e9;
-        color: #388e3c;
-    }
-
-    .badge-inactive {
-        background: #ffebee;
-        color: #c62828;
-    }
-
-    .user-stats {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-    }
-
-    .stat-box {
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        text-align: center;
-    }
-
-    .stat-label {
-        font-size: 12px;
-        color: #8d6e63;
-        margin-bottom: 5px;
-    }
-
-    .stat-value {
+    .ud-header h1 {
+        font-family: 'Playfair Display', serif;
         font-size: 24px;
+        color: #fff;
+        margin: 0 0 4px;
         font-weight: 700;
-        color: #5d4037;
-    }
-
-    .detail-row {
-        padding: 15px 0;
-        border-bottom: 1px solid #f0f0f0;
         display: flex;
-        justify-content: space-between;
-    }
-
-    .detail-label {
-        color: #8d6e63;
-        font-weight: 500;
-        font-size: 14px;
-    }
-
-    .detail-value {
-        color: #5d4037;
-        font-size: 14px;
-        font-weight: 600;
-    }
-
-    .actions {
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #f0f0f0;
-        display: flex;
+        align-items: center;
         gap: 10px;
     }
-
-    .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
+    .ud-header p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; }
+    .ud-back {
+        background: rgba(255,255,255,.1);
+        border: 1.5px solid rgba(255,255,255,.15);
+        color: #fff;
+        padding: 10px 22px;
+        border-radius: 30px;
         text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s;
-        border: none;
-        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        transition: background .2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: relative; z-index: 1;
+    }
+    .ud-back:hover { background: rgba(255,255,255,.18); color: #fff; }
+
+    /* ── PROFILE CARD ── */
+    .ud-profile {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 28px 30px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+    }
+    .ud-avatar {
+        width: 80px; height: 80px; min-width: 80px;
+        background: var(--cream2);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--brown-mid);
+        font-size: 32px;
+        border: 3px solid var(--cream2);
+    }
+    .ud-profile-info h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 22px;
+        color: var(--text);
+        margin: 0 0 8px;
+        font-weight: 700;
+    }
+    .ud-profile-meta { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* ── DETAIL CARD ── */
+    .ud-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 28px 30px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        margin-bottom: 20px;
+    }
+    .ud-card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 20px;
+        padding-bottom: 14px;
+        border-bottom: 1.5px solid var(--cream2);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .ud-card-title i { color: var(--brown-acc); }
+
+    .ud-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 0;
+        border-bottom: 1.5px solid var(--cream2);
+    }
+    .ud-row:last-child { border-bottom: none; }
+    .ud-label {
+        font-size: 13px;
+        color: var(--muted);
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .ud-label i { color: var(--brown-light); width: 16px; }
+    .ud-value { font-size: 14px; color: var(--text); font-weight: 600; }
+
+    /* badges */
+    .ud-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+    }
+    .ud-badge.active   { background: #e8f5e9; color: #2e7d32; }
+    .ud-badge.inactive { background: #ffebee; color: #c62828; }
+    .ud-badge.admin    { background: var(--cream2); color: var(--brown-dark); }
+    .ud-badge.staff    { background: #fff3e0; color: #e65100; }
+    .ud-badge.user     { background: #f3e5f5; color: #7b1fa2; }
+
+    /* ── ACTIONS ── */
+    .ud-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .ud-btn {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        font-size: 14px;
+        padding: 11px 24px;
+        border-radius: 40px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background .2s, transform .2s;
+        border: none;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
     }
+    .ud-btn:hover { transform: translateY(-2px); }
+    .ud-btn.edit     { background: #fff3e0; color: #e65100; }
+    .ud-btn.edit:hover { background: #ffe0b2; }
+    .ud-btn.back     { background: var(--cream2); color: var(--brown-dark); }
+    .ud-btn.back:hover { background: #e0d4c5; }
 
-    .btn-warning {
-        background: #FF9800;
-        color: white;
+    /* ── DANGER ZONE ── */
+    .ud-danger {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 24px 30px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        border-left: 4px solid #f44336;
     }
-
-    .btn-warning:hover {
-        background: #F57C00;
-    }
-
-    .btn-secondary {
-        background: #e0e0e0;
-        color: #5d4037;
-    }
-
-    .btn-secondary:hover {
-        background: #bdbdbd;
-    }
-
-    .btn-danger {
-        background: #f44336;
-        color: white;
-    }
-
-    .btn-danger:hover {
-        background: #d32f2f;
-    }
-
-    .delete-section {
-        max-width: 800px;
-        margin: 0 auto;
-        background: #fff5f5;
-        padding: 20px;
-        border-radius: 12px;
-        border: 2px solid #ffebee;
-    }
-
-    .delete-section h3 {
+    .ud-danger-title {
+        font-size: 15px;
+        font-weight: 700;
         color: #c62828;
-        margin: 0 0 10px 0;
-        font-size: 16px;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
-
-    .delete-section p {
-        color: #666;
-        font-size: 14px;
-        margin-bottom: 15px;
+    .ud-danger p { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+    .ud-btn-delete {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 24px;
+        border-radius: 40px;
+        font-size: 13px;
+        font-weight: 700;
+        background: #ffebee;
+        color: #c62828;
+        border: none;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: background .2s, transform .2s;
     }
-
-    .role-badge {
-        display: inline-block;
-        padding: 4px 12px;
-        background: #6d4c41;
-        color: white;
-        border-radius: 12px;
-        font-size: 12px;
-        margin-right: 5px;
-    }
+    .ud-btn-delete:hover { background: #ffcdd2; transform: translateY(-2px); }
 </style>
+{% endblock %}
 
-<div class="detail-container">
-    <div class="detail-header">
-        <h1>👤 User Details</h1>
-    </div>
+{% block body %}
+<div class="ud-wrap">
 
-    <div class="user-card">
-        <div class="user-header">
-            <div class="user-name">{{ user.email }}</div>
-            {% if user.isActive %}
-                <span class="badge badge-active">Active</span>
-            {% else %}
-                <span class="badge badge-inactive">Inactive</span>
-            {% endif %}
+    {# ── HEADER ── #}
+    <div class="ud-header">
+        <div>
+            <h1><i class="fas fa-user"></i> User Details</h1>
+            <p>View and manage user account information.</p>
         </div>
-
-        <div class="user-stats">
-            <div class="stat-box">
-                <div class="stat-label">User ID</div>
-                <div class="stat-value">#{{ user.id }}</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-label">Total Roles</div>
-                <div class="stat-value">{{ user.roles|length }}</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="detail-row">
-        <span class="detail-label">Email</span>
-        <span class="detail-value">{{ user.email }}</span>
-    </div>
-
-    <div class="detail-row">
-        <span class="detail-label">Status</span>
-        <span class="detail-value">
-            {% if user.isActive %}
-                <span style="color: #388e3c;">✓ Active</span>
-            {% else %}
-                <span style="color: #c62828;">✗ Inactive</span>
-            {% endif %}
-        </span>
-    </div>
-
-    <div class="detail-row">
-        <span class="detail-label">Roles</span>
-        <span class="detail-value">
-            {% for role in user.roles %}
-                <span class="role-badge">{{ role }}</span>
-            {% endfor %}
-        </span>
-    </div>
-
-    <div class="detail-row">
-        <span class="detail-label">Last Login</span>
-        <span class="detail-value">
-            {% if user.lastLogin %}
-                {{ user.lastLogin|date('M d, Y h:i A') }}
-            {% else %}
-                Never logged in
-            {% endif %}
-        </span>
-    </div>
-
-    <div class="actions">
-        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-warning">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-            </svg>
-            Edit User
+        <a href="{{ path('app_user_index') }}" class="ud-back">
+            <i class="fas fa-arrow-left"></i> Back to Users
         </a>
-        <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Back to List</a>
     </div>
-</div>
 
-<div class="delete-section">
-    <h3>⚠️ Danger Zone</h3>
-    <p>Once you delete this user, there is no going back. Please be certain.</p>
-    <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" onsubmit="return confirm('Are you sure you want to delete this user?');">
-        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-        <button class="btn btn-danger">Delete User</button>
-    </form>
+    {# ── PROFILE CARD ── #}
+    <div class="ud-profile">
+        <div class="ud-avatar">
+            <i class="fas fa-user"></i>
+        </div>
+        <div class="ud-profile-info">
+            <h2>{{ user.email }}</h2>
+            <div class="ud-profile-meta">
+                {% if user.isActive %}
+                    <span class="ud-badge active"><i class="fas fa-check-circle"></i> Active</span>
+                {% else %}
+                    <span class="ud-badge inactive"><i class="fas fa-times-circle"></i> Inactive</span>
+                {% endif %}
+                {% for role in user.roles %}
+                    {% if role == 'ROLE_ADMIN' %}
+                        <span class="ud-badge admin"><i class="fas fa-crown"></i> Admin</span>
+                    {% elseif role == 'ROLE_STAFF' %}
+                        <span class="ud-badge staff"><i class="fas fa-user-tie"></i> Staff</span>
+                    {% elseif role == 'ROLE_USER' %}
+                        <span class="ud-badge user"><i class="fas fa-user"></i> User</span>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    {# ── ACCOUNT INFO ── #}
+    <div class="ud-card">
+        <div class="ud-card-title">
+            <i class="fas fa-id-card"></i> Account Information
+        </div>
+
+        <div class="ud-row">
+            <span class="ud-label"><i class="fas fa-hashtag"></i> User ID</span>
+            <span class="ud-value">#{{ user.id }}</span>
+        </div>
+        <div class="ud-row">
+            <span class="ud-label"><i class="fas fa-envelope"></i> Email</span>
+            <span class="ud-value">{{ user.email }}</span>
+        </div>
+        <div class="ud-row">
+            <span class="ud-label"><i class="fas fa-circle"></i> Status</span>
+            <span class="ud-value">
+                {% if user.isActive %}
+                    <span class="ud-badge active"><i class="fas fa-check-circle"></i> Active</span>
+                {% else %}
+                    <span class="ud-badge inactive"><i class="fas fa-times-circle"></i> Inactive</span>
+                {% endif %}
+            </span>
+        </div>
+        <div class="ud-row">
+            <span class="ud-label"><i class="fas fa-shield-alt"></i> Roles</span>
+            <span class="ud-value" style="display:flex;gap:6px;flex-wrap:wrap;">
+                {% for role in user.roles %}
+                    {% if role == 'ROLE_ADMIN' %}
+                        <span class="ud-badge admin"><i class="fas fa-crown"></i> Admin</span>
+                    {% elseif role == 'ROLE_STAFF' %}
+                        <span class="ud-badge staff"><i class="fas fa-user-tie"></i> Staff</span>
+                    {% elseif role == 'ROLE_USER' %}
+                        <span class="ud-badge user"><i class="fas fa-user"></i> User</span>
+                    {% endif %}
+                {% endfor %}
+            </span>
+        </div>
+        <div class="ud-row">
+            <span class="ud-label"><i class="far fa-clock"></i> Last Login</span>
+            <span class="ud-value">
+                {% if user.lastLogin %}
+                    {{ user.lastLogin|date('M d, Y h:i A') }}
+                {% else %}
+                    <span style="color:var(--muted);">Never logged in</span>
+                {% endif %}
+            </span>
+        </div>
+
+        <div style="padding-top:20px; border-top:1.5px solid var(--cream2); margin-top:6px;">
+            <div class="ud-actions">
+                <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="ud-btn edit">
+                    <i class="fas fa-pen"></i> Edit User
+                </a>
+                <a href="{{ path('app_user_index') }}" class="ud-btn back">
+                    <i class="fas fa-list"></i> Back to List
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {# ── DANGER ZONE ── #}
+    <div class="ud-danger">
+        <div class="ud-danger-title">
+            <i class="fas fa-exclamation-triangle"></i> Danger Zone
+        </div>
+        <p>Once you delete this user, there is no going back. Please be certain before proceeding.</p>
+        <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}"
+              onsubmit="return confirm('Are you sure you want to delete this user?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+            <button class="ud-btn-delete">
+                <i class="fas fa-trash"></i> Delete User
+            </button>
+        </form>
+    </div>
+
 </div>
 {% endblock %}

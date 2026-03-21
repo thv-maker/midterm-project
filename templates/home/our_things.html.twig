@@ -1,0 +1,350 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Our Things - Carpe Diem Cafe{% endblock %}
+
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --brown:       #6d4c41;
+        --brown-dark:  #3e1f0d;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
+    }
+
+    body { background: var(--cream); font-family: 'DM Sans', sans-serif; color: var(--text); }
+
+    /* ── PAGE HERO ── */
+    .ot-hero {
+    background: var(--white);
+    padding: 60px 0;
+    border-bottom: 1.5px solid var(--cream2);
+    text-align: left;
+}
+.ot-hero span {
+    font-size: 12px; letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--brown-light); font-weight: 700;
+    display: block; margin-bottom: 10px;
+}
+.ot-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 5vw, 64px);
+    color: var(--text); margin: 0 0 18px; line-height: 1.1;
+}
+.ot-hero h1 span { color: var(--brown-acc); font-style: italic; }
+.ot-hero p {
+    color: var(--muted); font-size: 15px;
+    max-width: 420px; line-height: 1.75; margin: 0;
+}
+
+    /* ── PILLARS ── */
+    .ot-pillars { padding: 90px 0; background: var(--cream); }
+    .ot-pillar-card {
+        background: var(--white);
+        border-radius: 18px;
+        padding: 36px 28px;
+        box-shadow: 0 4px 24px rgba(0,0,0,.06);
+        transition: transform .3s, box-shadow .3s;
+        height: 100%;
+        border-top: 4px solid var(--brown-acc);
+    }
+    .ot-pillar-card:hover { transform: translateY(-6px); box-shadow: 0 14px 40px rgba(0,0,0,.11); }
+    .ot-pillar-icon { font-size: 28px; color: var(--brown-acc); }
+    .ot-pillar-card h4 {
+        font-family: 'Playfair Display', serif;
+        font-size: 20px; color: var(--text); margin-bottom: 10px;
+    }
+    .ot-pillar-card p { font-size: 14px; color: var(--muted); line-height: 1.75; margin: 0; }
+
+    /* ── NUTRITION HIGHLIGHT ── */
+    .ot-nut {
+        background: var(--brown-dark);
+        padding: 90px 0;
+    }
+    .ot-nut-text span {
+        font-size: 12px; letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--brown-light); font-weight: 700;
+    }
+    .ot-nut-text h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 38px; color: #fff;
+        margin: 12px 0 18px; line-height: 1.2;
+    }
+    .ot-nut-text h2 em { color: #d4a97a; font-style: italic; }
+    .ot-nut-text p {
+        color: rgba(255,255,255,.68); font-size: 15px;
+        line-height: 1.8; margin-bottom: 32px; max-width: 420px;
+    }
+    .ot-nut-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+    .ot-nut-box {
+        background: rgba(255,255,255,.07);
+        border: 1.5px solid rgba(255,255,255,.1);
+        border-radius: 14px; padding: 22px 20px;
+        transition: background .3s;
+    }
+    .ot-nut-box:hover { background: rgba(255,255,255,.12); }
+    .ot-nut-box h5 {
+        font-size: 28px; font-weight: 700;
+        color: #fff; margin-bottom: 4px;
+        font-family: 'Playfair Display', serif;
+    }
+    .ot-nut-box p { font-size: 13px; color: rgba(255,255,255,.6); margin: 0; }
+    .ot-nut-img {
+        border-radius: 20px; overflow: hidden; height: 440px;
+    }
+    .ot-nut-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── COMMITMENTS ── */
+    .ot-commit { padding: 90px 0; background: var(--white); }
+    .ot-section-head { text-align: center; margin-bottom: 55px; }
+    .ot-section-head span {
+        font-size: 12px; letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--brown-light); font-weight: 700;
+    }
+    .ot-section-head h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 38px; color: var(--text); margin-top: 8px;
+    }
+    .ot-commit-card {
+        display: flex; align-items: flex-start; gap: 18px;
+        padding: 26px; border-radius: 16px;
+        border: 1.5px solid var(--cream2);
+        transition: border-color .2s, box-shadow .2s;
+        height: 100%;
+    }
+    .ot-commit-card:hover {
+        border-color: var(--brown-light);
+        box-shadow: 0 6px 24px rgba(0,0,0,.06);
+    }
+    .ot-commit-icon {
+        width: 50px; height: 50px; 
+        min-width: 50px;
+        background: var(--cream2); 
+        border-radius: 14px;
+        display: flex; 
+        align-items: center;
+        justify-content: center; 
+        font-size: 22px;
+        color: var(--brown-acc);
+    }
+    .ot-commit-card h5 {
+        font-size: 15px; 
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 6px;
+    }
+    .ot-commit-card p {
+        font-size: 13px; 
+        color: var(--muted);
+        line-height: 1.7; 
+        margin: 0;
+    }
+
+    /* ── CTA ── */
+    .ot-cta {
+        background: var(--cream2);
+        padding: 80px 0; text-align: center;
+    }
+    .ot-cta h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 38px; color: var(--text); margin-bottom: 12px;
+    }
+    .ot-cta h2 span { color: var(--brown-acc); font-style: italic; }
+    .ot-cta p {
+        color: var(--muted); font-size: 15px;
+        max-width: 500px; margin: 0 auto 30px; line-height: 1.8;
+    }
+    .ot-btn {
+        display: inline-block;
+        background: var(--brown-dark); color: #fff;
+        padding: 13px 34px; border-radius: 40px;
+        font-weight: 700; font-size: 14px;
+        text-decoration: none; transition: background .2s;
+    }
+    .ot-btn:hover { background: var(--brown-acc); color: #fff; }
+
+    @media (max-width: 768px) {
+        .ot-nut-grid { grid-template-columns: 1fr; }
+        .ot-nut-img { height: 280px; margin-top: 40px; }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+{# ── HERO ── #}
+<section class="ot-hero">
+    <div class="container">
+        <div style="display:flex; align-items:center; gap:60px; min-height:420px;">
+            <div style="flex:0 0 50%;">
+                <span>What We Stand For</span>
+                <h1>Our <span>Things</span></h1>
+                <p>Everything we do is about delivering an exceptional café experience — from the bean to the cup, with full transparency every step of the way.</p>
+                <a href="{{ path('app_contact') }}" style="display:inline-block; background:#3e1f0d; color:#fff; padding:13px 32px; border-radius:40px; font-weight:700; font-size:14px; text-decoration:none; margin-top:20px;">Visit Us Today</a>
+            </div>
+            <div style="flex:1; position:relative; display:flex; justify-content:center;">
+                <div style="width:360px; height:360px; border-radius:50%; overflow:hidden; border:6px solid #f3ece4; box-shadow:0 20px 60px rgba(110,76,65,.15);">
+                    <img src="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=700&q=80"
+                         alt="Our Things" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+                <div style="position:absolute; top:10%; right:2%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#6d4c41;display:inline-block;"></span> Fair-Trade Beans
+                </div>
+                <div style="position:absolute; top:38%; left:0%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#a0785a;display:inline-block;"></span> Eco Packaging
+                </div>
+                <div style="position:absolute; bottom:25%; right:0%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#3e1f0d;display:inline-block;"></span> Expert Baristas
+                </div>
+                <div style="position:absolute; bottom:8%; left:5%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#c49a6c;display:inline-block;"></span> Community First
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── 4 PILLARS ── #}
+<section class="ot-pillars">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="ot-pillar-card">
+                    <span class="ot-pillar-icon"><i class="fas fa-leaf"></i></span>
+                    <h4>Local Fair-Trade Beans</h4>
+                    <p>We source only from local fair-trade farms — fresher beans, better flavor, and a positive impact on our community.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="ot-pillar-card">
+                    <span class="ot-pillar-icon"><i class="fas fa-user-tie"></i></span>
+                    <h4>Expert Barista Craft</h4>
+                    <p>Our baristas undergo rigorous training to master craft recipes that bring out the best in every single brew.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="ot-pillar-card">
+                    <span class="ot-pillar-icon"><i class="fas fa-hands-helping"></i></span>
+                    <h4>Community Programs</h4>
+                    <p>We give back — through charitable initiatives, local partnerships, and programs that strengthen our neighbourhood.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="ot-pillar-card">
+                    <span class="ot-pillar-icon"><i class="fas fa-recycle"></i></span>
+                    <h4>Sustainable Packaging</h4>
+                    <p>We use eco-friendly, biodegradable packaging and actively reduce waste across all our operations.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── NUTRITION HIGHLIGHT ── #}
+<section class="ot-nut">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-md-6">
+                <div class="ot-nut-text">
+                    <span>Our Uniqueness</span>
+                    <h2>The Only Café with<br><em>Full Nutrition Facts</em></h2>
+                    <p>We believe you deserve to know exactly what's in your cup. That's why every Carpe Diem drink comes with complete nutrition information — no secrets, no surprises.</p>
+                    <div class="ot-nut-grid">
+                        <div class="ot-nut-box">
+                            <h5>100%</h5>
+                            <p>Nutrition transparent</p>
+                        </div>
+                        <div class="ot-nut-box">
+                            <h5>20+</h5>
+                            <p>Drinks with nutrition facts</p>
+                        </div>
+                        <div class="ot-nut-box">
+                            <h5>0</h5>
+                            <p>Hidden ingredients</p>
+                        </div>
+                        <div class="ot-nut-box">
+                            <h5>∞</h5>
+                            <p>Trust from our customers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="ot-nut-img">
+                    <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80" alt="Nutrition Transparency">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── COMMITMENTS ── #}
+<section class="ot-commit">
+    <div class="container">
+        <div class="ot-section-head">
+            <span>Our Commitments</span>
+            <h2>How We Do Things Differently</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="ot-commit-card">
+                    <div class="ot-commit-icon"><i class="fas fa-clipboard-list"></i></div>
+                    <div>
+                        <h5>Calories on Every Cup</h5>
+                        <p>From espresso to cold brew — every drink lists its calorie count so you can make informed choices.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="ot-commit-card">
+                    <div class="ot-commit-icon"><i class="fas fa-coffee"></i></div>
+                    <div>
+                        <h5>Caffeine Content Listed</h5>
+                        <p>We display exact caffeine levels so you always know how much you're getting in each sip.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="ot-commit-card">
+                    <div class="ot-commit-icon"><i class="fas fa-flask"></i></div>
+                    <div>
+                        <h5>Full Ingredient List</h5>
+                        <p>Every ingredient in every drink is listed — no artificial fillers, no hidden additives, ever.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="ot-commit-card">
+                    <div class="ot-commit-icon"><i class="fas fa-seedling"></i></div>
+                    <div>
+                        <h5>Clean & Natural Sourcing</h5>
+                        <p>We source naturally grown, chemical-free beans and ingredients that are good for you and the planet.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── CTA ── #}
+<section class="ot-cta">
+    <div class="container">
+        <h2>Experience Coffee<br><span>the Honest Way</span></h2>
+        <p>Come visit Carpe Diem and taste the difference that transparency, quality, and passion makes in every single cup.</p>
+        <a href="{{ path('app_contact') }}" class="ot-btn">Visit Us Today</a>
+    </div>
+</section>
+
+{% endblock %}

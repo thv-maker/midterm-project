@@ -2,227 +2,286 @@
 
 {% block title %}Customer Management{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    .page-header {
-        background: white;
-        padding: 25px 30px;
-        border-radius: 12px;
-        margin-bottom: 25px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+    :root {
+        --brown-dark:  #3e1f0d;
+        --brown-mid:   #6d4c41;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
+    }
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
+
+    .cm-wrap { padding: 32px 36px; }
+
+    /* ── HEADER ── */
+    .cm-header {
+        background: var(--brown-dark);
+        border-radius: 18px;
+        padding: 28px 32px;
+        margin-bottom: 28px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        position: relative;
+        overflow: hidden;
     }
-
-    .page-header h1 {
-        color: #5d4037;
-        margin: 0;
+    .cm-header::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 200px; height: 200px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.04);
+    }
+    .cm-header h1 {
+        font-family: 'Playfair Display', serif;
         font-size: 24px;
-        font-weight: 600;
+        color: #fff;
+        margin: 0 0 4px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
+    .cm-header p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; }
 
-    .btn {
-        padding: 10px 20px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s;
-        border: none;
-        cursor: pointer;
-        display: inline-flex;
+    /* ── STATS ── */
+    .cm-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+    .cm-stat {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        border-left: 4px solid var(--brown-acc);
+        transition: transform .3s, box-shadow .3s;
+    }
+    .cm-stat:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,.09); }
+    .cm-stat-icon {
+        width: 54px; height: 54px;
+        border-radius: 14px;
+        background: var(--cream2);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px;
+        color: var(--brown-mid);
+        flex-shrink: 0;
+    }
+    .cm-stat-label { font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .cm-stat-value { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--text); line-height: 1; }
+
+    /* ── TABLE CARD ── */
+    .cm-card {
+        background: var(--white);
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        overflow: hidden;
+    }
+    .cm-card-head {
+        padding: 22px 28px;
+        border-bottom: 1.5px solid var(--cream2);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .cm-card-head h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0;
+        display: flex;
         align-items: center;
         gap: 8px;
     }
+    .cm-card-head h3 i { color: var(--brown-acc); }
+    .cm-count { font-size: 13px; color: var(--muted); font-weight: 500; }
 
-    .btn-primary {
-        background: #6d4c41;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background: #5d4037;
-    }
-
-    .btn-sm {
-        padding: 6px 12px;
-        font-size: 14px;
-    }
-
-    .btn-info {
-        background: #2196F3;
-        color: white;
-    }
-
-    .btn-info:hover {
-        background: #1976D2;
-    }
-
-    .btn-warning {
-        background: #FF9800;
-        color: white;
-    }
-
-    .btn-warning:hover {
-        background: #F57C00;
-    }
-
-    .btn-danger {
-        background: #f44336;
-        color: white;
-    }
-
-    .btn-danger:hover {
-        background: #d32f2f;
-    }
-
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        margin-bottom: 25px;
-    }
-
-    .stat-card {
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-    }
-
-    .stat-card h3 {
-        color: #8d6e63;
-        font-size: 14px;
-        margin: 0 0 10px 0;
-        font-weight: 500;
-    }
-
-    .stat-card .value {
-        font-size: 32px;
-        font-weight: 700;
-        color: #5d4037;
-        margin: 0;
-    }
-
-    .table-container {
-        background: white;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-    }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .table thead {
-        border-bottom: 2px solid #f0f0f0;
-    }
-
-    .table th {
-        padding: 12px;
+    /* ── TABLE ── */
+    table.cm-table { width: 100%; border-collapse: collapse; }
+    table.cm-table thead th {
+        padding: 12px 18px;
         text-align: left;
-        color: #8d6e63;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: var(--cream);
+        border-bottom: 2px solid var(--cream2);
+    }
+    table.cm-table tbody td {
+        padding: 16px 18px;
         font-size: 13px;
-        font-weight: 600;
+        color: var(--text);
+        border-bottom: 1.5px solid var(--cream2);
+        vertical-align: middle;
     }
+    table.cm-table tbody tr:last-child td { border-bottom: none; }
+    table.cm-table tbody tr:hover td { background: var(--cream); }
 
-    .table td {
-        padding: 15px 12px;
-        border-bottom: 1px solid #f8f8f8;
-        color: #5d4037;
+    /* customer cell */
+    .cm-cust-cell { display: flex; align-items: center; gap: 12px; }
+    .cm-avatar {
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        background: var(--cream2);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--brown-mid);
+        font-size: 15px;
+        flex-shrink: 0;
     }
+    .cm-cust-name { font-weight: 600; color: var(--text); font-size: 13px; }
+    .cm-cust-id { font-size: 11px; color: var(--muted); }
 
-    .table tbody tr:hover {
-        background: #f8f5f2;
-    }
-
-    .badge {
+    /* order badge */
+    .cm-order-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
         padding: 4px 12px;
         border-radius: 20px;
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 700;
+        background: var(--cream2);
+        color: var(--brown-dark);
     }
-
-    .badge-active {
+    .cm-order-badge.has-orders {
         background: #e8f5e9;
-        color: #388e3c;
+        color: #2e7d32;
     }
 
-    .badge-inactive {
-        background: #ffebee;
-        color: #c62828;
-    }
-
-    .actions {
-        display: flex;
-        gap: 8px;
-    }
-
-    .no-data {
-        text-align: center;
-        padding: 40px;
-        color: #95a5a6;
-    }
-
-    .delete-form {
-        display: inline;
-    }
+    /* empty */
+    .cm-empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .cm-empty i { font-size: 48px; opacity: .3; margin-bottom: 16px; display: block; }
+    .cm-empty p { font-size: 15px; margin: 0; }
 </style>
+{% endblock %}
 
-<div class="page-header">
-    <h1>👥 Customer Management</h1>
-</div>
+{% block body %}
+<div class="cm-wrap">
 
-<div class="stats-grid">
-    <div class="stat-card">
-        <h3>Total Customers</h3>
-        <p class="value">{{ customers|length }}</p>
-    </div>
-    <div class="stat-card">
-        <h3>With Orders</h3>
-        <p class="value">{{ customers|filter(c => c.orders|length > 0)|length }}</p>
-    </div>
-    <div class="stat-card">
-        <h3>Total Orders</h3>
-        <p class="value">{% set totalOrders = 0 %}{% for customer in customers %}{% set totalOrders = totalOrders + customer.orders|length %}{% endfor %}{{ totalOrders }}</p>
-    </div>
-</div>
-
-<div class="table-container">
-    {% if customers is empty %}
-        <div class="no-data">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 60px; height: 60px; margin: 0 auto 15px; display: block; color: #bdc3c7;">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-            </svg>
-            <p>No customers found</p>
+    {# ── HEADER ── #}
+    <div class="cm-header">
+        <div>
+            <h1><i class="fas fa-users"></i> Customer Management</h1>
+            <p>View and manage all registered customers.</p>
         </div>
-    {% else %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Address</th>
-                    <th>Orders</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for customer in customers %}
-                    <tr>
-                        <td>#{{ customer.id }}</td>
-                        <td><strong>{{ customer.name }}</strong></td>
-                        <td>{{ customer.email }}</td>
-                        <td>{{ customer.phone }}</td>
-                        <td>{{ customer.address|length > 30 ? customer.address|slice(0, 30) ~ '...' : customer.address }}</td>
-                        <td><strong>{{ customer.orders|length }}</strong> orders</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+    </div>
+
+    {# ── STATS ── #}
+    {% set totalOrders = 0 %}
+    {% for customer in customers %}
+        {% set totalOrders = totalOrders + customer.orders|length %}
+    {% endfor %}
+
+    <div class="cm-stats">
+        <div class="cm-stat">
+            <div class="cm-stat-icon"><i class="fas fa-users"></i></div>
+            <div>
+                <div class="cm-stat-label">Total Customers</div>
+                <div class="cm-stat-value">{{ customers|length }}</div>
+            </div>
+        </div>
+        <div class="cm-stat">
+            <div class="cm-stat-icon"><i class="fas fa-shopping-bag"></i></div>
+            <div>
+                <div class="cm-stat-label">With Orders</div>
+                <div class="cm-stat-value">{{ customers|filter(c => c.orders|length > 0)|length }}</div>
+            </div>
+        </div>
+        <div class="cm-stat">
+            <div class="cm-stat-icon"><i class="fas fa-receipt"></i></div>
+            <div>
+                <div class="cm-stat-label">Total Orders</div>
+                <div class="cm-stat-value">{{ totalOrders }}</div>
+            </div>
+        </div>
+    </div>
+
+    {# ── TABLE ── #}
+    <div class="cm-card">
+        <div class="cm-card-head">
+            <h3><i class="fas fa-list"></i> All Customers</h3>
+            <span class="cm-count">{{ customers|length }} customer{{ customers|length != 1 ? 's' : '' }} found</span>
+        </div>
+
+        {% if customers is empty %}
+            <div class="cm-empty">
+                <i class="fas fa-users"></i>
+                <p>No customers found in the system.</p>
+            </div>
+        {% else %}
+            <div style="overflow-x:auto;">
+                <table class="cm-table">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Address</th>
+                            <th>Orders</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for customer in customers %}
+                        <tr>
+                            <td>
+                                <div class="cm-cust-cell">
+                                    <div class="cm-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <div class="cm-cust-name">{{ customer.name }}</div>
+                                        <div class="cm-cust-id">#{{ customer.id }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span style="display:flex; align-items:center; gap:6px; color:var(--muted);">
+                                    <i class="fas fa-envelope" style="font-size:11px;"></i>
+                                    {{ customer.email }}
+                                </span>
+                            </td>
+                            <td>
+                                <span style="display:flex; align-items:center; gap:6px; color:var(--muted);">
+                                    <i class="fas fa-phone" style="font-size:11px;"></i>
+                                    {{ customer.phone }}
+                                </span>
+                            </td>
+                            <td>
+                                <span style="color:var(--muted); font-size:13px;">
+                                    <i class="fas fa-map-marker-alt" style="font-size:11px; margin-right:4px;"></i>
+                                    {{ customer.address|length > 30 ? customer.address|slice(0, 30) ~ '...' : customer.address }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="cm-order-badge {{ customer.orders|length > 0 ? 'has-orders' : '' }}">
+                                    <i class="fas fa-{{ customer.orders|length > 0 ? 'check' : 'minus' }}"></i>
+                                    {{ customer.orders|length }} order{{ customer.orders|length != 1 ? 's' : '' }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
 </div>
 {% endblock %}

@@ -3,296 +3,289 @@
 {% block title %}New Product{% endblock %}
 
 {% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+    :root {
+        --brown-dark:  #3e1f0d;
+        --brown-mid:   #6d4c41;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
     }
 
-    body {
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: #f5f5f5;
-        min-height: 100vh;
-        padding: 2rem;
-    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
 
-    .container {
-        max-width: 900px;
-        margin: 0 auto;
-    }
+    .pn-wrap { padding: 32px 36px; }
 
-    .header {
-        background: linear-gradient(135deg, #6b4423 0%, #8b5a3c 100%);
-        padding: 2rem;
-        border-radius: 15px 15px 0 0;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    /* ── HEADER ── */
+    .pn-header {
+        background: var(--brown-dark);
+        border-radius: 18px;
+        padding: 28px 32px;
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
     }
-
-    .header h1 {
-        color: white;
-        font-size: 2rem;
-        font-weight: 600;
+    .pn-header::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 200px; height: 200px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.04);
+    }
+    .pn-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 24px;
+        color: #fff;
+        margin: 0 0 4px;
+        font-weight: 700;
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 10px;
     }
-
-    .header h1::before {
-        content: "🛍️";
-        font-size: 2.5rem;
-    }
-
-    .action-links {
-        background: white;
-        padding: 1rem 2rem;
-        border-bottom: 2px solid #e8d4c4;
-    }
-
-    .action-links a {
-        color: #6b4423;
+    .pn-header p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; }
+    .pn-back {
+        background: rgba(255,255,255,.1);
+        border: 1.5px solid rgba(255,255,255,.15);
+        color: #fff;
+        padding: 10px 22px;
+        border-radius: 30px;
         text-decoration: none;
-        font-weight: 500;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        transition: all 0.3s ease;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-    }
-
-    .action-links a:hover {
-        background: #f9f3ee;
-        transform: translateX(-5px);
-    }
-
-    .content-card {
-        background: white;
-        padding: 2.5rem;
-        border-radius: 0 0 15px 15px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-
-    .form-section {
-        margin-bottom: 2.5rem;
-        padding: 2rem;
-        background: linear-gradient(135deg, #faf8f6 0%, #ffffff 100%);
-        border-radius: 12px;
-        border-left: 4px solid #6b4423;
-    }
-
-    .section-title {
-        color: #6b4423;
-        font-size: 1.3rem;
+        font-size: 13px;
         font-weight: 600;
-        margin-bottom: 1.5rem;
+        transition: background .2s;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 8px;
+        position: relative; z-index: 1;
     }
+    .pn-back:hover { background: rgba(255,255,255,.18); color: #fff; }
 
-    .form-section:first-child .section-title::before {
-        content: "📝";
+    /* ── CARDS ── */
+    .pn-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 28px 32px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        margin-bottom: 20px;
     }
-
-    .form-section:last-of-type .section-title::before {
-        content: "🥤";
+    .pn-card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 22px;
+        padding-bottom: 14px;
+        border-bottom: 1.5px solid var(--cream2);
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
+    .pn-card-title i { color: var(--brown-acc); }
 
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    label {
-        display: block;
+    /* ── FIELDS ── */
+    .pn-label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 13px;
         font-weight: 600;
-        color: #4a5568;
-        margin-bottom: 0.5rem;
-        font-size: 0.95rem;
+        color: var(--text);
+        margin-bottom: 8px;
     }
+    .pn-label i { color: var(--brown-light); font-size: 13px; }
 
-    .form-control,
-    select {
+    .pn-card input[type="text"],
+    .pn-card input[type="number"],
+    .pn-card select,
+    .pn-card textarea {
         width: 100%;
-        padding: 0.875rem 1rem;
-        border: 2px solid #e2e8f0;
+        padding: 13px 16px;
+        border: 1.5px solid var(--cream2);
         border-radius: 10px;
-        font-size: 1rem;
-        transition: all 0.3s ease;
-        background: white;
-    }
-
-    .form-control:focus,
-    select:focus {
+        font-size: 14px;
+        font-family: 'DM Sans', sans-serif;
+        color: var(--text);
+        background: var(--cream);
         outline: none;
-        border-color: #6b4423;
-        box-shadow: 0 0 0 3px rgba(107, 68, 35, 0.1);
-        transform: translateY(-2px);
-    }
-
-    .form-control:hover,
-    select:hover {
-        border-color: #8b5a3c;
-    }
-
-    select {
-        cursor: pointer;
+        transition: border-color .2s, background .2s;
+        margin-bottom: 6px;
         appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b4423' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 1rem center;
-        padding-right: 2.5rem;
     }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #6b4423 0%, #8b5a3c 100%);
-        color: white;
-        padding: 1rem 2.5rem;
-        border: none;
-        border-radius: 10px;
-        font-size: 1.1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(107, 68, 35, 0.4);
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        width: 100%;
-        justify-content: center;
+    .pn-card input:focus,
+    .pn-card select:focus,
+    .pn-card textarea:focus {
+        border-color: var(--brown-acc);
+        background: var(--white);
     }
+    .pn-card input::placeholder,
+    .pn-card textarea::placeholder { color: var(--muted); }
 
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(107, 68, 35, 0.5);
-        background: linear-gradient(135deg, #8b5a3c 0%, #6b4423 100%);
-    }
-
-    .btn-primary:active {
-        transform: translateY(0);
-    }
-
-    .form-error {
-        color: #ef4444;
-        font-size: 0.875rem;
-        margin-top: 0.5rem;
+    .pn-help {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 20px;
+        margin-top: 4px;
         display: flex;
         align-items: center;
-        gap: 0.25rem;
+        gap: 5px;
     }
 
-    .form-error::before {
-        content: "⚠️";
+    .pn-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
     }
 
-    /* Input type number styling */
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-        opacity: 1;
+    /* nutrition highlight */
+    .pn-nut-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 28px 32px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        margin-bottom: 20px;
+        border-left: 4px solid var(--brown-light);
     }
 
-    /* Placeholder styling */
-    ::placeholder {
-        color: #a0aec0;
-        opacity: 1;
+    /* ── ACTIONS ── */
+    .pn-actions {
+        display: flex;
+        gap: 12px;
+        padding-top: 20px;
+        border-top: 1.5px solid var(--cream2);
+        margin-top: 8px;
     }
+    .pn-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 28px;
+        border-radius: 40px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background .2s, transform .2s;
+        border: none;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+    }
+    .pn-btn.primary { background: var(--brown-dark); color: #fff; }
+    .pn-btn.primary:hover { background: var(--brown-acc); color: #fff; transform: translateY(-2px); }
+    .pn-btn.cancel {
+        background: transparent;
+        color: var(--muted);
+        border: 2px solid var(--cream2);
+        text-decoration: none;
+    }
+    .pn-btn.cancel:hover { border-color: var(--brown-light); color: var(--text); transform: translateY(-2px); }
 
-    /* Responsive */
     @media (max-width: 768px) {
-        body {
-            padding: 1rem;
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-        }
-
-        .content-card {
-            padding: 1.5rem;
-        }
-
-        .form-section {
-            padding: 1.5rem;
-        }
-
-        .form-row {
-            grid-template-columns: 1fr;
-        }
+        .pn-row { grid-template-columns: 1fr; }
+        .pn-wrap { padding: 20px; }
     }
 </style>
 {% endblock %}
 
 {% block body %}
-    <div class="container">
-        <div class="header">
-            <h1>Create New Product</h1>
+<div class="pn-wrap">
+
+    {# ── HEADER ── #}
+    <div class="pn-header">
+        <div>
+            <h1><i class="fas fa-plus-circle"></i> Create New Product</h1>
+            <p>Add a new item to your café menu with full nutrition facts.</p>
         </div>
-
-        <div class="action-links">
-            <a href="{{ path('app_product_index') }}">← Back to list</a>
-        </div>
-
-        <div class="content-card">
-            {{ form_start(form, {'attr': {'class': 'product-form'}}) }}
-                <div class="form-section">
-                    <h2 class="section-title">Basic Information</h2>
-
-                    <div class="form-group">
-                        {{ form_label(form.name) }}
-                        {{ form_widget(form.name, {'attr': {'class': 'form-control', 'placeholder': 'Enter product name (e.g., Caramel Macchiato)'}}) }}
-                        {{ form_errors(form.name) }}
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            {{ form_label(form.category) }}
-                            {{ form_widget(form.category, {'attr': {'class': 'form-control'}}) }}
-                            {{ form_errors(form.category) }}
-                        </div>
-
-                        <div class="form-group">
-                            {{ form_label(form.price) }}
-                            {{ form_widget(form.price, {'attr': {'class': 'form-control', 'placeholder': '₱0.00', 'step': '0.01'}}) }}
-                            {{ form_errors(form.price) }}
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h2 class="section-title">Nutritional Information</h2>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            {{ form_label(form.calories) }}
-                            {{ form_widget(form.calories, {'attr': {'class': 'form-control', 'placeholder': 'Enter calories (e.g., 250)'}}) }}
-                            {{ form_errors(form.calories) }}
-                        </div>
-
-                        <div class="form-group">
-                            {{ form_label(form.sugarGrams) }}
-                            {{ form_widget(form.sugarGrams, {'attr': {'class': 'form-control', 'placeholder': 'Enter sugar in grams (e.g., 25.5)', 'step': '0.1'}}) }}
-                            {{ form_errors(form.sugarGrams) }}
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        {{ form_label(form.caffeineMg) }}
-                        {{ form_widget(form.caffeineMg, {'attr': {'class': 'form-control', 'placeholder': 'Enter caffeine in mg (e.g., 75)'}}) }}
-                        {{ form_errors(form.caffeineMg) }}
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-primary">
-                     Create Product
-                </button>
-            {{ form_end(form) }}
-        </div>
+        <a href="{{ path('app_dashboard_products') }}" class="pn-back">
+            <i class="fas fa-arrow-left"></i> Back to Products
+        </a>
     </div>
+
+    {{ form_start(form) }}
+
+        {# ── BASIC INFO ── #}
+        <div class="pn-card">
+            <div class="pn-card-title">
+                <i class="fas fa-info-circle"></i> Basic Information
+            </div>
+
+            <label class="pn-label" for="{{ form.name.vars.id }}">
+                <i class="fas fa-tag"></i> Product Name
+            </label>
+            {{ form_widget(form.name, {'attr': {'placeholder': 'e.g. Caramel Macchiato'}}) }}
+            {{ form_errors(form.name) }}
+            <div class="pn-help"><i class="fas fa-info-circle"></i> Enter the full name of the product.</div>
+
+            <div class="pn-row">
+                <div>
+                    <label class="pn-label" for="{{ form.category.vars.id }}">
+                        <i class="fas fa-list"></i> Category
+                    </label>
+                    {{ form_widget(form.category) }}
+                    {{ form_errors(form.category) }}
+                    <div class="pn-help"><i class="fas fa-info-circle"></i> Select a product category.</div>
+                </div>
+                <div>
+                    <label class="pn-label" for="{{ form.price.vars.id }}">
+                        <i class="fas fa-peso-sign"></i> Price (₱)
+                    </label>
+                    {{ form_widget(form.price, {'attr': {'placeholder': '0.00', 'step': '0.01'}}) }}
+                    {{ form_errors(form.price) }}
+                    <div class="pn-help"><i class="fas fa-info-circle"></i> Set the selling price in PHP.</div>
+                </div>
+            </div>
+        </div>
+
+        {# ── NUTRITION INFO ── #}
+        <div class="pn-nut-card pn-card">
+            <div class="pn-card-title">
+                <i class="fas fa-clipboard-list"></i> Nutritional Information
+            </div>
+
+            <div class="pn-row">
+                <div>
+                    <label class="pn-label" for="{{ form.calories.vars.id }}">
+                        <i class="fas fa-fire"></i> Calories (kcal)
+                    </label>
+                    {{ form_widget(form.calories, {'attr': {'placeholder': 'e.g. 250'}}) }}
+                    {{ form_errors(form.calories) }}
+                    <div class="pn-help"><i class="fas fa-info-circle"></i> Total calorie content per serving.</div>
+                </div>
+                <div>
+                    <label class="pn-label" for="{{ form.sugarGrams.vars.id }}">
+                        <i class="fas fa-cubes"></i> Sugar (g)
+                    </label>
+                    {{ form_widget(form.sugarGrams, {'attr': {'placeholder': 'e.g. 25.5', 'step': '0.1'}}) }}
+                    {{ form_errors(form.sugarGrams) }}
+                    <div class="pn-help"><i class="fas fa-info-circle"></i> Sugar content in grams per serving.</div>
+                </div>
+            </div>
+
+            <label class="pn-label" for="{{ form.caffeineMg.vars.id }}">
+                <i class="fas fa-bolt"></i> Caffeine (mg)
+            </label>
+            {{ form_widget(form.caffeineMg, {'attr': {'placeholder': 'e.g. 75'}}) }}
+            {{ form_errors(form.caffeineMg) }}
+            <div class="pn-help"><i class="fas fa-info-circle"></i> Caffeine content in milligrams per serving.</div>
+
+            <div class="pn-actions">
+                <button type="submit" class="pn-btn primary">
+                    <i class="fas fa-check"></i> Create Product
+                </button>
+                <a href="{{ path('app_dashboard_products') }}" class="pn-btn cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </div>
+
+    {{ form_end(form) }}
+
+</div>
 {% endblock %}

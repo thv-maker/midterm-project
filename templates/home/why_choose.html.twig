@@ -1,0 +1,367 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Why Choose Us - Carpe Diem Cafe{% endblock %}
+
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --brown:       #6d4c41;
+        --brown-dark:  #3e1f0d;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
+    }
+
+    body { background: var(--cream); font-family: 'DM Sans', sans-serif; color: var(--text); }
+
+    /* ── HERO ── */
+    .wc-hero {
+    background: var(--white);
+    padding: 60px 0;
+    border-bottom: 1.5px solid var(--cream2);
+    text-align: left;
+}
+.wc-hero span {
+    font-size: 12px; letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--brown-light); font-weight: 700;
+    display: block; margin-bottom: 10px;
+}
+.wc-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 5vw, 58px);
+    color: var(--text); margin: 0 0 18px; line-height: 1.1;
+}
+.wc-hero h1 span { color: var(--brown-acc); font-style: italic; }
+.wc-hero p {
+    color: var(--muted); font-size: 15px;
+    max-width: 420px; line-height: 1.75; margin: 0;
+}
+
+    /* ── MAIN REASONS ── */
+    .wc-reasons { padding: 90px 0; background: var(--cream); }
+    .wc-section-head { text-align: center; margin-bottom: 55px; }
+    .wc-section-head span {
+        font-size: 12px; letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--brown-light); font-weight: 700;
+    }
+    .wc-section-head h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 38px; color: var(--text); margin-top: 8px;
+    }
+    .wc-card {
+        background: var(--white);
+        border-radius: 18px; padding: 36px 28px;
+        box-shadow: 0 4px 24px rgba(0,0,0,.06);
+        transition: transform .3s, box-shadow .3s;
+        height: 100%;
+        border-bottom: 4px solid transparent;
+    }
+    .wc-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 40px rgba(0,0,0,.11);
+        border-bottom-color: var(--brown-acc);
+    }
+    .wc-icon { font-size: 28px; color: var(--brown-acc); }
+    .wc-card h4 {
+        font-family: 'Playfair Display', serif;
+        font-size: 20px; color: var(--text); margin-bottom: 10px;
+    }
+    .wc-card p { font-size: 14px; color: var(--muted); line-height: 1.75; margin: 0; }
+
+    /* ── USP DARK SECTION ── */
+    .wc-usp {
+        background: var(--brown-dark);
+        padding: 90px 0;
+    }
+    .wc-usp-inner {
+        display: flex; align-items: center; gap: 60px;
+    }
+    .wc-usp-text { flex: 1; }
+    .wc-usp-text span {
+        font-size: 12px; letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--brown-light); font-weight: 700;
+    }
+    .wc-usp-text h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 38px; color: #fff;
+        margin: 12px 0 18px; line-height: 1.2;
+    }
+    .wc-usp-text h2 em { color: #d4a97a; font-style: italic; }
+    .wc-usp-text p {
+        color: rgba(255,255,255,.68); font-size: 15px;
+        line-height: 1.8; margin-bottom: 32px; max-width: 420px;
+    }
+    .wc-usp-list { display: flex; flex-direction: column; gap: 14px; }
+    .wc-usp-item {
+        display: flex; align-items: center; gap: 14px;
+        background: rgba(255,255,255,.07);
+        border: 1.5px solid rgba(255,255,255,.1);
+        border-radius: 12px; padding: 16px 20px;
+        transition: background .3s;
+    }
+    .wc-usp-item:hover { background: rgba(255,255,255,.12); }
+    .wc-usp-item span {
+        font-size: 22px;
+        min-width: 36px;
+        text-align: center; 
+        letter-spacing: 0;
+        color: rgba(255,255,255,.85);
+
+    }
+    .wc-usp-item p { font-size: 14px; color: rgba(255,255,255,.8); margin: 0; font-weight: 500; }
+    .wc-usp-img { flex: 0 0 42%; }
+    .wc-usp-img img {
+        width: 100%; height: 440px;
+        object-fit: cover; border-radius: 20px;
+    }
+
+    /* ── COMPARE ── */
+    .wc-compare { padding: 90px 0; background: var(--white); }
+    .wc-compare-table {
+        width: 100%; border-collapse: collapse;
+        border-radius: 16px; overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0,0,0,.07);
+    }
+    .wc-compare-table thead tr {
+        background: var(--brown-dark); color: #fff;
+    }
+    .wc-compare-table thead th {
+        padding: 18px 24px; font-size: 14px;
+        font-weight: 700; letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    .wc-compare-table thead th:first-child {
+        font-family: 'Playfair Display', serif;
+        font-size: 16px; text-transform: none;
+    }
+    .wc-compare-table tbody tr { border-bottom: 1.5px solid var(--cream2); }
+    .wc-compare-table tbody tr:last-child { border-bottom: none; }
+    .wc-compare-table tbody tr:hover { background: var(--cream); }
+    .wc-compare-table tbody td {
+        padding: 16px 24px; font-size: 14px; color: var(--text);
+        text-align: center;
+    }
+    .wc-compare-table tbody td:first-child { text-align: left; font-weight: 600; }
+    .wc-check { color: #2e7d32; font-size: 18px; font-weight: 700; }
+    .wc-cross { color: #c62828; font-size: 18px; }
+
+    /* ── CTA ── */
+    .wc-cta {
+        background: var(--cream2); padding: 80px 0; text-align: center;
+    }
+    .wc-cta h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 38px; color: var(--text); margin-bottom: 12px;
+    }
+    .wc-cta h2 span { color: var(--brown-acc); font-style: italic; }
+    .wc-cta p {
+        color: var(--muted); font-size: 15px;
+        max-width: 500px; margin: 0 auto 30px; line-height: 1.8;
+    }
+    .wc-btn {
+        display: inline-block; background: var(--brown-dark);
+        color: #fff; padding: 13px 34px; border-radius: 40px;
+        font-weight: 700; font-size: 14px;
+        text-decoration: none; transition: background .2s;
+    }
+    .wc-btn:hover { background: var(--brown-acc); color: #fff; }
+
+    @media (max-width: 768px) {
+        .wc-usp-inner { flex-direction: column; }
+        .wc-usp-img { width: 100%; }
+        .wc-usp-img img { height: 280px; }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+{# ── HERO ── #}
+<section class="wc-hero">
+    <div class="container">
+        <div style="display:flex; align-items:center; gap:60px; min-height:420px;">
+            <div style="flex:0 0 50%;">
+                <span>Our Edge</span>
+                <h1>Why Choose <span>Carpe Diem</span>?</h1>
+                <p>We're more than just great coffee — we're a local experience with value, honesty, and full transparency in every single cup.</p>
+                <a href="{{ path('app_our_products') }}" style="display:inline-block; background:#3e1f0d; color:#fff; padding:13px 32px; border-radius:40px; font-weight:700; font-size:14px; text-decoration:none; margin-top:20px;">View Our Menu</a>
+            </div>
+            <div style="flex:1; position:relative; display:flex; justify-content:center;">
+                <div style="width:360px; height:360px; border-radius:50%; overflow:hidden; border:6px solid #f3ece4; box-shadow:0 20px 60px rgba(110,76,65,.15);">
+                    <img src="https://images.unsplash.com/photo-1521017432531-fbd92d768814?auto=format&fit=crop&w=700&q=80"
+                         alt="Why Choose Us" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+                <div style="position:absolute; top:10%; right:2%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#6d4c41;display:inline-block;"></span> Nutrition Facts
+                </div>
+                <div style="position:absolute; top:38%; left:0%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#a0785a;display:inline-block;"></span> 100% Transparent
+                </div>
+                <div style="position:absolute; bottom:25%; right:0%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#3e1f0d;display:inline-block;"></span> 0 Hidden Ingredients
+                </div>
+                <div style="position:absolute; bottom:8%; left:5%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#c49a6c;display:inline-block;"></span> Cebu City, PH
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── 6 REASONS ── #}
+<section class="wc-reasons">
+    <div class="container">
+        <div class="wc-section-head">
+            <span>6 Good Reasons</span>
+            <h2>What Makes Us Worth It</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4 col-sm-6">
+                <div class="wc-card">
+                    <span class="wc-icon"><i class="fas fa-trophy"></i></span>
+                    <h4>Consistent Quality</h4>
+                    <p>Every cup meets the same high standard — whether it's your first visit or your hundredth, quality never wavers.</p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="wc-card">
+                    <span class="wc-icon"><i class="fas fa-smile"></i></span>
+                    <h4>Friendly Atmosphere</h4>
+                    <p>Walk in as a stranger, leave as a regular. Our team makes every guest feel right at home.</p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="wc-card">
+                    <span class="wc-icon"><i class="fas fa-hands-helping"></i></span>
+                    <h4>Community-Focused</h4>
+                    <p>We're proud to be part of Cebu City — supporting local farms, suppliers, and community programs.</p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="wc-card">
+                    <span class="wc-icon"><i class="fas fa-seedling"></i></span>
+                    <h4>Premium Ingredients</h4>
+                    <p>Only the finest locally sourced, fair-trade beans and natural ingredients make it into your cup.</p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="wc-card">
+                    <span class="wc-icon"><i class="fas fa-comments"></i></span>
+                    <h4>Responsive Support</h4>
+                    <p>Questions? Concerns? Our team is always ready to help — fast, friendly, and genuinely caring.</p>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="wc-card">
+                    <span class="wc-icon"><i class="fas fa-mobile-alt"></i></span>
+                    <h4>Easy Online Ordering</h4>
+                    <p>Order your favourites online in seconds — quick, convenient, and always accurate.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── USP NUTRITION ── #}
+<section class="wc-usp">
+    <div class="container">
+        <div class="wc-usp-inner">
+            <div class="wc-usp-text">
+                <span>Our #1 Uniqueness</span>
+                <h2>The Only Café with<br><em>Full Nutrition Facts</em></h2>
+                <p>We believe you deserve to know exactly what's in your cup — that's why every Carpe Diem drink comes with complete nutrition information. No secrets, no surprises.</p>
+                <div class="wc-usp-list">
+                    <div class="wc-usp-item">
+                        <span><i class="fas fa-clipboard-list"></i></span>
+                        <p>Calories listed on every single drink</p>
+                    </div>
+                    <div class="wc-usp-item">
+                        <span><i class="fas fa-coffee"></i></span>
+                        <p>Exact caffeine content displayed per cup</p>
+                    </div>
+                    <div class="wc-usp-item">
+                        <span><i class="fas fa-flask"></i></span>
+                        <p>Full ingredient list — zero hidden additives</p>
+                    </div>
+                    <div class="wc-usp-item">
+                        <span><i class="fas fa-check-circle"></i></span>
+                        <p>100% transparent sourcing from farm to cup</p>
+                    </div>
+                </div>
+            </div>
+            <div class="wc-usp-img">
+                <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=800&q=80" alt="Our Uniqueness">
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── COMPARE TABLE ── #}
+<section class="wc-compare">
+    <div class="container">
+        <div class="wc-section-head">
+            <span>See The Difference</span>
+            <h2>Carpe Diem vs. Other Cafés</h2>
+        </div>
+        <table class="wc-compare-table">
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Carpe Diem ☕</th>
+                    <th>Other Cafés</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Nutrition facts on every drink</td>
+                    <td><span class="wc-check">✔</span></td>
+                    <td><span class="wc-cross">✘</span></td>
+                </tr>
+                <tr>
+                    <td>Caffeine content listed</td>
+                    <td><span class="wc-check">✔</span></td>
+                    <td><span class="wc-cross">✘</span></td>
+                </tr>
+                <tr>
+                    <td>Full ingredient transparency</td>
+                    <td><span class="wc-check">✔</span></td>
+                    <td><span class="wc-cross">✘</span></td>
+                </tr>
+                <tr>
+                    <td>Locally sourced fair-trade beans</td>
+                    <td><span class="wc-check">✔</span></td>
+                    <td><span class="wc-cross">✘</span></td>
+                </tr>
+                <tr>
+                    <td>Sustainable eco-friendly packaging</td>
+                    <td><span class="wc-check">✔</span></td>
+                    <td><span class="wc-cross">✘</span></td>
+                </tr>
+                <tr>
+                    <td>Community support programs</td>
+                    <td><span class="wc-check">✔</span></td>
+                    <td><span class="wc-cross">✘</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{# ── CTA ── #}
+<section class="wc-cta">
+    <div class="container">
+        <h2>Taste the Difference,<br><span>One Cup at a Time</span></h2>
+        <p>Come visit Carpe Diem Cafe and experience coffee the honest, transparent, and delicious way.</p>
+        <a href="{{ path('app_contact') }}" class="wc-btn">Visit Us Today</a>
+    </div>
+</section>
+
+{% endblock %}

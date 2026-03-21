@@ -1,0 +1,326 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact Us - Carpe Diem Cafe{% endblock %}
+
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --brown:       #6d4c41;
+        --brown-dark:  #3e1f0d;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
+    }
+
+    body { background: var(--cream); font-family: 'DM Sans', sans-serif; color: var(--text); }
+
+    /* ── HERO ── */
+    .ct-hero {
+    background: var(--white);
+    padding: 60px 0;
+    border-bottom: 1.5px solid var(--cream2);
+    text-align: left;
+}
+.ct-hero span {
+    font-size: 12px; letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--brown-light); font-weight: 700;
+    display: block; margin-bottom: 10px;
+}
+.ct-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 5vw, 58px);
+    color: var(--text); margin: 0 0 18px; line-height: 1.1;
+}
+.ct-hero h1 span { color: var(--brown-acc); font-style: italic; }
+.ct-hero p {
+    color: var(--muted); font-size: 15px;
+    max-width: 420px; line-height: 1.75; margin: 0;
+}
+
+    /* ── CONTACT INFO CARDS ── */
+    .ct-info { padding: 70px 0 0; background: var(--cream); }
+    .ct-info-card {
+        background: var(--white);
+        border-radius: 18px; padding: 32px 28px;
+        box-shadow: 0 4px 24px rgba(0,0,0,.06);
+        text-align: center; height: 100%;
+        transition: transform .3s, box-shadow .3s;
+        border-bottom: 4px solid transparent;
+    }
+    .ct-info-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 14px 40px rgba(0,0,0,.11);
+        border-bottom-color: var(--brown-acc);
+    }
+    .ct-info-icon { font-size: 28px; margin-bottom: 16px; display: block; color: var(--brown-acc); }
+    .ct-info-card h5 {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px; color: var(--text); margin-bottom: 8px;
+    }
+    .ct-info-card p { font-size: 14px; color: var(--muted); line-height: 1.7; margin: 0; }
+    .ct-info-card a { color: var(--brown-acc); text-decoration: none; font-weight: 600; }
+    .ct-info-card a:hover { color: var(--brown-dark); }
+
+    /* ── FORM + NUTRITION SECTION ── */
+    .ct-main { padding: 70px 0 90px; background: var(--cream); }
+
+    /* form */
+    .ct-form-wrap {
+        background: var(--white);
+        border-radius: 20px; padding: 44px 40px;
+        box-shadow: 0 4px 24px rgba(0,0,0,.06);
+    }
+    .ct-form-wrap h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 30px; color: var(--text); margin-bottom: 6px;
+    }
+    .ct-form-wrap p { color: var(--muted); font-size: 14px; margin-bottom: 30px; }
+    .ct-label {
+        display: block; font-size: 13px; font-weight: 600;
+        color: var(--text); margin-bottom: 7px;
+    }
+    .ct-input {
+        width: 100%; padding: 12px 16px;
+        border: 1.5px solid var(--cream2);
+        border-radius: 10px; font-size: 14px;
+        font-family: 'DM Sans', sans-serif;
+        color: var(--text); background: var(--cream);
+        outline: none; transition: border-color .2s;
+        margin-bottom: 20px;
+    }
+    .ct-input:focus { border-color: var(--brown-acc); background: var(--white); }
+    .ct-input::placeholder { color: var(--muted); }
+    textarea.ct-input { resize: vertical; min-height: 130px; }
+    .ct-submit {
+        width: 100%; padding: 14px;
+        background: var(--brown-dark); color: #fff;
+        border: none; border-radius: 40px;
+        font-size: 15px; font-weight: 700;
+        cursor: pointer; transition: background .2s;
+        font-family: 'DM Sans', sans-serif;
+    }
+    .ct-submit:hover { background: var(--brown-acc); }
+
+    /* nutrition side */
+    .ct-nut-side {
+        display: flex; flex-direction: column; gap: 20px;
+    }
+    .ct-nut-banner {
+        background: var(--brown-dark);
+        border-radius: 20px; padding: 36px 32px;
+        color: #fff;
+    }
+    .ct-nut-banner span {
+        font-size: 11px; letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--brown-light); font-weight: 700;
+    }
+    .ct-nut-banner h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 26px; margin: 10px 0 14px;
+        line-height: 1.2;
+    }
+    .ct-nut-banner h3 em { color: #d4a97a; font-style: italic; }
+    .ct-nut-banner p {
+        color: rgba(255,255,255,.68); font-size: 14px;
+        line-height: 1.75; margin: 0;
+    }
+    .ct-nut-pills {
+        display: flex; 
+        flex-wrap: wrap; 
+        gap: 10px; 
+        margin-top: 20px;
+    }
+    .ct-nut-pill {
+        background: rgba(255,255,255,.1);
+        border: 1.5px solid rgba(255,255,255,.15);
+        color: #fff; 
+        font-size: 11px; 
+        font-weight: 700;
+        padding: 6px 16px;
+        border-radius: 20px;
+    }
+
+    /* info cards side */
+    .ct-quick-card {
+        background: var(--white);
+        border-radius: 16px; padding: 24px 24px;
+        box-shadow: 0 4px 20px rgba(0,0,0,.05);
+        display: flex; align-items: flex-start; gap: 16px;
+        transition: box-shadow .2s;
+    }
+    .ct-quick-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,.10); }
+    .ct-quick-icon {
+        width: 46px; 
+        height: 46px; 
+        min-width: 46px;
+        background: var(--cream2); 
+        border-radius: 12px;
+        display: flex; 
+        align-items: center;
+        justify-content: center; 
+        font-size: 20px;
+        color: var(--brown-acc);
+    }
+    .ct-quick-card h5 {
+        font-size: 14px; font-weight: 700;
+        color: var(--text); margin-bottom: 4px;
+    }
+    .ct-quick-card p { font-size: 13px; color: var(--muted); margin: 0; line-height: 1.6; }
+    .ct-quick-card a { color: var(--brown-acc); text-decoration: none; }
+
+    @media (max-width: 768px) {
+        .ct-form-wrap { padding: 28px 22px; }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+{# ── HERO ── #}
+<section class="ct-hero">
+    <div class="container">
+        <div style="display:flex; align-items:center; gap:60px; min-height:420px;">
+            <div style="flex:0 0 50%;">
+                <span>Get In Touch</span>
+                <h1>Contact <span>Us</span></h1>
+                <p>We're here to help — inquiries, feedback, pre-orders, or just to say hi. We'd love to hear from you!</p>
+                <a href="#ct-form" style="display:inline-block; background:#3e1f0d; color:#fff; padding:13px 32px; border-radius:40px; font-weight:700; font-size:14px; text-decoration:none; margin-top:20px;">Send a Message</a>
+            </div>
+            <div style="flex:1; position:relative; display:flex; justify-content:center;">
+                <div style="width:360px; height:360px; border-radius:50%; overflow:hidden; border:6px solid #f3ece4; box-shadow:0 20px 60px rgba(110,76,65,.15);">
+                    <img src="https://images.unsplash.com/photo-1453614512568-c4024d13c247?auto=format&fit=crop&w=700&q=80"
+                         alt="Contact Us" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+                <div style="position:absolute; top:10%; right:2%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#6d4c41;display:inline-block;"></span> 24hr Response
+                </div>
+                <div style="position:absolute; top:38%; left:0%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#a0785a;display:inline-block;"></span> Pre-orders Welcome
+                </div>
+                <div style="position:absolute; bottom:25%; right:0%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#3e1f0d;display:inline-block;"></span> Cebu City, PH
+                </div>
+                <div style="position:absolute; bottom:8%; left:5%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#c49a6c;display:inline-block;"></span> Mon–Sun 7am–10pm
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── INFO CARDS ── #}
+<section class="ct-info">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="ct-info-card">
+                    <span class="ct-info-icon"><i class="fas fa-envelope"></i></span>
+                    <h5>Email Us</h5>
+                    <p><a href="mailto:hello@carpediemcafe.com">hello@carpediemcafe.com</a></p>
+                    <p>We reply within 24 hours.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="ct-info-card">
+                    <span class="ct-info-icon"><i class="fas fa-phone"></i></span>
+                    <h5>Call Us</h5>
+                    <p><a href="tel:+639123456789">+63 912 345 6789</a></p>
+                    <p>Mon–Sun, 7am–10pm</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="ct-info-card">
+                    <span class="ct-info-icon"><i class="fas fa-map-marker-alt"></i></span>
+                    <h5>Visit Us</h5>
+                    <p>123 Coffee Street</p>
+                    <p>Cebu City, Philippines</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── FORM + SIDE ── #}
+<section class="ct-main">
+    <div class="container">
+        <div class="row g-5 align-items-start">
+
+            {# FORM #}
+            <div class="col-md-7">
+                <div class="ct-form-wrap">
+                    <h2>Send Us a Message</h2>
+                    <p>Fill out the form and we'll get back to you as soon as possible.</p>
+                    <form action="{{ path('app_contact') }}" method="post">
+                        <div class="row g-0">
+                            <div class="col-md-6 pe-md-2">
+                                <label class="ct-label" for="name">Your Name</label>
+                                <input type="text" id="name" name="name" class="ct-input" placeholder="Juan dela Cruz" required>
+                            </div>
+                            <div class="col-md-6 ps-md-2">
+                                <label class="ct-label" for="email">Email Address</label>
+                                <input type="email" id="email" name="email" class="ct-input" placeholder="you@example.com" required>
+                            </div>
+                        </div>
+                        <label class="ct-label" for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" class="ct-input" placeholder="e.g. Pre-order inquiry, Nutrition question...">
+                        <label class="ct-label" for="message">Message</label>
+                        <textarea id="message" name="message" class="ct-input" placeholder="How can we help you?" required></textarea>
+                        <button type="submit" class="ct-submit">Send Message →</button>
+                    </form>
+                </div>
+            </div>
+
+            {# SIDE #}
+            <div class="col-md-5">
+                <div class="ct-nut-side">
+
+                    {# Nutrition USP banner #}
+                    <div class="ct-nut-banner">
+                        <span>Our Uniqueness</span>
+                        <h3>Ask About Our<br><em>Nutrition Facts</em></h3>
+                        <p>Curious about calories, caffeine, or ingredients in your favourite drink? Ask us anything — we're 100% transparent about what goes into every cup.</p>
+                        <div class="ct-nut-pills">
+                            <span class="ct-nut-pill"><i class="fas fa-clipboard-list"></i> Calories</span>
+                            <span class="ct-nut-pill"><i class="fas fa-coffee"></i> Caffeine</span>
+                            <span class="ct-nut-pill"><i class="fas fa-flask"></i> Ingredients</span>
+                            <span class="ct-nut-pill"><i class="fas fa-check-circle"></i> 0 Hidden</span>
+                        </div>
+                    </div>
+
+                    {# Quick info #}
+                    <div class="ct-quick-card">
+                        <div class="ct-quick-icon"><i class="fas fa-clock"></i></div>
+                        <div>
+                            <h5>Opening Hours</h5>
+                            <p>Monday – Sunday<br>7:00 AM – 10:00 PM</p>
+                        </div>
+                    </div>
+                    <div class="ct-quick-card">
+                        <div class="ct-quick-icon"><i class="fas fa-box"></i></div>
+                        <div>
+                            <h5>Pre-orders Welcome</h5>
+                            <p>Planning an event? <a href="mailto:hello@carpediemcafe.com">Email us</a> to pre-order your drinks with full nutrition breakdowns.</p>
+                        </div>
+                    </div>
+                    <div class="ct-quick-card">
+                        <div class="ct-quick-icon"><i class="fas fa-comments"></i></div>
+                        <div>
+                            <h5>Quick Response</h5>
+                            <p>We reply to all messages within 24 hours — no inquiry goes unanswered.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -2,262 +2,298 @@
 
 {% block title %}Activity Logs - {{ action|upper }}{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    .activity-header {
-        background: linear-gradient(135deg, #6d4c41 0%, #5d4037 100%);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    :root {
+        --brown-dark:  #3e1f0d;
+        --brown-mid:   #6d4c41;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
     }
-    
-    .stat-card {
-        background: white;
-        border-radius: 15px;
-        padding: 1.5rem;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: none;
-        overflow: hidden;
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
+
+    .ba-wrap { padding: 32px 36px; }
+
+    /* ── HEADER ── */
+    .ba-header {
+        background: var(--brown-dark);
+        border-radius: 18px;
+        padding: 28px 32px;
+        margin-bottom: 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
         position: relative;
+        overflow: hidden;
     }
-    
-    .stat-card::before {
+    .ba-header::before {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
+        top: -60px; right: -60px;
+        width: 200px; height: 200px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.04);
     }
-    
-    .stat-card.primary::before { background: linear-gradient(90deg, #6d4c41, #8d6e63); }
-    
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-    
-    .stat-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 12px;
+    .ba-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 24px;
+        color: #fff;
+        margin: 0 0 4px;
+        font-weight: 700;
         display: flex;
         align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        margin-bottom: 1rem;
+        gap: 10px;
     }
-    
-    .stat-card.primary .stat-icon { background: linear-gradient(135deg, #6d4c41 0%, #5d4037 100%); color: white; }
-    
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin: 0;
-        color: #2d3748;
-    }
-    
-    .stat-label {
-        color: #718096;
-        font-size: 0.9rem;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .logs-card {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        overflow: hidden;
-        border: none;
-    }
-    
-    .logs-card-header {
-        background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
-        padding: 1.5rem;
-        border-bottom: 2px solid #e2e8f0;
-    }
-    
-    .filter-buttons .btn {
-        border-radius: 25px;
-        padding: 0.5rem 1.5rem;
-        font-weight: 500;
-        margin: 0.25rem;
-        transition: all 0.3s ease;
-    }
-    
-    .table-modern {
-        margin: 0;
-    }
-    
-    .table-modern thead th {
-        background: #f7fafc;
-        color: #4a5568;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.5px;
-        border: none;
-        padding: 1rem;
-    }
-    
-    .table-modern tbody tr {
-        transition: all 0.2s ease;
-        border-bottom: 1px solid #e2e8f0;
-    }
-    
-    .table-modern tbody tr:hover {
-        background: #f7fafc;
-    }
-    
-    .table-modern td {
-        padding: 1rem;
-        vertical-align: middle;
-        border: none;
-    }
-    
-    .badge-modern {
-        padding: 0.4rem 0.9rem;
-        border-radius: 20px;
-        font-weight: 500;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-    
-    .badge-role {
-        background: linear-gradient(135deg, #6d4c41 0%, #5d4037 100%);
-        color: white;
-    }
-    
-    .badge-action-login { background: linear-gradient(135deg, #8d6e63 0%, #a1887f 100%); color: white; }
-    .badge-action-logout { background: linear-gradient(135deg, #bcaaa4 0%, #d7ccc8 100%); color: #4a5568; }
-    .badge-action-create { background: linear-gradient(135deg, #795548 0%, #8d6e63 100%); color: white; }
-    .badge-action-update { background: linear-gradient(135deg, #a1887f 0%, #bcaaa4 100%); color: white; }
-    .badge-action-delete { background: linear-gradient(135deg, #d84315 0%, #ff6f00 100%); color: white; }
-    
-    .user-link {
-        color: #6d4c41;
+    .ba-header p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; }
+    .ba-btns { display: flex; gap: 10px; position: relative; z-index: 1; }
+    .ba-btn-back {
+        background: rgba(255,255,255,.1);
+        border: 1.5px solid rgba(255,255,255,.15);
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 30px;
         text-decoration: none;
-        font-weight: 500;
+        font-size: 13px;
+        font-weight: 600;
+        transition: background .2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
-    
-    .user-link:hover {
-        color: #5d4037;
-        text-decoration: underline;
+    .ba-btn-back:hover { background: rgba(255,255,255,.18); color: #fff; }
+
+    /* ── STAT ── */
+    .ba-stat {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        border-left: 4px solid var(--brown-acc);
+        margin-bottom: 24px;
+        transition: transform .3s, box-shadow .3s;
     }
-    
-    .timestamp {
-        color: #718096;
-        font-size: 0.85rem;
+    .ba-stat:hover { transform: translateY(-4px); box-shadow: 0 10px 28px rgba(0,0,0,.09); }
+    .ba-stat-icon {
+        width: 60px; height: 60px;
+        border-radius: 14px;
+        background: var(--cream2);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px;
+        color: var(--brown-mid);
+        flex-shrink: 0;
     }
-    
-    .ip-address {
-        font-family: 'Courier New', monospace;
-        color: #a0aec0;
-        font-size: 0.8rem;
+    .ba-stat-label { font-size: 11px; color: var(--muted); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+    .ba-stat-value { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700; color: var(--text); line-height: 1; }
+
+    /* ── FILTER ── */
+    .ba-filter-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 24px 26px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        margin-bottom: 24px;
     }
-    
-    .empty-state {
-        padding: 3rem;
-        text-align: center;
-        color: #a0aec0;
+    .ba-filter-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
+    .ba-filter-title i { color: var(--brown-acc); }
+    .ba-filters { display: flex; flex-wrap: wrap; gap: 10px; }
+    .ba-filter-btn {
+        padding: 8px 20px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        border: 1.5px solid var(--cream2);
+        background: var(--cream);
+        color: var(--muted);
+        transition: all .2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .ba-filter-btn:hover { background: var(--brown-dark); color: #fff; border-color: var(--brown-dark); }
+    .ba-filter-btn.active { background: var(--brown-dark); color: #fff; border-color: var(--brown-dark); }
+    .ba-filter-btn.f-login.active,  .ba-filter-btn.f-login:hover  { background: #2e7d32; border-color: #2e7d32; color: #fff; }
+    .ba-filter-btn.f-logout.active, .ba-filter-btn.f-logout:hover { background: #546e7a; border-color: #546e7a; color: #fff; }
+    .ba-filter-btn.f-create.active, .ba-filter-btn.f-create:hover { background: #1565c0; border-color: #1565c0; color: #fff; }
+    .ba-filter-btn.f-update.active, .ba-filter-btn.f-update:hover { background: #e65100; border-color: #e65100; color: #fff; }
+    .ba-filter-btn.f-delete.active, .ba-filter-btn.f-delete:hover { background: #c62828; border-color: #c62828; color: #fff; }
+
+    /* ── TABLE CARD ── */
+    .ba-table-card {
+        background: var(--white);
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        overflow: hidden;
+    }
+    .ba-table-head {
+        padding: 22px 26px;
+        border-bottom: 1.5px solid var(--cream2);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: 'Playfair Display', serif;
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text);
+    }
+    .ba-table-head i { color: var(--brown-acc); font-size: 15px; }
+
+    table.ba-table { width: 100%; border-collapse: collapse; }
+    table.ba-table thead th {
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: var(--cream);
+        border-bottom: 2px solid var(--cream2);
+    }
+    table.ba-table tbody td {
+        padding: 14px 16px;
+        font-size: 13px;
+        color: var(--text);
+        border-bottom: 1.5px solid var(--cream2);
+        vertical-align: middle;
+    }
+    table.ba-table tbody tr:last-child td { border-bottom: none; }
+    table.ba-table tbody tr:hover td { background: var(--cream); }
+
+    .ba-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+    }
+    .ba-badge.role   { background: var(--cream2); color: var(--brown-dark); }
+    .ba-badge.login  { background: #e8f5e9; color: #2e7d32; }
+    .ba-badge.logout { background: #eceff1; color: #546e7a; }
+    .ba-badge.create { background: #e3f2fd; color: #1565c0; }
+    .ba-badge.update { background: #fff3e0; color: #e65100; }
+    .ba-badge.delete { background: #ffebee; color: #c62828; }
+
+    .ba-user-link {
+        color: var(--brown-acc);
+        text-decoration: none;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .ba-user-link:hover { color: var(--brown-dark); text-decoration: underline; }
+    .ba-timestamp { color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .ba-ip { font-family: 'Courier New', monospace; color: var(--muted); font-size: 12px; }
+    .ba-empty { text-align: center; padding: 50px 20px; color: var(--muted); }
+    .ba-empty i { font-size: 40px; margin-bottom: 14px; opacity: .4; display: block; }
 </style>
+{% endblock %}
 
-<div class="container-fluid px-4 py-4">
-    <div class="activity-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h1 class="mb-2">
-                    <i class="fas fa-filter"></i> {{ action|upper }} Activities
-                </h1>
-                <p class="mb-0 opacity-75">Showing all {{ action|lower }} activities</p>
-            </div>
-            <div>
-                <a href="{{ path('app_activity_log_index') }}" class="btn btn-light btn-lg me-2">
-                    <i class="fas fa-arrow-left me-2"></i> All Logs
-                </a>
-                <a href="{{ path('app_dashboard_index') }}" class="btn btn-outline-light btn-lg">
-                    <i class="fas fa-home me-2"></i> Dashboard
-                </a>
-            </div>
+{% block body %}
+<div class="ba-wrap">
+
+    {# ── HEADER ── #}
+    <div class="ba-header">
+        <div>
+            <h1>
+                {% if action == 'login' %}<i class="fas fa-sign-in-alt"></i>
+                {% elseif action == 'logout' %}<i class="fas fa-sign-out-alt"></i>
+                {% elseif action == 'create' %}<i class="fas fa-plus"></i>
+                {% elseif action == 'update' %}<i class="fas fa-edit"></i>
+                {% elseif action == 'delete' %}<i class="fas fa-trash"></i>
+                {% else %}<i class="fas fa-list"></i>{% endif %}
+                {{ action|upper }} Activities
+            </h1>
+            <p>Showing all {{ action|lower }} activities in the system</p>
+        </div>
+        <div class="ba-btns">
+            <a href="{{ path('app_activity_log_index') }}" class="ba-btn-back">
+                <i class="fas fa-arrow-left"></i> All Logs
+            </a>
+            <a href="{{ path('app_dashboard_index') }}" class="ba-btn-back">
+                <i class="fas fa-home"></i> Dashboard
+            </a>
         </div>
     </div>
 
-    <div class="row g-4 mb-4">
-        <div class="col-md-12">
-            <div class="stat-card primary">
-                <div class="d-flex align-items-center">
-                    <div class="stat-icon me-4">
-                        {% if action == 'login' %}
-                            <i class="fas fa-sign-in-alt"></i>
-                        {% elseif action == 'logout' %}
-                            <i class="fas fa-sign-out-alt"></i>
-                        {% elseif action == 'create' %}
-                            <i class="fas fa-plus"></i>
-                        {% elseif action == 'update' %}
-                            <i class="fas fa-edit"></i>
-                        {% elseif action == 'delete' %}
-                            <i class="fas fa-trash"></i>
-                        {% else %}
-                            <i class="fas fa-list"></i>
-                        {% endif %}
-                    </div>
-                    <div>
-                        <h2 class="stat-number">{{ logs|length }}</h2>
-                        <p class="stat-label mb-0">{{ action|upper }} Activities</p>
-                    </div>
-                </div>
-            </div>
+    {# ── STAT ── #}
+    <div class="ba-stat">
+        <div class="ba-stat-icon">
+            {% if action == 'login' %}<i class="fas fa-sign-in-alt"></i>
+            {% elseif action == 'logout' %}<i class="fas fa-sign-out-alt"></i>
+            {% elseif action == 'create' %}<i class="fas fa-plus"></i>
+            {% elseif action == 'update' %}<i class="fas fa-edit"></i>
+            {% elseif action == 'delete' %}<i class="fas fa-trash"></i>
+            {% else %}<i class="fas fa-list"></i>{% endif %}
+        </div>
+        <div>
+            <div class="ba-stat-label">{{ action|upper }} Activities</div>
+            <div class="ba-stat-value">{{ logs|length }}</div>
         </div>
     </div>
 
-    <div class="logs-card mb-4">
-        <div class="logs-card-header">
-            <h5 class="mb-3">
-                <i class="fas fa-filter me-2"></i> Filter by Action
-            </h5>
-            <div class="filter-buttons">
-                <a href="{{ path('app_activity_log_index') }}" class="btn btn-outline-dark">
-                    <i class="fas fa-list me-1"></i> All
-                </a>
-                <a href="{{ path('app_activity_log_by_action', {action: 'login'}) }}" 
-                   class="btn {{ action == 'login' ? 'btn-success' : 'btn-outline-success' }}">
-                    <i class="fas fa-sign-in-alt me-1"></i> Login
-                </a>
-                <a href="{{ path('app_activity_log_by_action', {action: 'logout'}) }}" 
-                   class="btn {{ action == 'logout' ? 'btn-secondary' : 'btn-outline-secondary' }}">
-                    <i class="fas fa-sign-out-alt me-1"></i> Logout
-                </a>
-                <a href="{{ path('app_activity_log_by_action', {action: 'create'}) }}" 
-                   class="btn {{ action == 'create' ? 'btn-primary' : 'btn-outline-primary' }}">
-                    <i class="fas fa-plus me-1"></i> Create
-                </a>
-                <a href="{{ path('app_activity_log_by_action', {action: 'update'}) }}" 
-                   class="btn {{ action == 'update' ? 'btn-warning' : 'btn-outline-warning' }}">
-                    <i class="fas fa-edit me-1"></i> Update
-                </a>
-                <a href="{{ path('app_activity_log_by_action', {action: 'delete'}) }}" 
-                   class="btn {{ action == 'delete' ? 'btn-danger' : 'btn-outline-danger' }}">
-                    <i class="fas fa-trash me-1"></i> Delete
-                </a>
-            </div>
+    {# ── FILTERS ── #}
+    <div class="ba-filter-card">
+        <div class="ba-filter-title">
+            <i class="fas fa-filter"></i> Filter by Action
+        </div>
+        <div class="ba-filters">
+            <a href="{{ path('app_activity_log_index') }}" class="ba-filter-btn">
+                <i class="fas fa-list"></i> All
+            </a>
+            <a href="{{ path('app_activity_log_by_action', {action: 'login'}) }}"
+               class="ba-filter-btn f-login {{ action == 'login' ? 'active' : '' }}">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </a>
+            <a href="{{ path('app_activity_log_by_action', {action: 'logout'}) }}"
+               class="ba-filter-btn f-logout {{ action == 'logout' ? 'active' : '' }}">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+            <a href="{{ path('app_activity_log_by_action', {action: 'create'}) }}"
+               class="ba-filter-btn f-create {{ action == 'create' ? 'active' : '' }}">
+                <i class="fas fa-plus"></i> Create
+            </a>
+            <a href="{{ path('app_activity_log_by_action', {action: 'update'}) }}"
+               class="ba-filter-btn f-update {{ action == 'update' ? 'active' : '' }}">
+                <i class="fas fa-edit"></i> Update
+            </a>
+            <a href="{{ path('app_activity_log_by_action', {action: 'delete'}) }}"
+               class="ba-filter-btn f-delete {{ action == 'delete' ? 'active' : '' }}">
+                <i class="fas fa-trash"></i> Delete
+            </a>
         </div>
     </div>
 
-    <div class="logs-card">
-        <div class="logs-card-header">
-            <h5 class="mb-0">
-                <i class="fas fa-clipboard-list me-2"></i> {{ action|upper }} Activities
-            </h5>
+    {# ── TABLE ── #}
+    <div class="ba-table-card">
+        <div class="ba-table-head">
+            <i class="fas fa-clipboard-list"></i> {{ action|upper }} Activity Records
         </div>
-        <div class="table-responsive">
-            <table class="table table-modern">
+        <div style="overflow-x:auto;">
+            <table class="ba-table">
                 <thead>
                     <tr>
                         <th>User ID</th>
@@ -272,36 +308,47 @@
                 <tbody>
                     {% for log in logs %}
                     <tr>
-                        <td><strong class="text-muted">#{{ log.userId }}</strong></td>
+                        <td><strong style="color:var(--muted);">#{{ log.userId }}</strong></td>
                         <td>
-                            <a href="{{ path('app_activity_log_by_user', {userId: log.userId}) }}" class="user-link">
-                                <i class="fas fa-user me-1"></i>{{ log.username }}
+                            <a href="{{ path('app_activity_log_by_user', {userId: log.userId}) }}" class="ba-user-link">
+                                <i class="fas fa-user" style="font-size:11px;"></i>
+                                {{ log.username }}
                             </a>
                         </td>
+                        <td><span class="ba-badge role">{{ log.formattedRole }}</span></td>
                         <td>
-                            <span class="badge badge-modern badge-role">{{ log.formattedRole }}</span>
-                        </td>
-                        <td>
-                            <span class="badge badge-modern badge-action-{{ log.action|lower }}">
+                            <span class="ba-badge {{ log.action|lower }}">
+                                {% if log.action == 'LOGIN' %}<i class="fas fa-sign-in-alt"></i>
+                                {% elseif log.action == 'LOGOUT' %}<i class="fas fa-sign-out-alt"></i>
+                                {% elseif log.action == 'CREATE' %}<i class="fas fa-plus"></i>
+                                {% elseif log.action == 'UPDATE' %}<i class="fas fa-edit"></i>
+                                {% elseif log.action == 'DELETE' %}<i class="fas fa-trash"></i>
+                                {% endif %}
                                 {{ log.action }}
                             </span>
                         </td>
                         <td>{{ log.targetData }}</td>
                         <td>
-                            <span class="timestamp">
-                                {{ log.dateTime|date('M d, Y h:i A') }}
-                            </span>
+                            <div class="ba-timestamp">
+                                <i class="far fa-clock"></i>
+                                {{ log.dateTime|date('M d, Y') }}<br>
+                                <small>{{ log.dateTime|date('h:i:s A') }}</small>
+                            </div>
                         </td>
                         <td>
-                            <span class="ip-address">{{ log.ipAddress ?? 'N/A' }}</span>
+                            <span class="ba-ip">
+                                <i class="fas fa-globe"></i>
+                                {{ log.ipAddress ?? 'N/A' }}
+                            </span>
                         </td>
                     </tr>
                     {% else %}
                     <tr>
                         <td colspan="7">
-                            <div class="empty-state">
+                            <div class="ba-empty">
                                 <i class="fas fa-inbox"></i>
-                                <h5>No {{ action|upper }} Activities</h5>
+                                <strong>No {{ action|upper }} Activities Found</strong>
+                                <p style="margin:6px 0 0; font-size:13px;">There are no {{ action|lower }} activities recorded yet.</p>
                             </div>
                         </td>
                     </tr>
@@ -310,5 +357,6 @@
             </table>
         </div>
     </div>
-</div>ss
+
+</div>
 {% endblock %}

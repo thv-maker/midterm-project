@@ -2,133 +2,577 @@
 
 {% block title %}Home - Carpe Diem Cafe{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    .hero-section {
-        background: linear-gradient(135deg, #6d4c41 0%, #8d6e63 100%);
-        color: white;
-        padding: 80px 30px;
-        text-align: center;
-        border-radius: 16px;
-        margin-bottom: 40px;
+    :root {
+        --brown:       #6d4c41;
+        --brown-dark:  #3e1f0d;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
+        --star:        #e8a020;
     }
 
-    .hero-section h1 {
-        font-size: 48px;
-        margin-bottom: 20px;
-        font-weight: 700;
-    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { background: var(--cream); font-family: 'DM Sans', sans-serif; color: var(--text); margin: 0; }
 
-    .hero-section p {
-        font-size: 20px;
-        opacity: 0.9;
-        margin-bottom: 30px;
-    }
-
-    .btn {
-        padding: 15px 40px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s;
-        display: inline-block;
-    }
-
-    .btn-light {
-        background: white;
-        color: #6d4c41;
-    }
-
-    .btn-light:hover {
-        background: #f5f5f5;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-
-    .features {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 30px;
-        margin-top: 40px;
-    }
-
-    .feature-card {
-        background: white;
-        padding: 40px;
-        border-radius: 16px;
-        text-align: center;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-        transition: all 0.3s;
-    }
-
-    .feature-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(93, 64, 55, 0.15);
-    }
-
-    .feature-icon {
-        width: 80px;
-        height: 80px;
-        background: rgba(109, 76, 65, 0.1);
-        border-radius: 50%;
+    /* =========================================================
+       HERO
+    ========================================================= */
+    .kf-hero {
+        background: var(--white);
+        min-height: 92vh;
         display: flex;
         align-items: center;
-        justify-content: center;
-        margin: 0 auto 20px;
-        color: #6d4c41;
+        position: relative;
+        overflow: hidden;
+        padding: 60px 0;
+    }
+    .kf-hero-inner {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        width: 100%;
+    }
+    .kf-hero-text { flex: 0 0 48%; padding-right: 20px; }
+    .kf-hero-text h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: clamp(38px, 5vw, 64px);
+        line-height: 1.1;
+        color: var(--text);
+        margin-bottom: 18px;
+    }
+    .kf-hero-text h1 span { color: var(--brown-acc); }
+    .kf-hero-text p {
+        font-size: 15px;
+        color: var(--muted);
+        line-height: 1.75;
+        max-width: 360px;
+        margin-bottom: 34px;
+    }
+    .kf-btn {
+        display: inline-block;
+        background: var(--brown-dark);
+        color: #fff;
+        padding: 13px 32px;
+        border-radius: 40px;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        transition: background .2s, transform .2s;
+    }
+    .kf-btn:hover { background: var(--brown-acc); color: #fff; transform: translateY(-2px); }
+
+    /* floating coffee circle */
+    .kf-hero-img { flex: 1; display: flex; align-items: center; justify-content: center; position: relative; }
+    .kf-circle {
+        width: 420px; height: 420px;
+        border-radius: 50%;
+        overflow: hidden;
+        background: var(--cream2);
+        border: 6px solid var(--cream2);
+        box-shadow: 0 20px 60px rgba(110,76,65,.15);
+        position: relative;
+        z-index: 1;
+    }
+    .kf-circle img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* floating bean labels */
+    .kf-bean {
+        position: absolute;
+        background: var(--white);
+        border: 1.5px solid var(--cream2);
+        border-radius: 30px;
+        padding: 7px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        display: flex; align-items: center; gap: 6px;
+        box-shadow: 0 4px 16px rgba(0,0,0,.07);
+        white-space: nowrap;
+        z-index: 2;
+    }
+    .kf-bean span { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+    .kf-bean.b1 { top: 10%; right: 2%; }
+    .kf-bean.b2 { top: 35%; left: 0%; }
+    .kf-bean.b3 { bottom: 30%; right: 0%; }
+    .kf-bean.b4 { bottom: 10%; left: 5%; }
+
+    /* stats row */
+    .kf-stats {
+        display: flex;
+        gap: 40px;
+        margin-top: 44px;
+        padding-top: 32px;
+        border-top: 1.5px solid var(--cream2);
+    }
+    .kf-stat-num {
+        font-family: 'Playfair Display', serif;
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+    .kf-stat-label { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+    /* =========================================================
+       MENU SECTION
+    ========================================================= */
+    .kf-menu {
+        background: var(--cream);
+        padding: 90px 0;
+    }
+    .kf-section-head { text-align: center; margin-bottom: 50px; }
+    .kf-section-head h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 40px;
+        color: var(--text);
+        margin-bottom: 24px;
     }
 
-    .feature-card h3 {
-        color: #5d4037;
+    /* tab filters */
+    .kf-tabs { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 44px; }
+    .kf-tab {
+        padding: 9px 24px;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 600;
+        border: 1.5px solid var(--cream2);
+        background: var(--white);
+        color: var(--muted);
+        cursor: pointer;
+        transition: all .2s;
+        display: flex; align-items: center; gap: 7px;
+    }
+    .kf-tab.active, .kf-tab:hover {
+        background: var(--brown-dark);
+        color: #fff;
+        border-color: var(--brown-dark);
+    }
+    .kf-tab .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; opacity: .6; }
+
+    /* menu cards */
+    .kf-menu-card {
+        background: var(--white);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0,0,0,.06);
+        transition: transform .3s, box-shadow .3s;
+    }
+    .kf-menu-card:hover { transform: translateY(-6px); box-shadow: 0 14px 40px rgba(0,0,0,.11); }
+    .kf-menu-card img { width: 100%; height: 200px; object-fit: cover; }
+    .kf-menu-body { padding: 18px 20px 22px; }
+    .kf-stars { color: var(--star); font-size: 13px; margin-bottom: 6px; }
+    .kf-stars span { color: var(--muted); font-size: 12px; margin-left: 4px; }
+    .kf-menu-body h4 {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px;
+        color: var(--text);
+        margin-bottom: 6px;
+    }
+    .kf-menu-body p { font-size: 13px; color: var(--muted); line-height: 1.6; margin-bottom: 14px; }
+    .kf-menu-footer { display: flex; align-items: center; justify-content: space-between; }
+    .kf-price {
+        font-family: 'Playfair Display', serif;
         font-size: 22px;
-        margin-bottom: 15px;
+        font-weight: 700;
+        color: var(--brown-dark);
+    }
+    .kf-add {
+        width: 34px; height: 34px;
+        background: var(--brown-dark);
+        color: #fff;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 20px;
+        text-decoration: none;
+        transition: background .2s;
+        line-height: 1;
+    }
+    .kf-add:hover { background: var(--brown-acc); color: #fff; }
+
+    /* =========================================================
+       SERVICES
+    ========================================================= */
+    .kf-services {
+        background: var(--white);
+        padding: 80px 0;
+    }
+    .kf-services h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 36px;
+        color: var(--text);
+        margin-bottom: 8px;
+    }
+    .kf-services h2 span { color: var(--brown-acc); }
+    .kf-services .sub { color: var(--muted); font-size: 14px; margin-bottom: 44px; }
+    .kf-svc-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 24px;
+        border-radius: 14px;
+        border: 1.5px solid var(--cream2);
+        transition: border-color .2s, box-shadow .2s;
+    }
+    .kf-svc-card:hover { border-color: var(--brown-light); box-shadow: 0 6px 24px rgba(0,0,0,.06); }
+    .kf-svc-icon {
+        width: 48px; 
+        height: 48px; 
+        min-width: 48px;
+        background: var(--cream2);
+        border-radius: 12px;
+        display: flex; 
+        align-items: center; 
+        justify-content: center;
+        font-size: 20px;
+        color: var(--brown-acc);
+    }
+    .kf-svc-card h5 { 
+        font-size: 15px; 
+        font-weight: 700; 
+        color: var(--text); 
+        margin-bottom: 5px; 
+    }
+    .kf-svc-card p { 
+        font-size: 13px; 
+        color: var(--muted); 
+        line-height: 1.65; 
+        margin: 0; 
     }
 
-    .feature-card p {
-        color: #8d6e63;
-        line-height: 1.6;
+    /* =========================================================
+       TESTIMONIAL
+    ========================================================= */
+    .kf-testi {
+        background: var(--cream);
+        padding: 80px 0;
+    }
+    .kf-testi-card {
+        background: var(--white);
+        border-radius: 20px;
+        padding: 36px;
+        box-shadow: 0 6px 28px rgba(0,0,0,.06);
+        display: flex;
+        gap: 28px;
+        align-items: flex-start;
+        max-width: 720px;
+        margin: 0 auto;
+    }
+    .kf-testi-avatar {
+        width: 64px; height: 64px; min-width: 64px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid var(--cream2);
+    }
+    .kf-testi-name { font-weight: 700; font-size: 16px; color: var(--text); margin-bottom: 2px; }
+    .kf-testi-role { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .kf-testi-stars { color: var(--star); font-size: 16px; margin-bottom: 14px; }
+    .kf-testi-text { font-size: 14px; color: #555; line-height: 1.8; font-style: italic; }
+
+    /* =========================================================
+       NEWSLETTER
+    ========================================================= */
+    .kf-newsletter {
+        background: var(--brown-dark);
+        padding: 70px 0;
+        text-align: center;
+    }
+    .kf-newsletter h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 36px;
+        color: #fff;
+        margin-bottom: 10px;
+    }
+    .kf-newsletter p { color: rgba(255,255,255,.65); font-size: 14px; margin-bottom: 30px; }
+    .kf-nl-form {
+        display: flex;
+        max-width: 480px;
+        margin: 0 auto;
+        background: rgba(255,255,255,.1);
+        border-radius: 40px;
+        overflow: hidden;
+        border: 1.5px solid rgba(255,255,255,.15);
+    }
+    .kf-nl-form input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        outline: none;
+        padding: 14px 22px;
+        color: #fff;
+        font-size: 14px;
+    }
+    .kf-nl-form input::placeholder { color: rgba(255,255,255,.45); }
+    .kf-nl-form button {
+        background: var(--brown-acc);
+        color: #fff;
+        border: none;
+        padding: 14px 28px;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background .2s;
+        border-radius: 0 40px 40px 0;
+    }
+    .kf-nl-form button:hover { background: var(--brown-light); }
+
+    /* =========================================================
+       FOOTER
+    ========================================================= */
+    .kf-footer {
+        background: #1c0e06;
+        color: rgba(255,255,255,.55);
+        padding: 55px 0 28px;
+    }
+    .kf-footer-grid {
+        display: grid;
+        grid-template-columns: 1.8fr 1fr 1fr 1fr;
+        gap: 40px;
+        margin-bottom: 40px;
+    }
+    .kf-footer-brand h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 22px; color: #fff; margin-bottom: 12px;
+    }
+    .kf-footer-brand p { font-size: 13px; line-height: 1.8; }
+    .kf-footer-col h5 {
+        font-size: 12px; font-weight: 700; color: #fff;
+        letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px;
+    }
+    .kf-footer-col a {
+        display: block; color: rgba(255,255,255,.5);
+        font-size: 13px; text-decoration: none; margin-bottom: 9px; transition: color .2s;
+    }
+    .kf-footer-col a:hover { color: var(--brown-light); }
+    .kf-footer-bottom {
+        border-top: 1px solid rgba(255,255,255,.07);
+        padding-top: 20px; text-align: center; font-size: 12px;
+    }
+
+    @media (max-width: 768px) {
+        .kf-hero-inner { flex-direction: column; }
+        .kf-circle { width: 280px; height: 280px; }
+        .kf-bean { display: none; }
+        .kf-stats { gap: 24px; }
+        .kf-footer-grid { grid-template-columns: 1fr 1fr; }
+        .kf-testi-card { flex-direction: column; }
     }
 </style>
+{% endblock %}
 
-<div class="hero-section">
-    <h1>☕ Welcome to Carpe Diem Cafe</h1>
-    <p>Seize the day with our premium coffee and pastries</p>
-    {% if app.user %}
-        <a href="{{ path('app_profile') }}" class="btn btn-light">My Profile</a>
-    {% else %}
-        <a href="{{ path('app_login') }}" class="btn btn-light">Login</a>
-    {% endif %}
-</div>
+{% block body %}
 
-<div class="features">
-    <div class="feature-card">
-        <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 40px; height: 40px;">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-            </svg>
+{# ── HERO ── #}
+<section class="kf-hero">
+    <div class="container">
+        <div class="kf-hero-inner">
+            <div class="kf-hero-text">
+                <h1>Enjoy our<br><span>Delicious Coffee</span></h1>
+                <p>One cup at a time. The only café that serves handcrafted coffee <strong>with nutrition facts</strong> — because great coffee should be delicious <em>and</em> transparent.</p>
+                {% if app.user %}
+                    <a href="{{ path('app_profile') }}" class="kf-btn">Order Now</a>
+                {% else %}
+                    <a href="{{ path('app_login') }}" class="kf-btn">View Menu</a>
+                {% endif %}
+                <div class="kf-stats">
+                    <div>
+                        <div class="kf-stat-num">100%</div>
+                        <div class="kf-stat-label">nutrition<br>transparent</div>
+                    </div>
+                    <div>
+                        <div class="kf-stat-num">20+</div>
+                        <div class="kf-stat-label">drinks with<br>nutrition facts</div>
+                    </div>
+                    <div>
+                        <div class="kf-stat-num">0</div>
+                        <div class="kf-stat-label">hidden<br>ingredients</div>
+                    </div>
+                </div>
+            </div>
+            <div class="kf-hero-img">
+                <div class="kf-circle">
+                    <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=700&q=80" alt="Coffee">
+                </div>
+                <div class="kf-bean b1"><span style="background:#6d4c41"></span> Nutrition Facts</div>
+                <div class="kf-bean b2"><span style="background:#a0785a"></span> Fresh Brewed</div>
+                <div class="kf-bean b3"><span style="background:#3e1f0d"></span> 0 Hidden Ingredients</div>
+                <div class="kf-bean b4"><span style="background:#c49a6c"></span> 100% Transparent</div>
+            </div>
         </div>
-        <h3>Fresh Products</h3>
-        <p>We source the finest ingredients to bring you the best quality coffee and pastries every day.</p>
     </div>
+</section>
 
-    <div class="feature-card">
-        <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 40px; height: 40px;">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+{# ── MENU ── #}
+<section class="kf-menu">
+    <div class="container">
+        <div class="kf-section-head">
+            <h2>Menu</h2>
+            <div class="kf-tabs">
+                <div class="kf-tab active"><span class="dot"></span> All Drinks</div>
+                <div class="kf-tab"><span class="dot"></span> Low Calorie</div>
+                <div class="kf-tab"><span class="dot"></span> High Caffeine</div>
+                <div class="kf-tab"><span class="dot"></span> Sugar Free</div>
+            </div>
         </div>
-        <h3>Fast Service</h3>
-        <p>Quick and efficient service to make sure you get your coffee fix without the wait.</p>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="kf-menu-card">
+                    <img src="https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=600&q=80" alt="Americano">
+                    <div class="kf-menu-body">
+                        <div class="kf-stars">★★★★★ <span>(360 reviews)</span></div>
+                        <h4>Americano</h4>
+                        <p>A type of coffee made by adding hot water to espresso coffee.</p>
+                        <div class="kf-menu-footer">
+                            <span class="kf-price">₱180</span>
+                            <a href="{{ path('app_login') }}" class="kf-add">+</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="kf-menu-card">
+                    <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=600&q=80" alt="Latte">
+                    <div class="kf-menu-body">
+                        <div class="kf-stars">★★★★★ <span>(420 reviews)</span></div>
+                        <h4>Latte</h4>
+                        <p>A coffee drink of Italian origin made with espresso and steamed milk.</p>
+                        <div class="kf-menu-footer">
+                            <span class="kf-price">₱250</span>
+                            <a href="{{ path('app_login') }}" class="kf-add">+</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="kf-menu-card">
+                    <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=600&q=80" alt="Mocha">
+                    <div class="kf-menu-body">
+                        <div class="kf-stars">★★★★☆ <span>(420 reviews)</span></div>
+                        <h4>Mocha</h4>
+                        <p>A flavoring made of a mixture of cocoa or chocolate with espresso.</p>
+                        <div class="kf-menu-footer">
+                            <span class="kf-price">₱280</span>
+                            <a href="{{ path('app_login') }}" class="kf-add">+</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</section>
 
-    <div class="feature-card">
-        <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 40px; height: 40px;">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-            </svg>
+{# ── SERVICES ── #}
+<section class="kf-services">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-md-5">
+                <h2>Explore our<br><span>Best Coffee Services</span></h2>
+                <p class="sub">We go beyond just coffee — experience quality, speed, and care in every cup we serve.</p>
+                <div class="d-flex flex-column gap-3">
+                    <div class="kf-svc-card">
+                        <div class="kf-svc-icon"><i class="fas fa-shipping-fast"></i></div>
+                        <div>
+                            <h5>Nutrition on Every Cup</h5>
+                            <p>Every drink comes with full nutrition facts — calories, caffeine, and ingredients listed.</p>
+                        </div>
+                    </div>
+                    <div class="kf-svc-card">
+                        <div class="kf-svc-icon"><i class="fas fa-gift"></i></div>
+                        <div>
+                            <h5>Zero Hidden Ingredients</h5>
+                            <p>We list every single ingredient — no artificial fillers, no surprises, ever.</p>
+                        </div>
+                    </div>
+                    <div class="kf-svc-card">
+                        <div class="kf-svc-icon"><i class="fas fa-check-circle"></i></div>
+                        <div>
+                            <h5>100% Transparent</h5>
+                            <p>From bean to cup — we're the only café fully committed to ingredient transparency.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-7">
+                <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=800&q=80"
+                     alt="Barista" style="width:100%;border-radius:20px;height:440px;object-fit:cover;">
+            </div>
         </div>
-        <h3>Made with Love</h3>
-        <p>Every cup is crafted with care and passion to ensure the perfect taste experience.</p>
     </div>
-</div>
+</section>
+
+{# ── TESTIMONIAL ── #}
+<section class="kf-testi">
+    <div class="container">
+        <div class="kf-section-head">
+            <h2>Customers Say About Us</h2>
+        </div>
+        <div class="kf-testi-card">
+            <img class="kf-testi-avatar"
+                 src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80"
+                 alt="Customer">
+            <div>
+                <div class="kf-testi-name">Ana Marie</div>
+                <div class="kf-testi-role">UX Designer</div>
+                <div class="kf-testi-stars">★★★★★</div>
+                <div class="kf-testi-text">"The best thing about Carpe Diem Cafe is when you close your eyes and imagine the coffee tastes, the feeling is like that. It brews so smooth and has no harsh acid taste. I will definitely be ordering again!"</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── NEWSLETTER ── #}
+<section class="kf-newsletter">
+    <div class="container">
+        <h2>Receiving Best Offers</h2>
+        <p>Enter your email here to keep our coffee deals up-to-date.</p>
+        <div class="kf-nl-form">
+            <input type="email" placeholder="Your email here...">
+            <button type="button">Send →</button>
+        </div>
+    </div>
+</section>
+
+{# ── FOOTER ── #}
+<footer class="kf-footer">
+    <div class="container">
+        <div class="kf-footer-grid">
+            <div class="kf-footer-brand">
+                <h3>Carpe Diem</h3>
+                <p>One cup at a time. — We're the only café where every drink comes with full nutrition facts, because we believe you deserve to know what's in your cup.</p>
+            </div>
+            <div class="kf-footer-col">
+                <h5>About</h5>
+                <a href="{{ path('app_about') }}">About Us</a>
+                <a href="{{ path('app_contact') }}">Contact</a>
+                <a href="{{ path('app_admins') }}">Admins</a>
+                <a href="{{ path('app_home') }}">Reviews</a>
+            </div>
+            <div class="kf-footer-col">
+                <h5>Product</h5>
+                <a href="{{ path('app_our_products') }}">Arabica</a>
+                <a href="{{ path('app_our_products') }}">Robusta</a>
+                <a href="{{ path('app_our_products') }}">Excelsa</a>
+                <a href="{{ path('app_our_products') }}">Liberica</a>
+            </div>
+            <div class="kf-footer-col">
+                <h5>Support</h5>
+                <a href="#">Service</a>
+                <a href="#">FAQs</a>
+                <a href="{{ path('app_why_choose') }}">Terms & Conditions</a>
+                <a href="#">Privacy</a>
+            </div>
+        </div>
+        <div class="kf-footer-bottom">
+            &copy; {{ "now"|date('Y') }} Carpe Diem Cafe. All rights reserved.
+        </div>
+    </div>
+</footer>
+
 {% endblock %}

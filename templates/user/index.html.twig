@@ -2,242 +2,302 @@
 
 {% block title %}User Management{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    .page-header {
-        background: white;
-        padding: 25px 30px;
-        border-radius: 12px;
-        margin-bottom: 25px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+    :root {
+        --brown-dark:  #3e1f0d;
+        --brown-mid:   #6d4c41;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
+    }
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
+
+    .um-wrap { padding: 32px 36px; }
+
+    /* ── HEADER ── */
+    .um-header {
+        background: var(--brown-dark);
+        border-radius: 18px;
+        padding: 28px 32px;
+        margin-bottom: 28px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        position: relative;
+        overflow: hidden;
     }
-
-    .page-header h1 {
-        color: #5d4037;
-        margin: 0;
+    .um-header::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 200px; height: 200px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.04);
+    }
+    .um-header h1 {
+        font-family: 'Playfair Display', serif;
         font-size: 24px;
-        font-weight: 600;
+        color: #fff;
+        margin: 0 0 4px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
-
-    .btn {
-        padding: 10px 20px;
-        border-radius: 8px;
+    .um-header p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; }
+    .um-add-btn {
+        background: rgba(255,255,255,.12);
+        border: 1.5px solid rgba(255,255,255,.2);
+        color: #fff;
+        padding: 11px 24px;
+        border-radius: 30px;
         text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s;
-        border: none;
-        cursor: pointer;
-        display: inline-flex;
+        font-size: 13px;
+        font-weight: 700;
+        transition: background .2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: relative; z-index: 1;
+    }
+    .um-add-btn:hover { background: rgba(255,255,255,.2); color: #fff; }
+
+    /* ── TABLE CARD ── */
+    .um-card {
+        background: var(--white);
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        overflow: hidden;
+    }
+    .um-card-head {
+        padding: 22px 28px;
+        border-bottom: 1.5px solid var(--cream2);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .um-card-head h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0;
+        display: flex;
         align-items: center;
         gap: 8px;
     }
-
-    .btn-primary {
-        background: #6d4c41;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background: #5d4037;
-    }
-
-    .btn-sm {
-        padding: 6px 12px;
-        font-size: 14px;
-    }
-
-    .btn-info {
-        background: #2196F3;
-        color: white;
-    }
-
-    .btn-info:hover {
-        background: #1976D2;
-    }
-
-    .btn-warning {
-        background: #FF9800;
-        color: white;
-    }
-
-    .btn-warning:hover {
-        background: #F57C00;
-    }
-
-    .btn-danger {
-        background: #f44336;
-        color: white;
-    }
-
-    .btn-danger:hover {
-        background: #d32f2f;
-    }
-
-    .btn-success {
-        background: #4caf50;
-        color: white;
-    }
-
-    .btn-success:hover {
-        background: #388e3c;
-    }
-
-    .table-container {
-        background: white;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-    }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .table thead {
-        border-bottom: 2px solid #f0f0f0;
-    }
-
-    .table th {
-        padding: 12px;
-        text-align: left;
-        color: #8d6e63;
+    .um-card-head h3 i { color: var(--brown-acc); }
+    .um-count {
         font-size: 13px;
-        font-weight: 600;
+        color: var(--muted);
+        font-weight: 500;
     }
 
-    .table td {
-        padding: 15px 12px;
-        border-bottom: 1px solid #f8f8f8;
-        color: #5d4037;
+    /* ── TABLE ── */
+    table.um-table { width: 100%; border-collapse: collapse; }
+    table.um-table thead th {
+        padding: 12px 18px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: var(--cream);
+        border-bottom: 2px solid var(--cream2);
     }
-
-    .table tbody tr:hover {
-        background: #f8f5f2;
+    table.um-table tbody td {
+        padding: 16px 18px;
+        font-size: 13px;
+        color: var(--text);
+        border-bottom: 1.5px solid var(--cream2);
+        vertical-align: middle;
     }
+    table.um-table tbody tr:last-child td { border-bottom: none; }
+    table.um-table tbody tr:hover td { background: var(--cream); }
 
-    .badge {
+    /* user cell */
+    .um-user-cell { display: flex; align-items: center; gap: 12px; }
+    .um-avatar {
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        background: var(--cream2);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--brown-mid);
+        font-size: 15px;
+        flex-shrink: 0;
+    }
+    .um-user-email { font-weight: 600; color: var(--text); font-size: 13px; }
+    .um-user-id { font-size: 11px; color: var(--muted); }
+
+    /* badges */
+    .um-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
         padding: 4px 12px;
         border-radius: 20px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .5px;
+        text-transform: uppercase;
+    }
+    .um-badge.admin  { background: var(--cream2); color: var(--brown-dark); }
+    .um-badge.staff  { background: #fff3e0; color: #e65100; }
+    .um-badge.user   { background: #f3e5f5; color: #7b1fa2; }
+    .um-badge.active   { background: #e8f5e9; color: #2e7d32; }
+    .um-badge.inactive { background: #ffebee; color: #c62828; }
+
+    /* action buttons */
+    .um-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .um-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 7px 14px;
+        border-radius: 20px;
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 700;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: opacity .2s, transform .2s;
     }
+    .um-btn:hover { opacity: .85; transform: translateY(-1px); }
+    .um-btn.view     { background: var(--cream2); color: var(--brown-dark); }
+    .um-btn.edit     { background: #fff3e0; color: #e65100; }
+    .um-btn.activate { background: #e8f5e9; color: #2e7d32; }
+    .um-btn.deactivate { background: #fff3e0; color: #e65100; }
+    .um-btn.delete   { background: #ffebee; color: #c62828; }
+    .um-btn-form { display: inline; }
 
-    .badge-active {
-        background: #e8f5e9;
-        color: #388e3c;
-    }
-
-    .badge-inactive {
-        background: #ffebee;
-        color: #c62828;
-    }
-
-    .badge-admin {
-        background: #e3f2fd;
-        color: #1976d2;
-    }
-
-    .badge-user {
-        background: #f3e5f5;
-        color: #7b1fa2;
-    }
-
-    .actions {
-        display: flex;
-        gap: 8px;
-    }
-
-    .no-data {
-        text-align: center;
-        padding: 40px;
-        color: #95a5a6;
-    }
-
-    .delete-form {
-        display: inline;
-    }
-
-    .toggle-form {
-        display: inline;
-    }
+    /* empty */
+    .um-empty { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .um-empty i { font-size: 48px; opacity: .3; margin-bottom: 16px; display: block; }
+    .um-empty p { font-size: 15px; margin: 0; }
 </style>
+{% endblock %}
 
-<div class="page-header">
-    <h1>👥 User Management</h1>
-    <a href="{{ path('app_user_new') }}" class="btn btn-primary">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-        </svg>
-        Add New User
-    </a>
-</div>
+{% block body %}
+<div class="um-wrap">
 
-<div class="table-container">
-    {% if users is empty %}
-        <div class="no-data">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 60px; height: 60px; margin: 0 auto 15px; display: block; color: #bdc3c7;">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-            </svg>
-            <p>No users found</p>
+    {# ── HEADER ── #}
+    <div class="um-header">
+        <div>
+            <h1><i class="fas fa-users"></i> User Management</h1>
+            <p>Manage all registered users and their permissions.</p>
         </div>
-    {% else %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Email</th>
-                    <th>Roles</th>
-                    <th>Status</th>
-                    <th>Last Login</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for user in users %}
-                    <tr>
-                        <td>#{{ user.id }}</td>
-                        <td><strong>{{ user.email }}</strong></td>
-                        <td>
-                            {% if 'ROLE_ADMIN' in user.roles %}
-                                <span class="badge badge-admin">Admin</span>
-                            {% else %}
-                                <span class="badge badge-user">User</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if user.isActive %}
-                                <span class="badge badge-active">Active</span>
-                            {% else %}
-                                <span class="badge badge-inactive">Inactive</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ user.lastLogin ? user.lastLogin|date('M d, Y h:i A') : 'Never' }}</td>
-                        <td>
-                            <div class="actions">
-                                <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn btn-sm btn-info">View</a>
-                                <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-sm btn-warning">Edit</a>
-                                
-                                <form method="post" action="{{ path('app_user_toggle_status', {'id': user.id}) }}" class="toggle-form" onsubmit="return confirm('Are you sure you want to {{ user.isActive ? 'deactivate' : 'activate' }} this user?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ user.id) }}">
-                                    <button class="btn btn-sm {{ user.isActive ? 'btn-warning' : 'btn-success' }}">
-                                        {{ user.isActive ? 'Deactivate' : 'Activate' }}
-                                    </button>
-                                </form>
+        <a href="{{ path('app_user_new') }}" class="um-add-btn">
+            <i class="fas fa-plus"></i> Add New User
+        </a>
+    </div>
 
-                                <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" class="delete-form" onsubmit="return confirm('Are you sure you want to delete this user?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                    <button class="btn btn-sm btn-danger">Delete</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    {% endif %}
+    {# ── TABLE CARD ── #}
+    <div class="um-card">
+        <div class="um-card-head">
+            <h3><i class="fas fa-list"></i> All Users</h3>
+            <span class="um-count">{{ users|length }} user{{ users|length != 1 ? 's' : '' }} found</span>
+        </div>
+
+        {% if users is empty %}
+            <div class="um-empty">
+                <i class="fas fa-users"></i>
+                <p>No users found in the system.</p>
+            </div>
+        {% else %}
+            <div style="overflow-x:auto;">
+                <table class="um-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <div class="um-user-cell">
+                                    <div class="um-avatar">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <div class="um-user-email">{{ user.email }}</div>
+                                        <div class="um-user-id">#{{ user.id }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if 'ROLE_ADMIN' in user.roles %}
+                                    <span class="um-badge admin"><i class="fas fa-crown"></i> Admin</span>
+                                {% elseif 'ROLE_STAFF' in user.roles %}
+                                    <span class="um-badge staff"><i class="fas fa-user-tie"></i> Staff</span>
+                                {% else %}
+                                    <span class="um-badge user"><i class="fas fa-user"></i> User</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.isActive %}
+                                    <span class="um-badge active"><i class="fas fa-check-circle"></i> Active</span>
+                                {% else %}
+                                    <span class="um-badge inactive"><i class="fas fa-times-circle"></i> Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span style="color:var(--muted); font-size:13px;">
+                                    {% if user.lastLogin %}
+                                        <i class="far fa-clock" style="margin-right:4px;"></i>
+                                        {{ user.lastLogin|date('M d, Y h:i A') }}
+                                    {% else %}
+                                        <i class="fas fa-minus" style="margin-right:4px;opacity:.4;"></i> Never
+                                    {% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="um-actions">
+                                    <a href="{{ path('app_user_show', {'id': user.id}) }}" class="um-btn view">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="um-btn edit">
+                                        <i class="fas fa-pen"></i> Edit
+                                    </a>
+                                    <form method="post" action="{{ path('app_user_toggle_status', {'id': user.id}) }}"
+                                          class="um-btn-form"
+                                          onsubmit="return confirm('Are you sure you want to {{ user.isActive ? 'deactivate' : 'activate' }} this user?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ user.id) }}">
+                                        <button class="um-btn {{ user.isActive ? 'deactivate' : 'activate' }}">
+                                            <i class="fas fa-{{ user.isActive ? 'ban' : 'check' }}"></i>
+                                            {{ user.isActive ? 'Deactivate' : 'Activate' }}
+                                        </button>
+                                    </form>
+                                    <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}"
+                                          class="um-btn-form"
+                                          onsubmit="return confirm('Are you sure you want to delete this user?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                        <button class="um-btn delete">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+    </div>
+
 </div>
 {% endblock %}

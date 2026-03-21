@@ -1,163 +1,334 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Create New Stock{% endblock %}
+{% block title %}Add New User{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    .form-container {
-        max-width: 800px;
-        margin: 0 auto;
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
+    :root {
+        --brown-dark:  #3e1f0d;
+        --brown-mid:   #6d4c41;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
     }
 
-    .form-header {
-        margin-bottom: 25px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f0f0f0;
-    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
 
-    .form-header h1 {
-        color: #5d4037;
+    .un-wrap { padding: 32px 36px; }
+
+    /* ── HEADER ── */
+    .un-header {
+        background: var(--brown-dark);
+        border-radius: 18px;
+        padding: 28px 32px;
+        margin-bottom: 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .un-header::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 200px; height: 200px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.04);
+    }
+    .un-header h1 {
+        font-family: 'Playfair Display', serif;
         font-size: 24px;
+        color: #fff;
+        margin: 0 0 4px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .un-header p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; }
+    .un-back {
+        background: rgba(255,255,255,.1);
+        border: 1.5px solid rgba(255,255,255,.15);
+        color: #fff;
+        padding: 10px 22px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-size: 13px;
         font-weight: 600;
+        transition: background .2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: relative; z-index: 1;
+    }
+    .un-back:hover { background: rgba(255,255,255,.18); color: #fff; }
+
+    /* ── FORM CARD ── */
+    .un-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+    }
+    .un-card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1.5px solid var(--cream2);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .un-card-title i { color: var(--brown-acc); }
+
+    /* ── FIELDS ── */
+    .un-label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 8px;
+    }
+    .un-label i { color: var(--brown-light); font-size: 13px; }
+
+    .un-input-wrap { position: relative; margin-bottom: 6px; }
+    .un-input {
+        width: 100%;
+        padding: 13px 16px;
+        border: 1.5px solid var(--cream2);
+        border-radius: 10px;
+        font-size: 14px;
+        font-family: 'DM Sans', sans-serif;
+        color: var(--text);
+        background: var(--cream);
+        outline: none;
+        transition: border-color .2s, background .2s;
+    }
+    .un-input:focus { border-color: var(--brown-acc); background: var(--white); }
+    .un-input::placeholder { color: var(--muted); }
+
+    .un-eye {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 15px;
+        background: none;
+        border: none;
+        padding: 0;
+    }
+    .un-eye:hover { color: var(--brown-acc); }
+
+    .un-help {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 20px;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* ── ROLES ── */
+    .un-roles-wrap {
+        background: var(--cream);
+        border: 1.5px solid var(--cream2);
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-bottom: 6px;
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+    .un-roles-wrap .form-check {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+    }
+    .un-roles-wrap input[type="checkbox"] {
+        width: 16px; height: 16px;
+        accent-color: var(--brown-dark);
+        cursor: pointer;
+    }
+    .un-roles-wrap label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        cursor: pointer;
         margin: 0;
     }
 
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-
-    .form-label, label {
-        display: block;
-        color: #5d4037;
-        font-weight: 500;
-        margin-bottom: 8px;
-        font-size: 14px;
-    }
-
-    .form-control, select, input[type="text"], input[type="number"], input[type="datetime-local"] {
-        width: 100%;
-        padding: 12px 15px;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 14px;
-        transition: all 0.3s;
-    }
-
-    .form-control:focus, select:focus, input:focus {
-        outline: none;
-        border-color: #6d4c41;
-        box-shadow: 0 0 0 3px rgba(109, 76, 65, 0.1);
-    }
-
-    .input-help {
-        font-size: 12px;
-        color: #8d6e63;
-        margin-top: 5px;
-        display: block;
-    }
-
-    .form-actions {
+    /* ── ACTIVE TOGGLE ── */
+    .un-toggle-wrap {
+        background: var(--cream);
+        border: 1.5px solid var(--cream2);
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-bottom: 6px;
         display: flex;
-        gap: 10px;
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #f0f0f0;
+        align-items: center;
+        gap: 12px;
+    }
+    .un-toggle-wrap input[type="checkbox"] {
+        width: 18px; height: 18px;
+        accent-color: var(--brown-dark);
+        cursor: pointer;
+    }
+    .un-toggle-wrap label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text);
+        cursor: pointer;
+        margin: 0;
     }
 
-    .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s;
-        border: none;
-        cursor: pointer;
+    /* ── ACTIONS ── */
+    .un-actions {
+        display: flex;
+        gap: 12px;
+        padding-top: 20px;
+        border-top: 1.5px solid var(--cream2);
+        margin-top: 8px;
+    }
+    .un-btn {
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        padding: 12px 28px;
+        border-radius: 40px;
         font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background .2s, transform .2s;
+        border: none;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
     }
+    .un-btn.primary { background: var(--brown-dark); color: #fff; }
+    .un-btn.primary:hover { background: var(--brown-acc); color: #fff; transform: translateY(-2px); }
+    .un-btn.cancel {
+        background: transparent;
+        color: var(--muted);
+        border: 2px solid var(--cream2);
+    }
+    .un-btn.cancel:hover { border-color: var(--brown-light); color: var(--text); transform: translateY(-2px); }
 
-    .btn-primary {
-        background: #6d4c41;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background: #5d4037;
-    }
-
-    .btn-secondary {
-        background: #e0e0e0;
-        color: #5d4037;
-    }
-
-    .btn-secondary:hover {
-        background: #bdbdbd;
-    }
-
-    .form-error {
-        color: #f44336;
-        font-size: 12px;
-        margin-top: 5px;
-    }
+    /* override symfony form widget styles */
+    .un-card .form-check { display: flex; align-items: center; gap: 8px; margin: 0; }
+    .un-card .form-check input { width: 16px; height: 16px; accent-color: var(--brown-dark); }
+    .un-card .form-check label { margin: 0; font-size: 14px; font-weight: 600; color: var(--text); }
 </style>
+{% endblock %}
 
-<div class="form-container">
-    <div class="form-header">
-        <h1>➕ Create New Stock</h1>
+{% block body %}
+<div class="un-wrap">
+
+    {# ── HEADER ── #}
+    <div class="un-header">
+        <div>
+            <h1><i class="fas fa-user-plus"></i> Add New User</h1>
+            <p>Create a new user account in the system.</p>
+        </div>
+        <a href="{{ path('app_user_index') }}" class="un-back">
+            <i class="fas fa-arrow-left"></i> Back to Users
+        </a>
     </div>
 
-    {{ form_start(form) }}
-        <div class="form-group">
-            {{ form_label(form.product) }}
-            {{ form_widget(form.product, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.product) }}
-            <span class="input-help">Choose the product for this stock entry</span>
+    {# ── FORM CARD ── #}
+    <div class="un-card">
+        <div class="un-card-title">
+            <i class="fas fa-id-card"></i> User Details
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                {{ form_label(form.quantity) }}
-                {{ form_widget(form.quantity, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.quantity) }}
-                <span class="input-help">Current stock quantity</span>
+        {{ form_start(form) }}
+
+            {# Email #}
+            <label class="un-label" for="{{ form.email.vars.id }}">
+                <i class="fas fa-envelope"></i> Email Address
+            </label>
+            <div class="un-input-wrap">
+                {{ form_widget(form.email, {'attr': {'class': 'un-input', 'placeholder': 'user@example.com'}}) }}
+            </div>
+            {{ form_errors(form.email) }}
+            <div class="un-help"><i class="fas fa-info-circle"></i> Enter a valid email address for the user.</div>
+
+            {# Password #}
+            <label class="un-label" for="{{ form.plainPassword.vars.id }}">
+                <i class="fas fa-lock"></i> Password
+            </label>
+            <div class="un-input-wrap">
+                {{ form_widget(form.plainPassword, {'attr': {'class': 'un-input', 'placeholder': '••••••••', 'id': 'plainPassword'}}) }}
+                <button type="button" class="un-eye" onclick="togglePass()">
+                    <i class="fas fa-eye" id="eyeIcon"></i>
+                </button>
+            </div>
+            {{ form_errors(form.plainPassword) }}
+            <div class="un-help"><i class="fas fa-info-circle"></i> Minimum 6 characters. Leave blank to keep current password.</div>
+
+            {# Roles #}
+            <label class="un-label">
+                <i class="fas fa-shield-alt"></i> Roles
+            </label>
+            <div class="un-roles-wrap">
+                {{ form_widget(form.roles) }}
+            </div>
+            {{ form_errors(form.roles) }}
+            <div class="un-help"><i class="fas fa-info-circle"></i> Select one or more roles for this user.</div>
+
+            {# Is Active #}
+            <label class="un-label">
+                <i class="fas fa-toggle-on"></i> Account Status
+            </label>
+            <div class="un-toggle-wrap">
+                {{ form_widget(form.isActive) }}
+                <label for="{{ form.isActive.vars.id }}" style="margin:0; font-size:14px; font-weight:600; color:var(--text); cursor:pointer;">
+                    Mark as Active
+                </label>
+            </div>
+            {{ form_errors(form.isActive) }}
+            <div class="un-help"><i class="fas fa-info-circle"></i> Inactive users cannot log in to the system.</div>
+
+            <div class="un-actions">
+                <button type="submit" class="un-btn primary">
+                    <i class="fas fa-user-plus"></i> Create User
+                </button>
+                <a href="{{ path('app_user_index') }}" class="un-btn cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
             </div>
 
-            <div class="form-group">
-                {{ form_label(form.reorderLevel) }}
-                {{ form_widget(form.reorderLevel, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.reorderLevel) }}
-                <span class="input-help">Minimum quantity before reorder</span>
-            </div>
-        </div>
+        {{ form_end(form) }}
+    </div>
 
-        <div class="form-group">
-            {{ form_label(form.lastUpdated) }}
-            {{ form_widget(form.lastUpdated, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.lastUpdated) }}
-            <span class="input-help">Date and time of last stock update</span>
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Create Stock
-            </button>
-            <a href="{{ path('app_dashboard_stocks') }}" class="btn btn-secondary">Cancel</a>
-        </div>
-    {{ form_end(form) }}
 </div>
+
+<script>
+function togglePass() {
+    const input = document.getElementById('plainPassword');
+    const icon = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+</script>
 {% endblock %}

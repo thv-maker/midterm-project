@@ -2,378 +2,345 @@
 
 {% block title %}{{ product.name }} - Carpe Diem{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 20px;
+    :root {
+        --brown-dark:  #3e1f0d;
+        --brown-mid:   #6d4c41;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
     }
 
-    .back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: #8d6e63;
-        text-decoration: none;
-        font-size: 14px;
-        font-weight: 500;
-        margin-bottom: 20px;
-        padding: 8px 16px;
-        background: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(93, 64, 55, 0.1);
-        transition: all 0.3s ease;
-    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
 
-    .back-link:hover {
-        color: #6d4037;
-        background: #f8f5f2;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(93, 64, 55, 0.15);
-    }
+    .ps-wrap { padding: 32px 36px; }
 
-    .page-header {
+    /* ── HEADER ── */
+    .ps-header {
+        background: var(--brown-dark);
+        border-radius: 18px;
+        padding: 28px 32px;
+        margin-bottom: 24px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: white;
-        padding: 25px 30px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
     }
-
-    .page-header h1 {
-        color: #5d4037;
-        font-size: 28px;
-        font-weight: 600;
-        margin: 0;
+    .ps-header::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 200px; height: 200px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.04);
     }
-
-    .product-card {
-        background: white;
-        border-radius: 12px;
-        padding: 30px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-        margin-bottom: 30px;
-    }
-
-    .product-card:hover {
-        border-color: #8d6e63;
-        box-shadow: 0 8px 20px rgba(93, 64, 55, 0.15);
-    }
-
-    .product-title-section {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid #f0f0f0;
-    }
-
-    .product-title-section h2 {
-        color: #5d4037;
+    .ps-header h1 {
+        font-family: 'Playfair Display', serif;
         font-size: 24px;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    .product-type {
-        background: #6d4c41;
-        color: white;
-        padding: 6px 16px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .product-id {
-        font-size: 14px;
-        color: #8d6e63;
-        background: #f8f5f2;
-        padding: 4px 12px;
-        border-radius: 15px;
-        margin-top: 8px;
-        display: inline-block;
-    }
-
-    .product-price {
-        font-size: 36px;
+        color: #fff;
+        margin: 0 0 4px;
         font-weight: 700;
-        color: #6d4c41;
-        margin: 30px 0;
-        text-align: center;
-        padding: 25px;
-        background: #f8f5f2;
-        border-radius: 12px;
-        border-left: 5px solid #8d6e63;
-        border-right: 5px solid #8d6e63;
-    }
-
-    .product-details-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
-        margin-bottom: 30px;
-    }
-
-    .detail-section {
-        background: #f8f5f2;
-        border-radius: 10px;
-        padding: 25px;
-        height: 100%;
-    }
-
-    .detail-section h3 {
-        font-size: 16px;
-        color: #8d6e63;
-        margin: 0 0 20px 0;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 600;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #e0e0e0;
-    }
-
-    .detail-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 12px 0;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
-    .detail-row:last-child {
-        border-bottom: none;
-    }
-
-    .detail-label {
-        color: #666;
-        font-size: 14px;
-        font-weight: 500;
-    }
-
-    .detail-value {
-        color: #5d4037;
-        font-weight: 600;
-        font-size: 14px;
-    }
-
-    .product-actions {
-        display: flex;
-        gap: 15px;
-        padding-top: 25px;
-        border-top: 2px solid #f0f0f0;
-    }
-
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 12px 24px;
-        text-decoration: none;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        gap: 8px;
-    }
-
-    .btn-edit {
-        background: #6d4c41;
-        color: white;
-        box-shadow: 0 4px 12px rgba(93, 64, 55, 0.3);
-        width: 100%;
-    }
-
-    .btn-edit:hover {
-        background: #5d4037;
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(93, 64, 55, 0.4);
-    }
-
-    .danger-card {
-        background: white;
-        border-radius: 12px;
-        padding: 30px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-        border: 2px solid #ffcdd2;
-    }
-
-    .danger-header {
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 15px;
     }
-
-    .danger-header svg {
-        color: #c62828;
-        width: 24px;
-        height: 24px;
-    }
-
-    .danger-title {
-        color: #c62828;
-        font-size: 18px;
-        font-weight: 600;
-        margin: 0;
-    }
-
-    .danger-text {
-        color: #666;
-        margin: 0 0 20px 0;
-        line-height: 1.6;
-        font-size: 14px;
-    }
-
-    .delete-button-container form {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-    }
-
-    .delete-button-container button {
-        background: #c62828;
-        color: white;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 6px;
+    .ps-header p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; }
+    .ps-back {
+        background: rgba(255,255,255,.1);
+        border: 1.5px solid rgba(255,255,255,.15);
+        color: #fff;
+        padding: 10px 22px;
+        border-radius: 30px;
+        text-decoration: none;
         font-size: 13px;
         font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s;
+        transition: background .2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: relative; z-index: 1;
+    }
+    .ps-back:hover { background: rgba(255,255,255,.18); color: #fff; }
+
+    /* ── PRODUCT PROFILE CARD ── */
+    .ps-profile {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 28px 30px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+    }
+    .ps-product-icon {
+        width: 80px; height: 80px; min-width: 80px;
+        background: var(--cream2);
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: var(--brown-mid);
+        font-size: 32px;
+        border: 3px solid var(--cream2);
+    }
+    .ps-profile-info h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 26px;
+        color: var(--text);
+        margin: 0 0 8px;
+        font-weight: 700;
+    }
+    .ps-profile-meta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .ps-cat-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--cream2);
+        color: var(--brown-dark);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 4px 12px;
+        border-radius: 20px;
+    }
+    .ps-id-badge {
+        font-size: 12px;
+        color: var(--muted);
+        background: var(--cream);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    /* ── PRICE CARD ── */
+    .ps-price-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 28px 30px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        margin-bottom: 20px;
+        text-align: center;
+        border: 2px solid var(--cream2);
+    }
+    .ps-price-label {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 8px;
+    }
+    .ps-price {
+        font-family: 'Playfair Display', serif;
+        font-size: 48px;
+        font-weight: 700;
+        color: var(--brown-dark);
+        line-height: 1;
+    }
+
+    /* ── INFO GRID ── */
+    .ps-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+
+    .ps-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 24px 26px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+    }
+    .ps-card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1.5px solid var(--cream2);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .ps-card-title i { color: var(--brown-acc); }
+
+    .ps-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 0;
+        border-bottom: 1.5px solid var(--cream2);
+    }
+    .ps-row:last-child { border-bottom: none; }
+    .ps-row-label {
+        font-size: 13px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-weight: 500;
+    }
+    .ps-row-label i { color: var(--brown-light); font-size: 12px; width: 14px; }
+    .ps-row-value { font-size: 14px; font-weight: 700; color: var(--text); }
+
+    /* nutrition card accent */
+    .ps-nut-card { border-left: 4px solid var(--brown-light); }
+
+    /* ── ACTIONS ── */
+    .ps-actions-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 24px 26px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        margin-bottom: 20px;
+        display: flex;
+        gap: 12px;
+    }
+    .ps-btn {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        width: auto;
+        padding: 12px 28px;
+        border-radius: 40px;
+        font-size: 14px;
+        font-weight: 700;
         text-decoration: none;
+        transition: background .2s, transform .2s;
+        border: none;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
     }
+    .ps-btn.edit { background: var(--brown-dark); color: #fff; }
+    .ps-btn.edit:hover { background: var(--brown-acc); color: #fff; transform: translateY(-2px); }
+    .ps-btn.back { background: var(--cream2); color: var(--brown-dark); }
+    .ps-btn.back:hover { background: #e0d4c5; transform: translateY(-2px); }
 
-    .delete-button-container button:hover {
-        background: #b71c1c;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(198, 40, 40, 0.3);
+    /* ── DANGER ZONE ── */
+    .ps-danger {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 24px 30px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        border-left: 4px solid #f44336;
     }
+    .ps-danger-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #c62828;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .ps-danger p { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
 
     @media (max-width: 768px) {
-        .container {
-            padding: 15px;
-        }
-
-        .page-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .product-details-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .btn {
-            width: 100%;
-        }
-        
-        .delete-button-container button {
-            width: 100%;
-            justify-content: center;
-        }
+        .ps-grid { grid-template-columns: 1fr; }
+        .ps-wrap { padding: 20px; }
+        .ps-profile { flex-direction: column; text-align: center; }
     }
 </style>
+{% endblock %}
 
-    <!-- Page Header -->
-    <div class="page-header">
-        <h1>Product Details</h1>
+{% block body %}
+<div class="ps-wrap">
+
+    {# ── HEADER ── #}
+    <div class="ps-header">
+        <div>
+            <h1><i class="fas fa-coffee"></i> Product Details</h1>
+            <p>View full product information and nutrition facts.</p>
+        </div>
+        <a href="{{ path('app_dashboard_products') }}" class="ps-back">
+            <i class="fas fa-arrow-left"></i> Back to Products
+        </a>
     </div>
 
-    <!-- Main Product Card -->
-    <div class="product-card">
-        <!-- Product Title and Type -->
-        <div class="product-title-section">
-            <div>
-                <h2>{{ product.name }}</h2>
-                <span class="product-id">ID: #{{ product.id }}</span>
-            </div>
-            <span class="product-category">{{ product.category|capitalize }}</span>
+    {# ── PROFILE ── #}
+    <div class="ps-profile">
+        <div class="ps-product-icon">
+            <i class="fas fa-coffee"></i>
         </div>
-
-        <!-- Product Price -->
-        <div class="product-price">
-            ₱{{ product.price|number_format(2) }}
-        </div>
-
-        <!-- Product Information Grid -->
-        <div class="product-details-grid">
-            <!-- Product Information -->
-            <div class="detail-section">
-                <h3>Product Information</h3>
-                <div class="detail-row">
-                    <span class="detail-label">Product Name</span>
-                    <span class="detail-value">{{ product.name }}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Product Category</span>
-                    <span class="detail-value">{{ product.category|capitalize }}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Product ID</span>
-                    <span class="detail-value">#{{ product.id }}</span>
-                </div>
+        <div class="ps-profile-info">
+            <h2>{{ product.name }}</h2>
+            <div class="ps-profile-meta">
+                <span class="ps-cat-badge"><i class="fas fa-tag"></i> {{ product.category|capitalize }}</span>
+                <span class="ps-id-badge">#{{ product.id }}</span>
             </div>
-
-            <!-- Nutritional Information -->
-            <div class="detail-section">
-                <h3>Nutritional Information</h3>
-                <div class="detail-row">
-                    <span class="detail-label">Calories</span>
-                    <span class="detail-value">{{ product.calories }} kcal</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Sugar</span>
-                    <span class="detail-value">{{ product.sugarGrams }} g</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Caffeine</span>
-                    <span class="detail-value">{{ product.caffeineMg }} mg</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Edit Product Button Only -->
-        <div class="product-actions">
-            <a href="{{ path('app_dashboard_product_edit', {'id': product.id}) }}" class="btn btn-edit">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                </svg>
-                Edit Product
-            </a>
         </div>
     </div>
 
-    <!-- Danger Zone Card -->
-    <div class="danger-card">
-        <div class="danger-header">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-            </svg>
-            <h3 class="danger-title">Danger Zone</h3>
-        </div>
-        <p class="danger-text">
-            Once you delete this product, there is no going back. This action cannot be undone.
-            All associated data will be permanently removed from the system.
-        </p>
-        
-        <div class="delete-button-container">
-            {{ include('product/_delete_form.html.twig') }}
-        </div>
+    {# ── PRICE ── #}
+    <div class="ps-price-card">
+        <div class="ps-price-label">Selling Price</div>
+        <div class="ps-price">₱{{ product.price|number_format(2) }}</div>
     </div>
+
+    {# ── INFO GRID ── #}
+    <div class="ps-grid">
+
+        {# Product Info #}
+        <div class="ps-card">
+            <div class="ps-card-title">
+                <i class="fas fa-info-circle"></i> Product Information
+            </div>
+            <div class="ps-row">
+                <span class="ps-row-label"><i class="fas fa-tag"></i> Name</span>
+                <span class="ps-row-value">{{ product.name }}</span>
+            </div>
+            <div class="ps-row">
+                <span class="ps-row-label"><i class="fas fa-list"></i> Category</span>
+                <span class="ps-row-value">{{ product.category|capitalize }}</span>
+            </div>
+            <div class="ps-row">
+                <span class="ps-row-label"><i class="fas fa-hashtag"></i> Product ID</span>
+                <span class="ps-row-value">#{{ product.id }}</span>
+            </div>
+        </div>
+
+        {# Nutrition Info #}
+        <div class="ps-card ps-nut-card">
+            <div class="ps-card-title">
+                <i class="fas fa-clipboard-list"></i> Nutritional Information
+            </div>
+            <div class="ps-row">
+                <span class="ps-row-label"><i class="fas fa-fire"></i> Calories</span>
+                <span class="ps-row-value">{{ product.calories }} kcal</span>
+            </div>
+            <div class="ps-row">
+                <span class="ps-row-label"><i class="fas fa-cubes"></i> Sugar</span>
+                <span class="ps-row-value">{{ product.sugarGrams }} g</span>
+            </div>
+            <div class="ps-row">
+                <span class="ps-row-label"><i class="fas fa-bolt"></i> Caffeine</span>
+                <span class="ps-row-value">{{ product.caffeineMg }} mg</span>
+            </div>
+        </div>
+
+    </div>
+
+    {# ── ACTIONS ── #}
+    <div class="ps-actions-card">
+        <a href="{{ path('app_dashboard_product_edit', {'id': product.id}) }}" class="ps-btn edit">
+            <i class="fas fa-pen"></i> Edit Product
+        </a>
+        <a href="{{ path('app_dashboard_products') }}" class="ps-btn back">
+            <i class="fas fa-list"></i> Back to List
+        </a>
+    </div>
+
+    {# ── DANGER ZONE ── #}
+    <div class="ps-danger">
+        <div class="ps-danger-title">
+            <i class="fas fa-exclamation-triangle"></i> Danger Zone
+        </div>
+        <p>Once you delete this product, there is no going back. All associated data will be permanently removed.</p>
+        {{ include('product/_delete_form.html.twig') }}
+    </div>
+
 </div>
 {% endblock %}

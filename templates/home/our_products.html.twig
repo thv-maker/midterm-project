@@ -1,0 +1,373 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Product - Carpe Diem Cafe{% endblock %}
+
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --brown:       #6d4c41;
+        --brown-dark:  #3e1f0d;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
+        --star:        #e8a020;
+    }
+
+    body { background: var(--cream); font-family: 'DM Sans', sans-serif; color: var(--text); }
+
+    /* ── PAGE HERO ── */
+    .pg-hero {
+    background: var(--white);
+    padding: 60px 0 50px;
+    margin-top: -1px;
+    text-align: center;
+}
+    .pg-hero {
+    background: var(--white);
+    padding: 60px 0;
+    margin-top: -1px;
+    text-align: left;
+    border-bottom: 1.5px solid var(--cream2);
+}
+.pg-hero span {
+    font-size: 12px; letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--brown-light); font-weight: 700;
+    display: block; margin-bottom: 10px;
+}
+.pg-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 5vw, 64px);
+    color: var(--text); margin: 10px 0 18px;
+    line-height: 1.1;
+}
+.pg-hero h1 span {
+    color: var(--brown-acc);
+    font-style: italic;
+    display: inline;
+}
+    /* ── FILTER TABS ── */
+    .pg-tabs {
+        display: flex; gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+        padding: 40px 0 10px;
+    }
+    .pg-tab {
+        padding: 9px 24px;
+        border-radius: 30px;
+        font-size: 14px; font-weight: 600;
+        border: 1.5px solid var(--cream2);
+        background: var(--white);
+        color: var(--muted);
+        cursor: pointer;
+        transition: all .2s;
+    }
+    .pg-tab.active, .pg-tab:hover {
+        background: var(--brown-dark);
+        color: #fff;
+        border-color: var(--brown-dark);
+    }
+
+    /* ── PRODUCT CARDS ── */
+    .pg-section { padding: 50px 0 90px; }
+    .pg-card {
+        background: var(--white);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 4px 24px rgba(0,0,0,.06);
+        transition: transform .3s, box-shadow .3s;
+        height: 100%;
+    }
+    .pg-card:hover { transform: translateY(-6px); box-shadow: 0 14px 40px rgba(0,0,0,.11); }
+    .pg-card-img { position: relative; overflow: hidden; height: 210px; }
+    .pg-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+    .pg-card:hover .pg-card-img img { transform: scale(1.05); }
+    .pg-badge {
+        position: absolute; top: 14px; left: 14px;
+        background: var(--brown-dark);
+        color: #fff;
+        font-size: 11px; font-weight: 700;
+        letter-spacing: 1px; text-transform: uppercase;
+        padding: 4px 12px; border-radius: 20px;
+    }
+    .pg-card-body { padding: 20px 22px 24px; }
+    .pg-stars { color: var(--star); font-size: 13px; margin-bottom: 6px; }
+    .pg-stars span { color: var(--muted); font-size: 12px; margin-left: 4px; }
+    .pg-card-body h4 {
+        font-family: 'Playfair Display', serif;
+        font-size: 20px; color: var(--text);
+        margin-bottom: 6px;
+    }
+    .pg-card-body p { font-size: 13px; color: var(--muted); line-height: 1.65; margin-bottom: 8px; }
+
+    /* nutrition pill */
+    .pg-nutrition {
+        display: flex; flex-wrap: wrap; gap: 6px;
+        margin-bottom: 16px;
+    }
+    .pg-nut-pill {
+        background: var(--cream2);
+        color: var(--brown);
+        font-size: 11px; font-weight: 700;
+        padding: 3px 10px; border-radius: 20px;
+    }
+
+    .pg-card-footer {
+        display: flex; align-items: center;
+        justify-content: space-between;
+        border-top: 1.5px solid var(--cream2);
+        padding-top: 14px;
+    }
+    .pg-price {
+        font-family: 'Playfair Display', serif;
+        font-size: 22px; font-weight: 700;
+        color: var(--brown-dark);
+    }
+    .pg-add {
+        width: 36px; height: 36px;
+        background: var(--brown-dark);
+        color: #fff; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 22px; text-decoration: none;
+        transition: background .2s; line-height: 1;
+    }
+    .pg-add:hover { background: var(--brown-acc); color: #fff; }
+
+    /* ── CTA STRIP ── */
+    .pg-cta {
+        background: var(--brown-dark);
+        padding: 70px 0;
+        text-align: center;
+    }
+    .pg-cta h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 36px; color: #fff; margin-bottom: 10px;
+    }
+    .pg-cta p { color: rgba(255,255,255,.65); font-size: 14px; margin-bottom: 28px; }
+    .pg-cta a {
+        display: inline-block;
+        background: var(--brown-light);
+        color: #fff; padding: 13px 34px;
+        border-radius: 40px; font-weight: 700;
+        font-size: 14px; text-decoration: none;
+        transition: background .2s;
+    }
+    .pg-cta a:hover { background: var(--brown-acc); color: #fff; }
+</style>
+{% endblock %}
+
+{% block body %}
+
+{# ── PAGE HERO ── #}
+{# ── PAGE HERO ── #}
+<section class="pg-hero">
+    <div class="container">
+        <div style="display:flex; align-items:center; gap:60px; min-height:420px;">
+            <div style="flex:0 0 50%; padding-top:0;">
+                <span>What We Serve</span>
+                <h1>Enjoy our <span>Delicious</span><br>Menu</h1>
+                <p>Every drink comes with full nutrition facts — because great coffee should be delicious and 100% transparent.</p>
+                <a href="{{ path('app_our_products') }}" style="display:inline-block; background:#3e1f0d; color:#fff; padding:13px 32px; border-radius:40px; font-weight:700; font-size:14px; text-decoration:none; margin-top:10px;">Explore Menu</a>
+            </div>
+            <div style="flex:1; position:relative; display:flex; justify-content:center;">
+                <div style="width:360px; height:360px; border-radius:50%; overflow:hidden; border:6px solid #f3ece4; box-shadow:0 20px 60px rgba(110,76,65,.15);">
+                    <img src="https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=700&q=80"
+                         alt="Our Menu" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+                <div style="position:absolute; top:10%; right:2%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#6d4c41;display:inline-block;"></span> Nutrition Facts
+                </div>
+                <div style="position:absolute; top:38%; left:0%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#a0785a;display:inline-block;"></span> 0 Hidden Ingredients
+                </div>
+                <div style="position:absolute; bottom:25%; right:0%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#3e1f0d;display:inline-block;"></span> 100% Transparent
+                </div>
+                <div style="position:absolute; bottom:8%; left:5%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#c49a6c;display:inline-block;"></span> Fresh Brewed Daily
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── FILTER TABS ── #}
+<div class="container">
+    <div class="pg-tabs">
+        <div class="pg-tab active">All</div>
+        <div class="pg-tab">Hot Coffee</div>
+        <div class="pg-tab">Cold Brew</div>
+        <div class="pg-tab">Pastries</div>
+        <div class="pg-tab">Seasonal</div>
+    </div>
+</div>
+
+{# ── PRODUCTS ── #}
+<section class="pg-section">
+    <div class="container">
+        <div class="row g-4">
+
+            {# Espresso Blend #}
+            <div class="col-md-4 col-sm-6">
+                <div class="pg-card">
+                    <div class="pg-card-img">
+                        <img src="https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=600&q=80" alt="Espresso Blend">
+                        <span class="pg-badge">Hot</span>
+                    </div>
+                    <div class="pg-card-body">
+                        <div class="pg-stars">★★★★★ <span>(210 reviews)</span></div>
+                        <h4>Espresso Blend</h4>
+                        <p>Bold, rich, and full-bodied — our signature espresso shot crafted from premium Arabica beans.</p>
+                        <div class="pg-nutrition">
+                            <span class="pg-nut-pill">5 kcal</span>
+                            <span class="pg-nut-pill">0g fat</span>
+                            <span class="pg-nut-pill">63mg caffeine</span>
+                        </div>
+                        <div class="pg-card-footer">
+                            <span class="pg-price">₱150</span>
+                            <a href="{{ path('app_login') }}" class="pg-add">+</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Cappuccino #}
+            <div class="col-md-4 col-sm-6">
+                <div class="pg-card">
+                    <div class="pg-card-img">
+                        <img src="https://images.unsplash.com/photo-1534778101976-62847782c213?auto=format&fit=crop&w=600&q=80" alt="Cappuccino">
+                        <span class="pg-badge">Hot</span>
+                    </div>
+                    <div class="pg-card-body">
+                        <div class="pg-stars">★★★★★ <span>(360 reviews)</span></div>
+                        <h4>Cappuccino</h4>
+                        <p>Velvety microfoam layered over a bold espresso shot — the timeless classic choice.</p>
+                        <div class="pg-nutrition">
+                            <span class="pg-nut-pill">80 kcal</span>
+                            <span class="pg-nut-pill">4g fat</span>
+                            <span class="pg-nut-pill">63mg caffeine</span>
+                        </div>
+                        <div class="pg-card-footer">
+                            <span class="pg-price">₱180</span>
+                            <a href="{{ path('app_login') }}" class="pg-add">+</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Latte #}
+            <div class="col-md-4 col-sm-6">
+                <div class="pg-card">
+                    <div class="pg-card-img">
+                        <img src="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=600&q=80" alt="Latte">
+                        <span class="pg-badge">Hot</span>
+                    </div>
+                    <div class="pg-card-body">
+                        <div class="pg-stars">★★★★★ <span>(420 reviews)</span></div>
+                        <h4>Latte</h4>
+                        <p>Creamy steamed milk blended with a smooth espresso — silky and satisfying every time.</p>
+                        <div class="pg-nutrition">
+                            <span class="pg-nut-pill">120 kcal</span>
+                            <span class="pg-nut-pill">5g fat</span>
+                            <span class="pg-nut-pill">63mg caffeine</span>
+                        </div>
+                        <div class="pg-card-footer">
+                            <span class="pg-price">₱200</span>
+                            <a href="{{ path('app_login') }}" class="pg-add">+</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Cold Brew #}
+            <div class="col-md-4 col-sm-6">
+                <div class="pg-card">
+                    <div class="pg-card-img">
+                        <img src="https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?auto=format&fit=crop&w=600&q=80" alt="Cold Brew">
+                        <span class="pg-badge">Cold</span>
+                    </div>
+                    <div class="pg-card-body">
+                        <div class="pg-stars">★★★★☆ <span>(285 reviews)</span></div>
+                        <h4>Cold Brew</h4>
+                        <p>Steeped for 12 hours in cold water for a smooth, naturally sweet low-acid coffee.</p>
+                        <div class="pg-nutrition">
+                            <span class="pg-nut-pill">15 kcal</span>
+                            <span class="pg-nut-pill">0g fat</span>
+                            <span class="pg-nut-pill">155mg caffeine</span>
+                        </div>
+                        <div class="pg-card-footer">
+                            <span class="pg-price">₱220</span>
+                            <a href="{{ path('app_login') }}" class="pg-add">+</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Seasonal Special #}
+            <div class="col-md-4 col-sm-6">
+                <div class="pg-card">
+                    <div class="pg-card-img">
+                        <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=600&q=80" alt="Seasonal Special">
+                        <span class="pg-badge">Seasonal</span>
+                    </div>
+                    <div class="pg-card-body">
+                        <div class="pg-stars">★★★★★ <span>(190 reviews)</span></div>
+                        <h4>Seasonal Special</h4>
+                        <p>Our rotating seasonal creation — crafted from limited ingredients available only now.</p>
+                        <div class="pg-nutrition">
+                            <span class="pg-nut-pill">140 kcal</span>
+                            <span class="pg-nut-pill">6g fat</span>
+                            <span class="pg-nut-pill">80mg caffeine</span>
+                        </div>
+                        <div class="pg-card-footer">
+                            <span class="pg-price">₱250</span>
+                            <a href="{{ path('app_login') }}" class="pg-add">+</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Baked Pastries #}
+            <div class="col-md-4 col-sm-6">
+                <div class="pg-card">
+                    <div class="pg-card-img">
+                        <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=600&q=80" alt="Baked Pastries">
+                        <span class="pg-badge">Pastry</span>
+                    </div>
+                    <div class="pg-card-body">
+                        <div class="pg-stars">★★★★☆ <span>(310 reviews)</span></div>
+                        <h4>Baked Pastries</h4>
+                        <p>Freshly baked every morning — buttery croissants, muffins, and more to pair with your cup.</p>
+                        <div class="pg-nutrition">
+                            <span class="pg-nut-pill">320 kcal</span>
+                            <span class="pg-nut-pill">14g fat</span>
+                            <span class="pg-nut-pill">0mg caffeine</span>
+                        </div>
+                        <div class="pg-card-footer">
+                            <span class="pg-price">₱120</span>
+                            <a href="{{ path('app_login') }}" class="pg-add">+</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{# ── CTA ── #}
+<section class="pg-cta">
+    <div class="container">
+        <h2>Know What's In Your Cup</h2>
+        <p>We're the only café that lists full nutrition facts on every drink — because transparency is our promise.</p>
+        <a href="{{ path('app_contact') }}">Visit Us Today</a>
+    </div>
+</section>
+
+{% endblock %}

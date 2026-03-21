@@ -2,229 +2,378 @@
 
 {% block title %}Edit User{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    .form-container {
-        max-width: 800px;
-        margin: 0 auto;
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-        margin-bottom: 20px;
+    :root {
+        --brown-dark:  #3e1f0d;
+        --brown-mid:   #6d4c41;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
     }
 
-    .form-header {
-        margin-bottom: 25px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f0f0f0;
-    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
 
-    .form-header h1 {
-        color: #5d4037;
-        font-size: 24px;
-        font-weight: 600;
-        margin: 0;
-    }
+    .ue-wrap { padding: 32px 36px; }
 
-    .form-group {
-        margin-bottom: 20px;
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
-
-    .form-label, label {
-        display: block;
-        color: #5d4037;
-        font-weight: 500;
-        margin-bottom: 8px;
-        font-size: 14px;
-    }
-
-    .form-control, select, input[type="text"], input[type="email"], input[type="password"], input[type="checkbox"] {
-        width: 100%;
-        padding: 12px 15px;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        font-size: 14px;
-        transition: all 0.3s;
-    }
-
-    input[type="checkbox"] {
-        width: auto;
-        margin-right: 8px;
-    }
-
-    .form-control:focus, select:focus, input:focus {
-        outline: none;
-        border-color: #6d4c41;
-        box-shadow: 0 0 0 3px rgba(109, 76, 65, 0.1);
-    }
-
-    .input-help {
-        font-size: 12px;
-        color: #8d6e63;
-        margin-top: 5px;
-        display: block;
-    }
-
-    .form-actions {
+    /* ── HEADER ── */
+    .ue-header {
+        background: var(--brown-dark);
+        border-radius: 18px;
+        padding: 28px 32px;
+        margin-bottom: 24px;
         display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .ue-header::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 200px; height: 200px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.04);
+    }
+    .ue-header h1 {
+        font-family: 'Playfair Display', serif;
+        font-size: 24px;
+        color: #fff;
+        margin: 0 0 4px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
         gap: 10px;
-        margin-top: 30px;
-        padding-top: 20px;
-        border-top: 1px solid #f0f0f0;
+    }
+    .ue-header p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; }
+    .ue-back {
+        background: rgba(255,255,255,.1);
+        border: 1.5px solid rgba(255,255,255,.15);
+        color: #fff;
+        padding: 10px 22px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: background .2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: relative; z-index: 1;
+    }
+    .ue-back:hover { background: rgba(255,255,255,.18); color: #fff; }
+
+    /* ── FORM CARD ── */
+    .ue-card {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        margin-bottom: 20px;
+    }
+    .ue-card-title {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 24px;
+        padding-bottom: 16px;
+        border-bottom: 1.5px solid var(--cream2);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .ue-card-title i { color: var(--brown-acc); }
+
+    /* ── FIELDS ── */
+    .ue-label {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 8px;
+    }
+    .ue-label i { color: var(--brown-light); font-size: 13px; }
+
+    .ue-input-wrap { position: relative; margin-bottom: 6px; }
+    .ue-card input[type="email"],
+    .ue-card input[type="password"],
+    .ue-card input[type="text"] {
+        width: 100%;
+        padding: 13px 46px 13px 16px;
+        border: 1.5px solid var(--cream2);
+        border-radius: 10px;
+        font-size: 14px;
+        font-family: 'DM Sans', sans-serif;
+        color: var(--text);
+        background: var(--cream);
+        outline: none;
+        transition: border-color .2s, background .2s;
+    }
+    .ue-card input[type="email"]:focus,
+    .ue-card input[type="password"]:focus,
+    .ue-card input[type="text"]:focus {
+        border-color: var(--brown-acc);
+        background: var(--white);
     }
 
-    .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s;
-        border: none;
+    .ue-eye {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
         cursor: pointer;
+        color: var(--muted);
+        font-size: 15px;
+        background: none;
+        border: none;
+        padding: 0;
+    }
+    .ue-eye:hover { color: var(--brown-acc); }
+
+    .ue-help {
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 20px;
+        margin-top: 5px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* roles */
+    .ue-roles-wrap {
+        background: var(--cream);
+        border: 1.5px solid var(--cream2);
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-bottom: 6px;
+        display: flex;
+        gap: 24px;
+        flex-wrap: wrap;
+    }
+    .ue-roles-wrap .form-check {
+        display: flex; align-items: center; gap: 8px; margin: 0;
+    }
+    .ue-roles-wrap input[type="checkbox"] {
+        width: 16px; height: 16px;
+        accent-color: var(--brown-dark); cursor: pointer;
+    }
+    .ue-roles-wrap label {
+        font-size: 14px; font-weight: 600;
+        color: var(--text); cursor: pointer; margin: 0;
+    }
+
+    /* active toggle */
+    .ue-toggle-wrap {
+        background: var(--cream);
+        border: 1.5px solid var(--cream2);
+        border-radius: 10px;
+        padding: 16px 20px;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .ue-toggle-wrap input[type="checkbox"] {
+        width: 18px; height: 18px;
+        accent-color: var(--brown-dark); cursor: pointer;
+    }
+    .ue-toggle-wrap label {
+        font-size: 14px; font-weight: 600;
+        color: var(--text); cursor: pointer; margin: 0;
+    }
+
+    /* ── ACTIONS ── */
+    .ue-actions {
+        display: flex;
+        gap: 12px;
+        padding-top: 20px;
+        border-top: 1.5px solid var(--cream2);
+        margin-top: 8px;
+    }
+    .ue-btn {
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        padding: 12px 28px;
+        border-radius: 40px;
         font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: background .2s, transform .2s;
+        border: none;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
     }
-
-    .btn-primary {
-        background: #6d4c41;
-        color: white;
+    .ue-btn.primary { background: var(--brown-dark); color: #fff; }
+    .ue-btn.primary:hover { background: var(--brown-acc); color: #fff; transform: translateY(-2px); }
+    .ue-btn.cancel {
+        background: transparent;
+        color: var(--muted);
+        border: 2px solid var(--cream2);
     }
+    .ue-btn.cancel:hover { border-color: var(--brown-light); color: var(--text); transform: translateY(-2px); }
 
-    .btn-primary:hover {
-        background: #5d4037;
+    /* ── DANGER ZONE ── */
+    .ue-danger {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 24px 30px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
+        border-left: 4px solid #f44336;
     }
-
-    .btn-secondary {
-        background: #e0e0e0;
-        color: #5d4037;
-    }
-
-    .btn-secondary:hover {
-        background: #bdbdbd;
-    }
-
-    .btn-danger {
-        background: #f44336;
-        color: white;
-    }
-
-    .btn-danger:hover {
-        background: #d32f2f;
-    }
-
-    .delete-section {
-        max-width: 800px;
-        margin: 0 auto;
-        background: #fff5f5;
-        padding: 20px;
-        border-radius: 12px;
-        border: 2px solid #ffebee;
-    }
-
-    .delete-section h3 {
+    .ue-danger-title {
+        font-size: 15px;
+        font-weight: 700;
         color: #c62828;
-        margin: 0 0 10px 0;
-        font-size: 16px;
-    }
-
-    .delete-section p {
-        color: #666;
-        font-size: 14px;
-        margin-bottom: 15px;
-    }
-
-    .form-error {
-        color: #f44336;
-        font-size: 12px;
-        margin-top: 5px;
-    }
-
-    .checkbox-group {
+        margin-bottom: 6px;
         display: flex;
         align-items: center;
+        gap: 8px;
     }
-
-    .roles-section {
-        background: #f8f5f2;
-        padding: 15px;
-        border-radius: 8px;
-    }
-
-    .role-checkbox {
-        display: flex;
+    .ue-danger p { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+    .ue-btn-delete {
+        display: inline-flex;
         align-items: center;
-        margin-bottom: 10px;
+        gap: 8px;
+        padding: 11px 24px;
+        border-radius: 40px;
+        font-size: 13px;
+        font-weight: 700;
+        background: #ffebee;
+        color: #c62828;
+        border: none;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: background .2s, transform .2s;
     }
+    .ue-btn-delete:hover { background: #ffcdd2; transform: translateY(-2px); }
 
-    .role-checkbox input {
-        width: auto;
-        margin-right: 10px;
-    }
+    .ue-card .form-check { display: flex; align-items: center; gap: 8px; margin: 0; }
+    .ue-card .form-check input { width: 16px; height: 16px; accent-color: var(--brown-dark); }
+    .ue-card .form-check label { margin: 0; font-size: 14px; font-weight: 600; color: var(--text); }
 </style>
+{% endblock %}
 
-<div class="form-container">
-    <div class="form-header">
-        <h1>✏️ Edit User</h1>
+{% block body %}
+<div class="ue-wrap">
+
+    {# ── HEADER ── #}
+    <div class="ue-header">
+        <div>
+            <h1><i class="fas fa-user-edit"></i> Edit User</h1>
+            <p>Update user account information and permissions.</p>
+        </div>
+        <a href="{{ path('app_user_index') }}" class="ue-back">
+            <i class="fas fa-arrow-left"></i> Back to Users
+        </a>
     </div>
 
-    {{ form_start(form) }}
-        <div class="form-group">
-            {{ form_label(form.email) }}
-            {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+    {# ── FORM CARD ── #}
+    <div class="ue-card">
+        <div class="ue-card-title">
+            <i class="fas fa-id-card"></i> User Details
+        </div>
+
+        {{ form_start(form) }}
+
+            {# Email #}
+            <label class="ue-label" for="{{ form.email.vars.id }}">
+                <i class="fas fa-envelope"></i> Email Address
+            </label>
+            <div class="ue-input-wrap">
+                {{ form_widget(form.email, {'attr': {'placeholder': 'user@example.com'}}) }}
+            </div>
             {{ form_errors(form.email) }}
-            <span class="input-help">User's email address (used for login)</span>
-        </div>
+            <div class="ue-help"><i class="fas fa-info-circle"></i> User's email address used for login.</div>
 
-        <div class="form-group">
-            {{ form_label(form.plainPassword, 'New Password (leave blank to keep current)') }}
-            {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Leave blank to keep current password'}}) }}
+            {# Password #}
+            <label class="ue-label" for="{{ form.plainPassword.vars.id }}">
+                <i class="fas fa-lock"></i> New Password
+            </label>
+            <div class="ue-input-wrap">
+                {{ form_widget(form.plainPassword, {'attr': {'placeholder': 'Leave blank to keep current password', 'id': 'plainPassword'}}) }}
+                <button type="button" class="ue-eye" onclick="togglePass()">
+                    <i class="fas fa-eye" id="eyeIcon"></i>
+                </button>
+            </div>
             {{ form_errors(form.plainPassword) }}
-            <span class="input-help">Only fill this if you want to change the password</span>
-        </div>
+            <div class="ue-help"><i class="fas fa-info-circle"></i> Leave blank to keep the current password.</div>
 
-        <div class="form-group roles-section">
-            {{ form_label(form.roles, 'User Roles') }}
-            {{ form_widget(form.roles) }}
+            {# Roles #}
+            <label class="ue-label">
+                <i class="fas fa-shield-alt"></i> Roles
+            </label>
+            <div class="ue-roles-wrap">
+                {{ form_widget(form.roles) }}
+            </div>
             {{ form_errors(form.roles) }}
-            <span class="input-help">Select one or more roles for this user</span>
-        </div>
+            <div class="ue-help"><i class="fas fa-info-circle"></i> Select one or more roles for this user.</div>
 
-        <div class="form-group">
-            <div class="checkbox-group">
-                {{ form_widget(form.isActive, {'attr': {'class': ''}}) }}
-                {{ form_label(form.isActive) }}
+            {# Is Active #}
+            <label class="ue-label">
+                <i class="fas fa-toggle-on"></i> Account Status
+            </label>
+            <div class="ue-toggle-wrap">
+                {{ form_widget(form.isActive) }}
+                <label for="{{ form.isActive.vars.id }}" style="margin:0; font-size:14px; font-weight:600; color:var(--text); cursor:pointer;">
+                    Mark as Active
+                </label>
             </div>
             {{ form_errors(form.isActive) }}
-            <span class="input-help">Inactive users cannot log in</span>
-        </div>
+            <div class="ue-help"><i class="fas fa-info-circle"></i> Inactive users cannot log in to the system.</div>
 
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 18px; height: 18px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
-                Update User
+            <div class="ue-actions">
+                <button type="submit" class="ue-btn primary">
+                    <i class="fas fa-check"></i> Update User
+                </button>
+                <a href="{{ path('app_user_index') }}" class="ue-btn cancel">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    {# ── DANGER ZONE ── #}
+    <div class="ue-danger">
+        <div class="ue-danger-title">
+            <i class="fas fa-exclamation-triangle"></i> Danger Zone
+        </div>
+        <p>Once you delete this user, there is no going back. Please be certain before proceeding.</p>
+        <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}"
+              onsubmit="return confirm('Are you sure you want to delete this user?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+            <button class="ue-btn-delete">
+                <i class="fas fa-trash"></i> Delete User
             </button>
-            <a href="{{ path('app_user_index') }}" class="btn btn-secondary">Cancel</a>
-        </div>
-    {{ form_end(form) }}
+        </form>
+    </div>
+
 </div>
 
-<div class="delete-section">
-    <h3>⚠️ Danger Zone</h3>
-    <p>Once you delete this user, there is no going back. Please be certain.</p>
-    <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" onsubmit="return confirm('Are you sure you want to delete this user?');">
-        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-        <button class="btn btn-danger">Delete User</button>
-    </form>
-</div>
+<script>
+function togglePass() {
+    const input = document.getElementById('plainPassword');
+    const icon = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+    }
+}
+</script>
 {% endblock %}

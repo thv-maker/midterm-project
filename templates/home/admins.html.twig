@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admins - Carpe Diem Cafe{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <h1>Admins</h1>
+    <p>This page is for administrators and management functions.</p>
+    <ul>
+        <li>Manage users and staff accounts</li>
+        <li>View detailed sales and operations dashboards</li>
+        <li>Assign roles and control system settings</li>
+    </ul>
+    <p>Admin users should log in and navigate to <a href="{{ path('app_dashboard_index') }}">Dashboard</a> for full control tools.</p>
+</div>
+{% endblock %}

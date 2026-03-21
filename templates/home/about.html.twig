@@ -1,0 +1,387 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}About Us - Carpe Diem Cafe{% endblock %}
+
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --brown:       #6d4c41;
+        --brown-dark:  #3e1f0d;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
+        --star:        #e8a020;
+    }
+
+    body { background: var(--cream); 
+        font-family: 'DM Sans', sans-serif; 
+        color: var(--text); }
+
+    /* ── PAGE HERO ── */
+    .ab-hero {
+    background: var(--white);
+    padding: 60px 0;
+    border-bottom: 1.5px solid var(--cream2);
+    text-align: left;
+}
+.ab-hero span {
+    font-size: 12px; letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--brown-light); font-weight: 700;
+    display: block; margin-bottom: 10px;
+}
+.ab-hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(38px, 5vw, 64px);
+    color: var(--text);
+    margin: 0 0 18px; line-height: 1.1;
+}
+.ab-hero h1 span { color: var(--brown-acc); font-style: italic; }
+.ab-hero p {
+    color: var(--muted); font-size: 15px;
+    max-width: 420px; line-height: 1.75; margin: 0;
+}
+
+    /* ── STORY SECTION ── */
+    .ab-story { padding: 90px 0; background: var(--cream); }
+    .ab-story-img {
+        border-radius: 20px; overflow: hidden; height: 420px;
+    }
+    .ab-story-img img { width: 100%; height: 100%; object-fit: cover; }
+    .ab-story-text {
+        display: flex; 
+        flex-direction: column;
+        justify-content: center; 
+        padding: 10px 40px;
+    }
+    .ab-story-text span {
+        font-size: 12px; 
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--brown-light); 
+        font-weight: 700;
+    }
+    .ab-story-text h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 38px; 
+        color: var(--text);
+        margin: 12px 0 18px; 
+        line-height: 1.2;
+    }
+    .ab-story-text h2 span { color: var(--brown-acc); font-style: italic; }
+    .ab-story-text p {
+        color: var(--muted); font-size: 15px;
+        line-height: 1.8; margin-bottom: 14px;
+    }
+
+    /* ── USP SECTION ── */
+    .ab-usp {
+        background: var(--brown-dark);
+        padding: 80px 0;
+    }
+    .ab-usp-head { text-align: center; margin-bottom: 50px; }
+    .ab-usp-head span {
+        font-size: 12px; 
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--brown-light); 
+        font-weight: 700;
+    }
+    .ab-usp-head h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 38px; 
+        color: #fff; 
+        margin-top: 8px;
+    }
+    .ab-usp-card {
+        background: rgba(255,255,255,.06);
+        border: 1.5px solid rgba(255,255,255,.1);
+        border-radius: 18px; 
+        padding: 34px 28px;
+        text-align: center;
+        transition: background .3s;
+        height: 100%;
+    }
+    .ab-usp-card:hover { background: rgba(255,255,255,.11); }
+    .ab-usp-icon i {
+        font-size: 24px;
+        color: rgba(255,255,255,.85);
+     }
+    .ab-usp-card h5 {
+        font-family: 'Playfair Display', serif;
+        font-size: 18px; 
+        color: #fff; 
+        margin-bottom: 10px;
+    }
+    .ab-usp-card p {
+        font-size: 13px; 
+        color: rgba(255,255,255,.65);
+        line-height: 1.75; 
+        margin: 0;
+    }
+
+    /* ── NUTRITION PROMISE ── */
+    .ab-nutrition {
+        background: var(--white);
+        padding: 90px 0;
+    }
+    .ab-nut-badge {
+        display: inline-block;
+        background: var(--cream2);
+        color: var(--brown-dark);
+        font-size: 11px; 
+        font-weight: 700;
+        letter-spacing: 2px; 
+        text-transform: uppercase;
+        padding: 5px 16px; 
+        border-radius: 20px;
+        margin-bottom: 18px;
+    }
+    .ab-nutrition h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 38px; 
+        color: var(--text);
+        margin-bottom: 16px; 
+        line-height: 1.2;
+    }
+    .ab-nutrition h2 span { color: var(--brown-acc); }
+    .ab-nutrition p {
+        color: var(--muted); 
+        font-size: 15px;
+        line-height: 1.8; 
+        margin-bottom: 32px;
+        max-width: 460px;
+    }
+    .ab-nut-items { display: flex; flex-direction: column; gap: 16px; }
+    .ab-nut-item {
+        display: flex; 
+        align-items: flex-start; 
+        gap: 16px;
+        padding: 20px; 
+        border-radius: 14px;
+        border: 1.5px solid var(--cream2);
+        transition: border-color .2s, box-shadow .2s;
+    }
+    .ab-nut-item:hover {
+        border-color: var(--brown-light);
+        box-shadow: 0 4px 20px rgba(0,0,0,.06);
+    }
+    .ab-nut-dot {
+        width: 44px;
+        height: 44px; 
+        min-width: 44px;
+        background: var(--cream2);
+        border-radius: 12px;
+        display: flex; 
+        align-items: center;
+        justify-content: center; 
+        font-size: 20px;
+        color: var(--brown-acc);
+    }
+    .ab-nut-item h5 {
+        font-size: 15px; 
+        font-weight: 700;
+        color: var(--text); 
+        margin-bottom: 4px;
+    }
+    .ab-nut-item p {
+        font-size: 13px; 
+        color: var(--muted);
+        line-height: 1.65; 
+        margin: 0;
+    }
+    .ab-nut-img {
+        border-radius: 20px; 
+        overflow: hidden; 
+        height: 420px;
+    }
+    .ab-nut-img img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ── MISSION ── */
+    .ab-mission {
+        background: var(--cream2);
+        padding: 80px 0;
+        text-align: center;
+    }
+    .ab-mission h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 38px; 
+        color: var(--text);
+        margin-bottom: 16px;
+    }
+    .ab-mission h2 span { color: var(--brown-acc); font-style: italic; }
+    .ab-mission p {
+        color: var(--muted); 
+        font-size: 16px;
+        max-width: 600px; 
+        margin: 0 auto 36px;
+        line-height: 1.8;
+    }
+    .ab-btn {
+        display: inline-block;
+        background: var(--brown-dark);
+        color: #fff; padding: 13px 34px;
+        border-radius: 40px; font-weight: 700;
+        font-size: 14px; text-decoration: none;
+        transition: background .2s;
+    }
+    .ab-btn:hover { background: var(--brown-acc); color: #fff; }
+
+    @media (max-width: 768px) {
+        .ab-story-text { padding: 30px 0 0; }
+        .ab-nut-img { height: 280px; margin-top: 40px; }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+{# ── PAGE HERO ── #}
+<section class="ab-hero">
+    <div class="container">
+        <div style="display:flex; align-items:center; gap:60px; min-height:420px;">
+            <div style="flex:0 0 50%;">
+                <span>Who We Are</span>
+                <h1>About <span>Carpe Diem</span></h1>
+                <p>One cup at a time — we're the only café where every drink comes with full nutrition facts, because you deserve to know what's in your cup.</p>
+                <a href="{{ path('app_contact') }}" style="display:inline-block; background:#3e1f0d; color:#fff; padding:13px 32px; border-radius:40px; font-weight:700; font-size:14px; text-decoration:none; margin-top:20px;">Visit Us Today</a>
+            </div>
+            <div style="flex:1; position:relative; display:flex; justify-content:center;">
+                <div style="width:360px; height:360px; border-radius:50%; overflow:hidden; border:6px solid #f3ece4; box-shadow:0 20px 60px rgba(110,76,65,.15);">
+                    <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=700&q=80"
+                         alt="About Us" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+                <div style="position:absolute; top:10%; right:2%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#6d4c41;display:inline-block;"></span> Since 2020
+                </div>
+                <div style="position:absolute; top:38%; left:0%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#a0785a;display:inline-block;"></span> Nutrition Facts
+                </div>
+                <div style="position:absolute; bottom:25%; right:0%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#3e1f0d;display:inline-block;"></span> 0 Hidden Ingredients
+                </div>
+                <div style="position:absolute; bottom:8%; left:5%; background:#fff; border:1.5px solid #f3ece4; border-radius:30px; padding:7px 16px; font-size:13px; font-weight:600; color:#2b1a0f; box-shadow:0 4px 16px rgba(0,0,0,.07); display:flex; align-items:center; gap:6px;">
+                    <span style="width:10px;height:10px;border-radius:50%;background:#c49a6c;display:inline-block;"></span> Cebu City
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── OUR STORY ── #}
+<section class="ab-story">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-md-6">
+                <div class="ab-story-img">
+                    <img src="https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=800&q=80" alt="Our Story">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="ab-story-text">
+                    <span>Our Story</span>
+                    <h2>Built on Coffee,<br>Built on <span>Trust</span></h2>
+                    <p>Carpe Diem Cafe started with a simple mission — serve exceptional coffee with a warm smile. From a small corner shop to a community favourite, we've grown by putting our customers first.</p>
+                    <p>We source local beans, bake fresh treats every day, and treat each visitor as a guest. But what truly sets us apart? Every single drink on our menu comes with <strong>full nutrition facts</strong> — calories, fat, caffeine, and more.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── USP CARDS ── #}
+<section class="ab-usp">
+    <div class="container">
+        <div class="ab-usp-head">
+            <span>Our Promise</span>
+            <h2>Why We're Different</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-3 col-sm-6">
+                <div class="ab-usp-card">
+                    <span class="ab-usp-icon"><i class="fas fa-clipboard-list"></i></span>
+                    <h5>Nutrition Facts on Every Cup</h5>
+                    <p>We're the only café that lists full nutrition info — calories, fat, protein, and caffeine — on every item.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="ab-usp-card">
+                    <span class="ab-usp-icon"><i class="fas fa-seedling"></i></span>
+                    <h5>Locally Sourced Beans</h5>
+                    <p>We partner with local farms to bring you the freshest, most sustainable coffee beans available.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="ab-usp-card">
+                    <span class="ab-usp-icon"><i class="fas fa-heart"></i></span>
+                    <h5>Made with Love</h5>
+                    <p>Every cup is crafted with care by our passionate baristas who take pride in every single brew.</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="ab-usp-card">
+                    <span class="ab-usp-icon"><i class="fas fa-couch"></i></span>
+                    <h5>Cozy Atmosphere</h5>
+                    <p>A warm, welcoming space to relax, work, connect, and enjoy life's best little moments.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── NUTRITION PROMISE ── #}
+<section class="ab-nutrition">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-md-6">
+                <span class="ab-nut-badge">Our Uniqueness</span>
+                <h2>100% <span>Transparent</span><br>Nutrition Info</h2>
+                <p>We believe great coffee should be delicious and honest. That's why every drink at Carpe Diem comes with complete nutrition facts — no hidden surprises.</p>
+                <div class="ab-nut-items">
+                    <div class="ab-nut-item">
+                        <div class="ab-nut-dot"><i class="fas fa-calculator"></i></div>
+                        <div>
+                            <h5>Calories Listed</h5>
+                            <p>Know exactly how many calories are in your cup before you order.</p>
+                        </div>
+                    </div>
+                    <div class="ab-nut-item">
+                        <div class="ab-nut-dot"><i class="fas fa-coffee"></i></div>
+                        <div>
+                            <h5>Caffeine Amount</h5>
+                            <p>We display exact caffeine content so you can manage your daily intake.</p>
+                        </div>
+                    </div>
+                    <div class="ab-nut-item">
+                        <div class="ab-nut-dot"><i class="fas fa-check-circle"></i></div>
+                        <div>
+                            <h5>Zero Hidden Ingredients</h5>
+                            <p>Full ingredient transparency — what you see is exactly what's in your cup.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="ab-nut-img">
+                    <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80" alt="Nutrition Transparency">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ── MISSION ── #}
+<section class="ab-mission">
+    <div class="container">
+        <h2>Seize Every Day,<br><span>One Cup at a Time</span></h2>
+        <p>We invite you to stop by, enjoy a drink, and feel the difference. At Carpe Diem, every cup is an experience — crafted with care, served with love, and backed by full transparency.</p>
+        <a href="{{ path('app_contact') }}" class="ab-btn">Visit Us Today</a>
+    </div>
+</section>
+
+{% endblock %}

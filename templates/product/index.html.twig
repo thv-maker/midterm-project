@@ -2,269 +2,288 @@
 
 {% block title %}Products - Carpe Diem{% endblock %}
 
-{% block body %}
+{% block stylesheets %}
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-    .container {
-        max-width: 1400px;
-        margin: 0 auto;
+    :root {
+        --brown-dark:  #3e1f0d;
+        --brown-mid:   #6d4c41;
+        --brown-acc:   #8B5E3C;
+        --brown-light: #c49a6c;
+        --cream:       #faf7f4;
+        --cream2:      #f3ece4;
+        --white:       #ffffff;
+        --text:        #2b1a0f;
+        --muted:       #9e8070;
+        --star:        #e8a020;
     }
 
-    .page-header {
+    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
+
+    .pd-wrap { padding: 32px 36px; }
+
+    /* ── HEADER ── */
+    .pd-header {
+        background: var(--brown-dark);
+        border-radius: 18px;
+        padding: 28px 32px;
+        margin-bottom: 28px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: white;
-        padding: 25px 30px;
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-        margin-bottom: 30px;
+        position: relative;
+        overflow: hidden;
     }
-
-    .page-header h1 {
-        color: #5d4037;
-        font-size: 28px;
-        font-weight: 600;
-        margin: 0;
+    .pd-header::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 200px; height: 200px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.04);
     }
-
-    .btn {
-        display: inline-block;
-        padding: 12px 24px;
-        text-decoration: none;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-    }
-
-    .btn-create {
-        background: linear-gradient(135deg, #6d4c41 0%, #8d6e63 100%);
-        color: white;
-        box-shadow: 0 4px 12px rgba(93, 64, 55, 0.3);
-    }
-
-    .btn-create:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(93, 64, 55, 0.4);
-    }
-
-    .content-card {
-        background: white;
-        border-radius: 12px;
-        padding: 30px;
-        box-shadow: 0 2px 8px rgba(93, 64, 55, 0.08);
-    }
-
-    .products-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-        gap: 25px;
-        margin-bottom: 30px;
-    }
-
-    .product-card {
-        background: #f8f5f2;
-        border-radius: 12px;
-        padding: 25px;
-        transition: all 0.3s ease;
-        border: 2px solid transparent;
-    }
-
-    .product-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 8px 20px rgba(93, 64, 55, 0.15);
-        border-color: #8d6e63;
-    }
-
-    .product-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: start;
-        margin-bottom: 15px;
-    }
-
-    .product-header h3 {
-        color: #5d4037;
-        font-size: 20px;
-        font-weight: 600;
-        margin: 0;
-        flex: 1;
-    }
-
-    .product-type {
-        background: #6d4c41;
-        color: white;
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 11px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .product-price {
+    .pd-header h1 {
+        font-family: 'Playfair Display', serif;
         font-size: 24px;
+        color: #fff;
+        margin: 0 0 4px;
         font-weight: 700;
-        color: #6d4c41;
-        margin-bottom: 20px;
-    }
-
-    .product-nutrition {
-        background: white;
-        border-radius: 8px;
-        padding: 15px;
-        margin-bottom: 20px;
-    }
-
-    .product-nutrition h4 {
-        font-size: 13px;
-        color: #8d6e63;
-        margin: 0 0 12px 0;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 600;
-    }
-
-    .nutrition-row {
         display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
-    .nutrition-row:last-child {
-        border-bottom: none;
-    }
-
-    .nutrition-label {
-        color: #666;
-        font-size: 13px;
-    }
-
-    .nutrition-value {
-        color: #5d4037;
-        font-weight: 600;
-        font-size: 13px;
-    }
-
-    .product-actions {
-        display: flex;
+        align-items: center;
         gap: 10px;
     }
-
-    .btn-show,
-    .btn-edit {
-        flex: 1;
-        text-align: center;
-        padding: 10px 16px;
-        font-size: 13px;
-        border-radius: 6px;
+    .pd-header p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; }
+    .pd-add-btn {
+        background: rgba(255,255,255,.12);
+        border: 1.5px solid rgba(255,255,255,.2);
+        color: #fff;
+        padding: 11px 24px;
+        border-radius: 30px;
         text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        font-size: 13px;
+        font-weight: 700;
+        transition: background .2s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        position: relative; z-index: 1;
+    }
+    .pd-add-btn:hover { background: rgba(255,255,255,.2); color: #fff; }
+
+    /* ── GRID ── */
+    .pd-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 22px;
     }
 
-    .btn-show {
-        background: white;
-        color: #6d4c41;
-        border: 2px solid #6d4c41;
+    /* ── PRODUCT CARD ── */
+    .pd-card {
+        background: var(--white);
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0,0,0,.06);
+        transition: transform .3s, box-shadow .3s;
+        border-top: 4px solid var(--brown-acc);
+    }
+    .pd-card:hover { transform: translateY(-6px); box-shadow: 0 14px 36px rgba(0,0,0,.11); }
+
+    .pd-card-body { padding: 22px 24px 0; }
+
+    .pd-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+    .pd-card-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0;
+        flex: 1;
+        padding-right: 10px;
+    }
+    .pd-cat-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--cream2);
+        color: var(--brown-dark);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 20px;
+        white-space: nowrap;
     }
 
-    .btn-show:hover {
-        background: #6d4c41;
-        color: white;
+    .pd-price {
+        font-family: 'Playfair Display', serif;
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--brown-dark);
+        margin-bottom: 18px;
     }
 
-    .btn-edit {
-        background: #6d4c41;
-        color: white;
+    /* nutrition box */
+    .pd-nutrition {
+        background: var(--cream);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 20px;
+    }
+    .pd-nut-title {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .pd-nut-title i { color: var(--brown-light); }
+    .pd-nut-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 7px 0;
+        border-bottom: 1.5px solid var(--cream2);
+    }
+    .pd-nut-row:last-child { border-bottom: none; }
+    .pd-nut-label {
+        font-size: 12px;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .pd-nut-label i { font-size: 11px; color: var(--brown-light); width: 14px; }
+    .pd-nut-value {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text);
     }
 
-    .btn-edit:hover {
-        background: #5d4037;
+    /* actions */
+    .pd-card-footer {
+        display: flex;
+        border-top: 1.5px solid var(--cream2);
     }
+    .pd-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 14px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: background .2s;
+    }
+    .pd-btn.view {
+        background: var(--cream);
+        color: var(--brown-dark);
+        border-right: 1.5px solid var(--cream2);
+    }
+    .pd-btn.view:hover { background: var(--cream2); }
+    .pd-btn.edit {
+        background: var(--brown-dark);
+        color: #fff;
+    }
+    .pd-btn.edit:hover { background: var(--brown-acc); }
 
-    .no-records {
+    /* empty */
+    .pd-empty {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 70px 30px;
         text-align: center;
-        padding: 60px 20px;
-        color: #8d6e63;
-        font-size: 16px;
+        box-shadow: 0 2px 12px rgba(0,0,0,.05);
     }
-
-    .add-button-container {
-        text-align: center;
-        padding-top: 10px;
-    }
+    .pd-empty i { font-size: 52px; color: var(--cream2); margin-bottom: 18px; display: block; }
+    .pd-empty p { font-size: 15px; color: var(--muted); margin-bottom: 24px; }
 
     @media (max-width: 768px) {
-        .products-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .page-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
-        }
+        .pd-grid { grid-template-columns: 1fr; }
     }
 </style>
+{% endblock %}
 
-<div class="container">
-    <div class="page-header">
-        <h1>Products</h1>
-        <a href="{{ path('app_dashboard_product_new') }}" class="btn btn-create">+ Add New Product</a>
+{% block body %}
+<div class="pd-wrap">
+
+    {# ── HEADER ── #}
+    <div class="pd-header">
+        <div>
+            <h1><i class="fas fa-coffee"></i> Products</h1>
+            <p>Manage your café menu with full nutrition facts on every item.</p>
+        </div>
+        <a href="{{ path('app_dashboard_product_new') }}" class="pd-add-btn">
+            <i class="fas fa-plus"></i> Add New Product
+        </a>
     </div>
 
-    <div class="content-card">
-        {% if products is empty %}
-            <div class="no-records">
-                <svg fill="none" stroke="#8d6e63" viewBox="0 0 24 24" style="width: 60px; height: 60px; margin: 0 auto 20px; display: block;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                </svg>
-                <p>No products found. Start by adding your first product!</p>
-                <div style="margin-top: 20px;">
-                    <a href="{{ path('app_dashboard_product_new') }}" class="btn btn-create">+ Add First Product</a>
-                </div>
-            </div>
-        {% else %}
-            <div class="products-grid">
-                {% for product in products %}
-                    <div class="product-card">
-                        <div class="product-header">
-                            <h3>{{ product.name }}</h3>
-                            <span class="product-category">{{ product.category }}</span>
-                        </div>
+    {# ── GRID ── #}
+    {% if products is empty %}
+        <div class="pd-empty">
+            <i class="fas fa-coffee"></i>
+            <p>No products found. Start by adding your first product!</p>
+            <a href="{{ path('app_dashboard_product_new') }}" style="display:inline-flex; align-items:center; gap:8px; background:var(--brown-dark); color:#fff; padding:12px 28px; border-radius:40px; text-decoration:none; font-weight:700; font-size:14px;">
+                <i class="fas fa-plus"></i> Add First Product
+            </a>
+        </div>
+    {% else %}
+        <div class="pd-grid">
+            {% for product in products %}
+            <div class="pd-card">
+                <div class="pd-card-body">
+                    <div class="pd-card-top">
+                        <h3 class="pd-card-name">{{ product.name }}</h3>
+                        <span class="pd-cat-badge"><i class="fas fa-tag"></i> {{ product.category }}</span>
+                    </div>
 
-                        <div class="product-price">
-                            ₱{{ product.price|number_format(2) }}
-                        </div>
+                    <div class="pd-price">₱{{ product.price|number_format(2) }}</div>
 
-                        <div class="product-nutrition">
-                            <h4>Nutritional Information</h4>
-                            <div class="nutrition-row">
-                                <span class="nutrition-label">Calories:</span>
-                                <span class="nutrition-value">{{ product.calories }} kcal</span>
-                            </div>
-                            <div class="nutrition-row">
-                                <span class="nutrition-label">Sugar:</span>
-                                <span class="nutrition-value">{{ product.sugarGrams }} g</span>
-                            </div>
-                            <div class="nutrition-row">
-                                <span class="nutrition-label">Caffeine:</span>
-                                <span class="nutrition-value">{{ product.caffeineMg }} mg</span>
-                            </div>
+                    <div class="pd-nutrition">
+                        <div class="pd-nut-title">
+                            <i class="fas fa-clipboard-list"></i> Nutritional Information
                         </div>
-
-                        <div class="product-actions">
-                            <a href="{{ path('app_dashboard_product_show', {'id': product.id}) }}" class="btn-show">View</a>
-                            <a href="{{ path('app_dashboard_product_edit', {'id': product.id}) }}" class="btn-edit">Edit</a>
+                        <div class="pd-nut-row">
+                            <span class="pd-nut-label"><i class="fas fa-fire"></i> Calories</span>
+                            <span class="pd-nut-value">{{ product.calories }} kcal</span>
+                        </div>
+                        <div class="pd-nut-row">
+                            <span class="pd-nut-label"><i class="fas fa-cubes"></i> Sugar</span>
+                            <span class="pd-nut-value">{{ product.sugarGrams }} g</span>
+                        </div>
+                        <div class="pd-nut-row">
+                            <span class="pd-nut-label"><i class="fas fa-bolt"></i> Caffeine</span>
+                            <span class="pd-nut-value">{{ product.caffeineMg }} mg</span>
                         </div>
                     </div>
-                {% endfor %}
+                </div>
+
+                <div class="pd-card-footer">
+                    <a href="{{ path('app_dashboard_product_show', {'id': product.id}) }}" class="pd-btn view">
+                        <i class="fas fa-eye"></i> View
+                    </a>
+                    <a href="{{ path('app_dashboard_product_edit', {'id': product.id}) }}" class="pd-btn edit">
+                        <i class="fas fa-pen"></i> Edit
+                    </a>
+                </div>
             </div>
-        {% endif %}
-    </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
 </div>
 {% endblock %}

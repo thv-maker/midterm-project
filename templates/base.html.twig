@@ -10,7 +10,7 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -19,194 +19,273 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #f5f1ee;
-        }
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: #faf7f4;
+}
 
         .layout {
             display: flex;
             min-height: 100vh;
         }
 
-        .sidebar {
-            width: 250px;
-            background: #6d4c41;
-            color: white;
-            position: fixed;
-            height: 100vh;
-            overflow-y: auto;
-        }
+        /* Sidebar styles */
 
-        .sidebar-header {
-            padding: 25px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
+        /* ── SIDEBAR ── */
+.sidebar {
+    width: 250px;
+    background: #3e1f0d;
+    color: white;
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 24px rgba(0,0,0,.15);
+}
 
-        .sidebar-header h2 {
-            font-size: 20px;
-            font-weight: 600;
-        }
+.sidebar-header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
 
-        .sidebar-menu {
-            padding: 20px 0;
-            padding-bottom: 100px; /* Space for logout button */
-        }
+.sidebar-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: .5px;
+    margin: 0;
+}
 
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
-            color: rgba(255,255,255,0.8);
-            text-decoration: none;
-            transition: all 0.3s;
-        }
+.sidebar-header p {
+    font-size: 11px;
+    color: rgba(255,255,255,.4);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 4px 0 0;
+}
 
-        .menu-item:hover,
-        .menu-item.active {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
+.sidebar-menu {
+    padding: 16px 12px;
+    flex: 1;
+}
 
-        .menu-item svg,
-        .menu-item i {
-            width: 20px;
-            height: 20px;
-        }
+.menu-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.3);
+    padding: 16px 12px 8px;
+    display: block;
+}
 
-        .main-content {
-            flex: 1;
-            padding: 30px;
-            background: #f5f1ee;
-        }
+.menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    color: rgba(255,255,255,.65);
+    text-decoration: none;
+    transition: all 0.2s;
+    border-radius: 10px;
+    margin-bottom: 2px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+}
 
-        .main-content.with-sidebar {
-            margin-left: 250px;
-        }
+.menu-item:hover {
+    background: rgba(255,255,255,.08);
+    color: #fff;
+}
 
-        .logout-btn {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 20px;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: all 0.3s;
-        }
+.menu-item.active {
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    font-weight: 600;
+}
 
-        .logout-btn:hover {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
+.menu-item svg,
+.menu-item i {
+    width: 18px;
+    height: 18px;
+    opacity: .8;
+    flex-shrink: 0;
+}
+
+.menu-item.active svg,
+.menu-item.active i {
+    opacity: 1;
+}
+
+.sidebar-footer {
+    padding: 16px 12px 24px;
+    border-top: 1px solid rgba(255,255,255,.08);
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    background: rgba(255,255,255,.06);
+    color: rgba(255,255,255,.65);
+    text-decoration: none;
+    border-radius: 10px;
+    transition: all 0.2s;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    width: 100%;
+}
+
+.logout-btn:hover {
+    background: rgba(255,255,255,.12);
+    color: #fff;
+}
+
+.main-content {
+    flex: 1;
+    padding: 0;
+    background: #faf7f4;
+}
+
+.main-content.with-sidebar {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    min-width: 0;
+}
+
     </style>
     
     {% block stylesheets %}{% endblock %}
 </head>
 <body>
-    <div class="layout">
-        {% if app.user %}
+    {% if app.request.get('_route') not in ['app_login', 'app_register'] and (not app.user or app.request.get('_route') in ['app_home', 'app_our_products', 'app_about', 'app_our_things', 'app_why_choose', 'app_contact', 'app_admins']) %}
+<header style="background:#fff; border-bottom:1.5px solid #f3ece4; padding:18px 0; position:sticky; top:0; z-index:999;">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="{{ path('app_home') }}" style="font-family:'Playfair Display',serif; font-size:22px; color:#3e1f0d; text-decoration:none; font-weight:700;">
+            ● Carpe Diem
+        </a>
+        <nav style="display:flex; gap:32px; align-items:center;">
+            <a href="{{ path('app_home') }}" style="color:{{ app.request.get('_route') == 'app_home' ? '#3e1f0d' : '#9e8070' }}; text-decoration:none; font-size:14px; font-weight:{{ app.request.get('_route') == 'app_home' ? '700' : '500' }};">Home</a>
+            <a href="{{ path('app_our_products') }}" style="color:{{ app.request.get('_route') == 'app_our_products' ? '#3e1f0d' : '#9e8070' }}; text-decoration:none; font-size:14px; font-weight:{{ app.request.get('_route') == 'app_our_products' ? '700' : '500' }};">Menu</a>
+            <a href="{{ path('app_about') }}" style="color:{{ app.request.get('_route') == 'app_about' ? '#3e1f0d' : '#9e8070' }}; text-decoration:none; font-size:14px; font-weight:{{ app.request.get('_route') == 'app_about' ? '700' : '500' }};">About Us</a>
+            <a href="{{ path('app_our_things') }}" style="color:{{ app.request.get('_route') == 'app_our_things' ? '#3e1f0d' : '#9e8070' }}; text-decoration:none; font-size:14px; font-weight:{{ app.request.get('_route') == 'app_our_things' ? '700' : '500' }};">Our Things</a>
+            <a href="{{ path('app_why_choose') }}" style="color:{{ app.request.get('_route') == 'app_why_choose' ? '#3e1f0d' : '#9e8070' }}; text-decoration:none; font-size:14px; font-weight:{{ app.request.get('_route') == 'app_why_choose' ? '700' : '500' }};">Why Choose</a>
+            <a href="{{ path('app_contact') }}" style="color:{{ app.request.get('_route') == 'app_contact' ? '#3e1f0d' : '#9e8070' }}; text-decoration:none; font-size:14px; font-weight:{{ app.request.get('_route') == 'app_contact' ? '700' : '500' }};">Contact Us</a>
+        </nav>
+        <div style="display:flex; align-items:center; gap:16px;">
+            <a href="{{ path('app_login') }}" style="background:#3e1f0d; color:#fff; padding:10px 22px; border-radius:30px; text-decoration:none; font-size:13px; font-weight:600;">Login</a>
+    </div>
+</header>
+{% endif %}
+
+    <div class="layout" style="margin-top:0; padding-top:0;">
+       {% if app.user and app.request.get('_route') not in ['app_home', 'app_our_products', 'app_about', 'app_our_things', 'app_why_choose', 'app_contact'] %}
+           
             <!-- Sidebar for logged in users -->
-            <div class="sidebar">
-                <div class="sidebar-header">
-                    <h2>Carpe Diem</h2>
-                </div>
-                
-                <nav class="sidebar-menu">
-                    {% if is_granted('ROLE_STAFF') %}
-                        <a href="{{ path('app_dashboard_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_index' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-                            </svg>
-                            Dashboard
-                        </a>
-                    {% endif %}
-                    
-                    {% if is_granted('ROLE_STAFF') %}
-                        <a href="{{ path('app_order_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_order' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                            </svg>
-                            Orders
-                        </a>
-                    {% endif %}
-                    
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_dashboard_products') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_product' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                            </svg>
-                            Products
-                        </a>
-                    {% endif %}
-                    
-                    {% if is_granted('ROLE_STAFF') %}
-                        <a href="{{ path('app_dashboard_stocks') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_stock' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
-                            </svg>
-                            Stocks
-                        </a>
-                    {% endif %}
-                    
-                    {% if is_granted('ROLE_USER') %}
-                        <a href="{{ path('app_profile') }}" class="menu-item {% if app.request.get('_route') starts with 'app_profile' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
-                            My Profile
-                        </a>
-                    {% endif %}
-                    
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_user_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_user' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
-                            </svg>
-                            Users
-                        </a>
-                    {% endif %}
-                    
-                    {% if is_granted('ROLE_STAFF') %}
-                        <a href="{{ path('app_dashboard_customers') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_customers' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                            </svg>
-                            Customers
-                        </a>
-                    {% endif %}
-                    
-                    {# Activity Logs - Admin Only #}
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('app_activity_log_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_activity_log' %}active{% endif %}">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            Activity Logs
-                        </a>
-                    {% endif %}
-                </nav>
-                
-                <a href="{{ path('app_logout') }}" class="logout-btn">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                    </svg>
-                    Log Out
-                </a>
-            </div>
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>● Carpe Diem</h2>
+        <p>Admin Panel</p>
+    </div>
+
+    <nav class="sidebar-menu">
+        {% if is_granted('ROLE_STAFF') %}
+        <span class="menu-label">Main</span>
+            <a href="{{ path('app_dashboard_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_index' %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                Dashboard
+            </a>
+            <a href="{{ path('app_order_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_order' %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+                Orders
+            </a>
+        {% endif %}
+
+        {% if is_granted('ROLE_ADMIN') %}
+        <span class="menu-label">Management</span>
+            <a href="{{ path('app_dashboard_products') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_product' %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+                Products
+            </a>
+        {% endif %}
+
+        {% if is_granted('ROLE_STAFF') %}
+            <a href="{{ path('app_dashboard_stocks') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_stock' %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                Stocks
+            </a>
+            <a href="{{ path('app_dashboard_customers') }}" class="menu-item {% if app.request.get('_route') starts with 'app_dashboard_customers' %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                Customers
+            </a>
+        {% endif %}
+
+        {% if is_granted('ROLE_ADMIN') %}
+        <span class="menu-label">Admin</span>
+            <a href="{{ path('app_user_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_user' %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                Users
+            </a>
+            <a href="{{ path('app_activity_log_index') }}" class="menu-item {% if app.request.get('_route') starts with 'app_activity_log' %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                Activity Logs
+            </a>
+        {% endif %}
+
+        {% if is_granted('ROLE_USER') %}
+        <span class="menu-label">Account</span>
+            <a href="{{ path('app_profile') }}" class="menu-item {% if app.request.get('_route') starts with 'app_profile' %}active{% endif %}">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                </svg>
+                My Profile
+            </a>
+        {% endif %}
+    </nav>
+
+    <div class="sidebar-footer">
+        <a href="{{ path('app_logout') }}" class="logout-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:18px;height:18px;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+            Log Out
+        </a>
+    </div>
+</div>
         {% endif %}
 
         <!-- Main content area -->
-        <div class="main-content {% if app.user %}with-sidebar{% endif %}">
+        <div class="main-content {% if app.user and app.request.get('_route') not in ['app_home', 'app_our_products', 'app_about', 'app_our_things', 'app_why_choose', 'app_contact'] %}with-sidebar{% endif %}">
             {% block body %}{% endblock %}
         </div>
     </div>
+
+    <footer class="bg-light text-center text-muted py-3">
+    <div class="container">
+        <p class="mb-1">© {{ "now"|date('Y') }} Carpe Diem Cafe. All rights reserved.</p>
+        <small>
+            Quickly: <a href="{{ path('app_about') }}">About</a> • <a href="{{ path('app_contact') }}">Contact</a> • <a href="{{ path('app_our_products') }}">Product</a> • <a href="{{ path('app_why_choose') }}">Why choose</a>
+        </small>
+    </div>
+</footer>
     
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

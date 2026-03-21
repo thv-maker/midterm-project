@@ -31,7 +31,7 @@ security:
             entry_point: App\Security\AppCustomAuthenticator
             logout:
                 path: app_logout
-                target: app_login
+                target: app_home
                 invalidate_session: true
                 delete_cookies:
                     - REMEMBERME
@@ -42,10 +42,12 @@ security:
                 always_remember_me: false
 
     access_control:
-        # API routes 
+        # API routes
         - { path: ^/api/, roles: PUBLIC_ACCESS }
-        
-        # Public routes
+
+        # Public pages (unsecured)
+        - { path: ^/$, roles: PUBLIC_ACCESS }
+        - { path: ^/(about-us|contact-us|our-products|our-things|why-choose|admins), roles: PUBLIC_ACCESS }
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         

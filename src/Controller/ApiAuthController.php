@@ -1,9 +1,9 @@
 <?php
-
 namespace App\Controller;
 
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -14,8 +14,12 @@ use Symfony\Component\Routing\Attribute\Route;
 class ApiAuthController extends AbstractController
 {
     #[Route('/login', name: 'api_login', methods: ['POST'])]
-    public function login(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): JsonResponse
-    {
+    public function login(
+        Request $request,
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $passwordHasher,
+        JWTTokenManagerInterface $jwtManager
+    ): JsonResponse {
         $data = json_decode($request->getContent(), true);
         $email = $data['email'] ?? null;
         $password = $data['password'] ?? null;
@@ -30,8 +34,11 @@ class ApiAuthController extends AbstractController
             return $this->json(['message' => 'Invalid credentials'], 401);
         }
 
+        $token = $jwtManager->create($user);
+
         return $this->json([
             'message' => 'Login successful',
+            'token' => $token,
             'user' => [
                 'id' => $user->getId(),
                 'email' => $user->getEmail(),
@@ -41,8 +48,11 @@ class ApiAuthController extends AbstractController
     }
 
     #[Route('/register', name: 'api_register', methods: ['POST'])]
-    public function register(Request $request, EntityManagerInterface $em, UserPasswordHasherInterface $passwordHasher): JsonResponse
-    {
+    public function register(
+        Request $request,
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $passwordHasher
+    ): JsonResponse {
         $data = json_decode($request->getContent(), true);
         $email = $data['email'] ?? null;
         $password = $data['password'] ?? null;
@@ -66,10 +76,6 @@ class ApiAuthController extends AbstractController
 
         return $this->json([
             'message' => 'Registration successful',
-            'user' => [
-                'id' => $user->getId(),
-                'email' => $user->getEmail(),
-            ],
         ], 201);
     }
 }

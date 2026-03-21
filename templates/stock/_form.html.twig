@@ -1,36 +1,49 @@
 {{ form_start(form) }}
-    <div class="form-group">
-        {{ form_label(form.product) }}
-        {{ form_widget(form.product, {'attr': {'class': 'form-control'}}) }}
-        {{ form_errors(form.product) }}
-        <span class="input-help">Choose the product for this stock entry</span>
-    </div>
 
-    <div class="form-row">
-        <div class="form-group">
-            {{ form_label(form.quantity) }}
-            {{ form_widget(form.quantity, {'attr': {'class': 'form-control'}}) }}
+    {# Product #}
+    <label class="sn-label" for="{{ form.product.vars.id }}">
+        <i class="fas fa-coffee"></i> Product
+    </label>
+    {{ form_widget(form.product) }}
+    {{ form_errors(form.product) }}
+    <div class="sn-help"><i class="fas fa-info-circle"></i> Choose the product for this stock entry.</div>
+
+    {# Quantity + Reorder Level #}
+    <div class="sn-row">
+        <div>
+            <label class="sn-label" for="{{ form.quantity.vars.id }}">
+                <i class="fas fa-cubes"></i> Quantity
+            </label>
+            {{ form_widget(form.quantity) }}
             {{ form_errors(form.quantity) }}
-            <span class="input-help">Current stock quantity</span>
+            <div class="sn-help"><i class="fas fa-info-circle"></i> Current stock quantity available.</div>
         </div>
-
-        <div class="form-group">
-            {{ form_label(form.reorderLevel) }}
-            {{ form_widget(form.reorderLevel, {'attr': {'class': 'form-control'}}) }}
+        <div>
+            <label class="sn-label" for="{{ form.reorderLevel.vars.id }}">
+                <i class="fas fa-exclamation-triangle"></i> Reorder Level
+            </label>
+            {{ form_widget(form.reorderLevel) }}
             {{ form_errors(form.reorderLevel) }}
-            <span class="input-help">Minimum quantity before reorder</span>
+            <div class="sn-help"><i class="fas fa-info-circle"></i> Minimum quantity before reorder alert.</div>
         </div>
     </div>
 
-    <div class="form-group">
-        {{ form_label(form.lastUpdated) }}
-        {{ form_widget(form.lastUpdated, {'attr': {'class': 'form-control', 'readonly': true}}) }}
-        {{ form_errors(form.lastUpdated) }}
-        <span class="input-help">Date and time of last stock update</span>
+    {# Last Updated #}
+    <label class="sn-label" for="{{ form.lastUpdated.vars.id }}">
+        <i class="fas fa-clock"></i> Last Updated
+    </label>
+    {{ form_widget(form.lastUpdated, {'attr': {'readonly': true}}) }}
+    {{ form_errors(form.lastUpdated) }}
+    <div class="sn-help"><i class="fas fa-info-circle"></i> Date and time of last stock update.</div>
+
+    {# Actions #}
+    <div class="sn-actions">
+        <button type="submit" class="sn-btn primary">
+            <i class="fas fa-check"></i> {{ button_label|default('Save') }}
+        </button>
+        <a href="{{ path('app_dashboard_stocks') }}" class="sn-btn cancel">
+            <i class="fas fa-times"></i> Cancel
+        </a>
     </div>
 
-    <div class="form-actions">
-        <a href="{{ path('app_dashboard_stocks') }}" class="btn btn-secondary">Cancel</a>
-        <button type="submit" class="btn btn-primary">{{ button_label|default('Save') }}</button>
-    </div>
 {{ form_end(form) }}
