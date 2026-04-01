@@ -36,8 +36,18 @@
     font-family: 'Playfair Display', serif;
     font-size: clamp(38px, 5vw, 64px);
     color: var(--text); margin: 0 0 18px; line-height: 1.1;
+    white-space: nowrap;
 }
-.ot-hero h1 span { color: var(--brown-acc); font-style: italic; }
+.ot-hero h1 span { 
+    color: var(--brown-acc); 
+    font-style: italic;
+    display: inline !important;
+    font-size: inherit !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    font-weight: inherit !important;
+    margin: 0 !important;
+}
 .ot-hero p {
     color: var(--muted); font-size: 15px;
     max-width: 420px; line-height: 1.75; margin: 0;
@@ -190,7 +200,7 @@
         <div style="display:flex; align-items:center; gap:60px; min-height:420px;">
             <div style="flex:0 0 50%;">
                 <span>What We Stand For</span>
-                <h1>Our <span>Things</span></h1>
+                <h1><span style="color:var(--text); font-style:italic;">Our Things</span></h1>
                 <p>Everything we do is about delivering an exceptional café experience — from the bean to the cup, with full transparency every step of the way.</p>
                 <a href="{{ path('app_contact') }}" style="display:inline-block; background:#3e1f0d; color:#fff; padding:13px 32px; border-radius:40px; font-weight:700; font-size:14px; text-decoration:none; margin-top:20px;">Visit Us Today</a>
             </div>

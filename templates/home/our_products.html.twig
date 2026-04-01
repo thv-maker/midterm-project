@@ -47,9 +47,14 @@
     line-height: 1.1;
 }
 .pg-hero h1 span {
-    color: var(--brown-acc);
+    color: var(--text) !important;
     font-style: italic;
-    display: inline;
+    display: inline !important;
+    font-size: inherit !important;
+    letter-spacing: normal !important;
+    text-transform: none !important;
+    font-weight: inherit !important;
+    margin: 0 !important;
 }
     /* ── FILTER TABS ── */
     .pg-tabs {
@@ -171,7 +176,7 @@
         <div style="display:flex; align-items:center; gap:60px; min-height:420px;">
             <div style="flex:0 0 50%; padding-top:0;">
                 <span>What We Serve</span>
-                <h1>Enjoy our <span>Delicious</span><br>Menu</h1>
+                <h1><span>Enjoy our Delicious</span><br><span>Menu</span></h1>
                 <p>Every drink comes with full nutrition facts — because great coffee should be delicious and 100% transparent.</p>
                 <a href="{{ path('app_our_products') }}" style="display:inline-block; background:#3e1f0d; color:#fff; padding:13px 32px; border-radius:40px; font-weight:700; font-size:14px; text-decoration:none; margin-top:10px;">Explore Menu</a>
             </div>
