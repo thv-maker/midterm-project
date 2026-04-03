@@ -43,8 +43,12 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
         $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
         
         if ($user && !$user->isActive()) {
-            throw new CustomUserMessageAuthenticationException('Your account has been deactivated. Please contact administrator.');
-        }
+    throw new CustomUserMessageAuthenticationException('Your account has been deactivated. Please contact administrator.');
+}
+
+if ($user && !$user->isVerified()) {
+    throw new CustomUserMessageAuthenticationException('Please verify your email address before logging in. Check your inbox for the verification link.');
+}
 
         return new Passport(
             new UserBadge($email),

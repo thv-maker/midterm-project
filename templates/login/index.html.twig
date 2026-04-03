@@ -10,10 +10,10 @@
         <p style="text-align: center; color: #666; margin-bottom: 2rem;">Please sign in to continue</p>
 
         {% if error %}
-            <div style="background: #fee; border: 1px solid #fcc; color: #c33; padding: 1rem; border-radius: 5px; margin-bottom: 1rem;">
-                {{ error.messageKey|trans(error.messageData, 'security') }}
-            </div>
-        {% endif %}
+    <div style="background: #fee; border: 1px solid #fcc; color: #c33; padding: 1rem; border-radius: 5px; margin-bottom: 1rem;">
+        {{ error.message }}
+    </div>
+{% endif %}
 
         <form method="post" action="{{ path('app_login') }}">
             
