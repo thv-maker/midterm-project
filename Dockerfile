@@ -44,16 +44,16 @@ RUN echo '<VirtualHost *:80>\n\
     ServerName localhost\n\
     DocumentRoot /app/public\n\
     <Directory /app/public>\n\
-        Options FollowSymlinks\n\
-        AllowOverride All\n\
-        Require all granted\n\
+    Options FollowSymlinks\n\
+    AllowOverride All\n\
+    Require all granted\n\
     </Directory>\n\
     <FilesMatch \.php$>\n\
-        SetHandler application/x-httpd-php\n\
+    SetHandler application/x-httpd-php\n\
     </FilesMatch>\n\
     ErrorLog ${APACHE_LOG_DIR}/symfony_error.log\n\
     CustomLog ${APACHE_LOG_DIR}/symfony_access.log combined\n\
-</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+    </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
 # Enable the default site
 RUN a2ensite 000-default
