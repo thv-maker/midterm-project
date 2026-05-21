@@ -19,9 +19,25 @@ final class Version20251214024235 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
+        if ($schema->hasTable('user')) {
+            return;
+        }
+
+        if ($schema->hasTable('users')) {
+            $this->addSql('RENAME TABLE users TO `user`');
+            $this->addSql('ALTER TABLE `user` DROP first_name, DROP last_name, DROP username, DROP created_at, DROP updated_at, CHANGE is_active is_active TINYINT(1) DEFAULT 1 NOT NULL');
+
+            return;
+        }
+
+        if ($schema->hasTable('cafe_users')) {
+            $this->addSql('RENAME TABLE cafe_users TO `user`');
+            $this->addSql('ALTER TABLE `user` DROP first_name, DROP last_name, DROP phone, DROP created_at, CHANGE last_login_at last_login DATETIME DEFAULT NULL, CHANGE is_active is_active TINYINT(1) DEFAULT 1 NOT NULL');
+
+            return;
+        }
+
         $this->addSql('CREATE TABLE `user` (id INT AUTO_INCREMENT NOT NULL, email VARCHAR(180) NOT NULL, roles JSON NOT NULL, password VARCHAR(255) NOT NULL, is_active TINYINT(1) DEFAULT 1 NOT NULL, last_login DATETIME DEFAULT NULL, UNIQUE INDEX UNIQ_IDENTIFIER_EMAIL (email), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('DROP TABLE users');
     }
 
     public function down(Schema $schema): void

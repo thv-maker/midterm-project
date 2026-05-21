@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260305035643 extends AbstractMigration
+final class Version20260521134414 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -28,6 +28,7 @@ final class Version20260305035643 extends AbstractMigration
         $this->addSql('ALTER TABLE activity_log DROP FOREIGN KEY FK_FD06F647A76ED395');
         $this->addSql('ALTER TABLE `order` DROP FOREIGN KEY FK_F52993989395C3F3');
         $this->addSql('ALTER TABLE stock DROP FOREIGN KEY FK_4B3656604584665A');
+        $this->addSql('ALTER TABLE stock DROP FOREIGN KEY FK_4B365660B03A8386');
         $this->addSql('DROP TABLE activity_log');
         $this->addSql('DROP TABLE customer');
         $this->addSql('DROP TABLE `order`');

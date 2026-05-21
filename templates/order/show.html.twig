@@ -1,271 +1,411 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Order Details{% endblock %}
+{% block title %}Order Details
+{% endblock %}
 
 {% block stylesheets %}
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-    :root {
-        --brown-dark:  #3e1f0d;
-        --brown-mid:   #6d4c41;
-        --brown-acc:   #8B5E3C;
-        --brown-light: #c49a6c;
-        --cream:       #faf7f4;
-        --cream2:      #f3ece4;
-        --white:       #ffffff;
-        --text:        #2b1a0f;
-        --muted:       #9e8070;
-    }
+	<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+	<style>:root
+	{
+		--brown-dark: #3e1f0d;
+		--brown-mid: #6d4c41;
+		--brown-acc: #8B5E3C;
+		--brown-light: #c49a6c;
+		--cream: #faf7f4;
+		--cream2: #f3ece4;
+		--white: #ffffff;
+		--text: #2b1a0f;
+		--muted: #9e8070;
+	}
 
-    body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
+	body {
+		font-family: 'DM Sans', sans-serif;
+		background: var(--cream);
+		color: var(--text);
+	}
 
-    .os-wrap { padding: 32px 36px; }
+	.os-wrap {
+		padding: 32px 36px;
+	}
 
-    .os-header {
-        background: var(--brown-dark);
-        border-radius: 18px;
-        padding: 28px 32px;
-        margin-bottom: 24px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: relative;
-        overflow: hidden;
-    }
-    .os-header::before {
-        content: '';
-        position: absolute;
-        top: -60px; right: -60px;
-        width: 200px; height: 200px;
-        border-radius: 50%;
-        background: rgba(255,255,255,.04);
-    }
-    .os-header h1 {
-        font-family: 'Playfair Display', serif;
-        font-size: 24px;
-        color: #fff;
-        margin: 0 0 4px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    .os-header p { font-size: 13px; color: rgba(255,255,255,.55); margin: 0; }
-    .os-back {
-        background: rgba(255,255,255,.1);
-        border: 1.5px solid rgba(255,255,255,.15);
-        color: #fff;
-        padding: 10px 22px;
-        border-radius: 30px;
-        text-decoration: none;
-        font-size: 13px;
-        font-weight: 600;
-        transition: background .2s;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        position: relative; z-index: 1;
-    }
-    .os-back:hover { background: rgba(255,255,255,.18); color: #fff; }
+	.os-header {
+		background: var(--brown-dark);
+		border-radius: 18px;
+		padding: 28px 32px;
+		margin-bottom: 24px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		position: relative;
+		overflow: hidden;
+	}
+	.os-header::before {
+		content: '';
+		position: absolute;
+		top: -60px;
+		right: -60px;
+		width: 200px;
+		height: 200px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.04);
+	}
+	.os-header h1 {
+		font-family: 'Playfair Display', serif;
+		font-size: 24px;
+		color: #fff;
+		margin: 0 0 4px;
+		font-weight: 700;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	.os-header p {
+		font-size: 13px;
+		color: rgba(255, 255, 255, 0.55);
+		margin: 0;
+	}
+	.os-back {
+		background: rgba(255, 255, 255, 0.1);
+		border: 1.5px solid rgba(255, 255, 255, 0.15);
+		color: #fff;
+		padding: 10px 22px;
+		border-radius: 30px;
+		text-decoration: none;
+		font-size: 13px;
+		font-weight: 600;
+		transition: background 0.2s;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		position: relative;
+		z-index: 1;
+	}
+	.os-back:hover {
+		background: rgba(255, 255, 255, 0.18);
+		color: #fff;
+	}
 
-    .os-receipt {
-        background: var(--white);
-        border-radius: 16px;
-        padding: 36px;
-        box-shadow: 0 2px 12px rgba(0,0,0,.05);
-    }
+	.os-receipt {
+		background: var(--white);
+		border-radius: 16px;
+		padding: 36px;
+		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+	}
 
-    .os-receipt-top {
-        text-align: center;
-        padding-bottom: 24px;
-        border-bottom: 1.5px solid var(--cream2);
-        margin-bottom: 28px;
-    }
-    .os-brand {
-        font-family: 'Playfair Display', serif;
-        font-size: 28px;
-        color: var(--brown-dark);
-        font-weight: 700;
-        margin-bottom: 4px;
-    }
-    .os-order-num {
-        font-size: 15px;
-        color: var(--brown-acc);
-        font-weight: 700;
-        letter-spacing: 1px;
-    }
+	.os-receipt-top {
+		text-align: center;
+		padding-bottom: 24px;
+		border-bottom: 1.5px solid var(--cream2);
+		margin-bottom: 28px;
+	}
+	.os-brand {
+		font-family: 'Playfair Display', serif;
+		font-size: 28px;
+		color: var(--brown-dark);
+		font-weight: 700;
+		margin-bottom: 4px;
+	}
+	.os-order-num {
+		font-size: 15px;
+		color: var(--brown-acc);
+		font-weight: 700;
+		letter-spacing: 1px;
+	}
 
-    .os-info-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-        margin-bottom: 28px;
-    }
-    .os-info-item {
-        background: var(--cream);
-        border-radius: 12px;
-        padding: 16px 18px;
-        border: 1.5px solid var(--cream2);
-    }
-    .os-info-label {
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        color: var(--muted);
-        margin-bottom: 6px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .os-info-label i { color: var(--brown-light); font-size: 11px; }
-    .os-info-value { font-size: 15px; color: var(--text); font-weight: 700; }
+	.os-info-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 14px;
+		margin-bottom: 28px;
+	}
+	.os-info-item {
+		background: var(--cream);
+		border-radius: 12px;
+		padding: 16px 18px;
+		border: 1.5px solid var(--cream2);
+	}
+	.os-info-label {
+		font-size: 10px;
+		font-weight: 700;
+		letter-spacing: 2px;
+		text-transform: uppercase;
+		color: var(--muted);
+		margin-bottom: 6px;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.os-info-label i {
+		color: var(--brown-light);
+		font-size: 11px;
+	}
+	.os-info-value {
+		font-size: 15px;
+		color: var(--text);
+		font-weight: 700;
+	}
 
-    .os-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 5px 14px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 700;
-        text-transform: uppercase;
-    }
-    .os-badge.pending   { background: #fff3e0; color: #f57c00; }
-    .os-badge.completed { background: #e8f5e9; color: #2e7d32; }
-    .os-badge.cancelled { background: #ffebee; color: #c62828; }
+	.os-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 5px;
+		padding: 5px 14px;
+		border-radius: 20px;
+		font-size: 12px;
+		font-weight: 700;
+		text-transform: uppercase;
+	}
+	.os-badge.pending {
+		background: #fff3e0;
+		color: #f57c00;
+	}
+	.os-badge.completed {
+		background: #e8f5e9;
+		color: #2e7d32;
+	}
+	.os-badge.cancelled {
+		background: #ffebee;
+		color: #c62828;
+	}
 
-    .os-total {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px 0;
-        border-top: 2px solid var(--brown-dark);
-        border-bottom: 2px solid var(--brown-dark);
-        margin-bottom: 28px;
-    }
-    .os-total-label { font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
-    .os-total-value { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--brown-dark); }
+	.os-total {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px 0;
+		border-top: 2px solid var(--brown-dark);
+		border-bottom: 2px solid var(--brown-dark);
+		margin-bottom: 28px;
+	}
+	.os-total-label {
+		font-size: 13px;
+		font-weight: 700;
+		letter-spacing: 2px;
+		text-transform: uppercase;
+		color: var(--muted);
+	}
+	.os-total-value {
+		font-family: 'Playfair Display', serif;
+		font-size: 32px;
+		font-weight: 700;
+		color: var(--brown-dark);
+	}
 
-    .os-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
-    .os-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 11px 24px;
-        border-radius: 40px;
-        font-size: 13px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: background .2s, transform .2s;
-        border: none;
-        cursor: pointer;
-        font-family: 'DM Sans', sans-serif;
-    }
-    .os-btn:hover { transform: translateY(-2px); }
-    .os-btn.edit  { background: #fff3e0; color: #e65100; }
-    .os-btn.edit:hover { background: #ffe0b2; }
-    .os-btn.back  { background: var(--cream2); color: var(--brown-dark); }
-    .os-btn.back:hover { background: #e0d4c5; }
-    .os-btn.print { background: #e8f5e9; color: #2e7d32; }
-    .os-btn.print:hover { background: #c8e6c9; }
+	.os-actions {
+		display: flex;
+		gap: 10px;
+		flex-wrap: wrap;
+		margin-bottom: 28px;
+	}
+	.os-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		padding: 11px 24px;
+		border-radius: 40px;
+		font-size: 13px;
+		font-weight: 700;
+		text-decoration: none;
+		transition: background 0.2s, transform 0.2s;
+		border: none;
+		cursor: pointer;
+		font-family: 'DM Sans', sans-serif;
+	}
+	.os-btn:hover {
+		transform: translateY(-2px);
+	}
+	.os-btn.edit {
+		background: #fff3e0;
+		color: #e65100;
+	}
+	.os-btn.edit:hover {
+		background: #ffe0b2;
+	}
+	.os-btn.back {
+		background: var(--cream2);
+		color: var(--brown-dark);
+	}
+	.os-btn.back:hover {
+		background: #e0d4c5;
+	}
+	.os-btn.print {
+		background: #e8f5e9;
+		color: #2e7d32;
+	}
+	.os-btn.print:hover {
+		background: #c8e6c9;
+	}
+	.os-btn.cancel {
+		background: #ffebee;
+		color: #c62828;
+	}
+	.os-btn.cancel:hover {
+		background: #ffcdd2;
+	}
 
-    .os-footer {
-        text-align: center;
-        padding-top: 20px;
-        border-top: 1.5px dashed var(--cream2);
-        color: var(--muted);
-        font-size: 13px;
-        line-height: 1.8;
-    }
-    .os-footer strong { font-family: 'Playfair Display', serif; color: var(--brown-dark); font-size: 15px; }
+	.os-footer {
+		text-align: center;
+		padding-top: 20px;
+		border-top: 1.5px dashed var(--cream2);
+		color: var(--muted);
+		font-size: 13px;
+		line-height: 1.8;
+	}
+	.os-footer strong {
+		font-family: 'Playfair Display', serif;
+		color: var(--brown-dark);
+		font-size: 15px;
+	}
 
-    @media print {
-        body * { visibility: hidden; }
-        .os-receipt, .os-receipt * { visibility: visible; }
-        .os-receipt { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; }
-        .os-actions { display: none; }
-        .os-header { display: none; }
-    }
+	@media print {
+		body * {
+			visibility: hidden;
+		}
+		.os-receipt,
+		.os-receipt * {
+			visibility: visible;
+		}
+		.os-receipt {
+			position: absolute;
+			left: 0;
+			top: 0;
+			width: 100%;
+			box-shadow: none;
+		}
+		.os-actions {
+			display: none;
+		}
+		.os-header {
+			display: none;
+		}
+	}
 
-    @media (max-width: 768px) {
-        .os-info-grid { grid-template-columns: 1fr; }
-        .os-wrap { padding: 20px; }
-    }
-</style>
-{% endblock %}
-
-{% block body %}
+	@media(max-width: 768px) {
+		.os-info-grid {
+			grid-template-columns: 1fr;
+		}
+		.os-wrap {
+			padding: 20px;
+		}
+	}
+</style>{% endblock %}{% block body %}
 <div class="os-wrap">
 
-    <div class="os-header">
-        <div>
-            <h1><i class="fas fa-receipt"></i> Order Details</h1>
-            <p>View complete order information and receipt.</p>
-        </div>
-        <a href="{{ path('app_order_index') }}" class="os-back">
-            <i class="fas fa-arrow-left"></i> Back to Orders
-        </a>
-    </div>
+	<div class="os-header">
+		<div>
+			<h1>
+				<i class="fas fa-receipt"></i>
+				Order Details</h1>
+			<p>View complete order information and receipt.</p>
+		</div>
+		<a href="{{ path('app_order_index') }}" class="os-back">
+			<i class="fas fa-arrow-left"></i>
+			Back to Orders
+		</a>
+	</div>
 
-    <div class="os-receipt">
-        <div class="os-receipt-top">
-            <div class="os-brand">● Carpe Diem</div>
-            <div class="os-order-num">Order #{{ order.orderNumber }}</div>
-        </div>
+	<div class="os-receipt">
+		<div class="os-receipt-top">
+			<div class="os-brand">● Carpe Diem</div>
+			<div class="os-order-num">Order #{{ order.orderNumber }}</div>
+		</div>
 
-        <div class="os-info-grid">
-            <div class="os-info-item">
-                <div class="os-info-label"><i class="fas fa-user"></i> Customer</div>
-                <div class="os-info-value">{{ order.customer.name }}</div>
-            </div>
-            <div class="os-info-item">
-                <div class="os-info-label"><i class="far fa-calendar"></i> Date & Time</div>
-                <div class="os-info-value" style="font-size:13px;">{{ order.createdAt|date('M d, Y h:i A') }}</div>
-            </div>
-            <div class="os-info-item">
-                <div class="os-info-label"><i class="fas fa-circle"></i> Status</div>
-                <div class="os-info-value">
-                    {% if order.status == 'pending' %}
-                        <span class="os-badge pending"><i class="fas fa-clock"></i> Pending</span>
-                    {% elseif order.status == 'completed' %}
-                        <span class="os-badge completed"><i class="fas fa-check-circle"></i> Completed</span>
-                    {% else %}
-                        <span class="os-badge cancelled"><i class="fas fa-times-circle"></i> Cancelled</span>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="os-info-item">
-                <div class="os-info-label"><i class="fas fa-peso-sign"></i> Amount</div>
-                <div class="os-info-value" style="font-family:'Playfair Display',serif; font-size:18px;">₱{{ order.total|number_format(2) }}</div>
-            </div>
-        </div>
+		<div class="os-info-grid">
+			<div class="os-info-item">
+				<div class="os-info-label">
+					<i class="fas fa-user"></i>
+					Customer</div>
+				<div class="os-info-value">{{ order.customer.name }}</div>
+			</div>
+			<div class="os-info-item">
+				<div class="os-info-label">
+					<i class="far fa-calendar"></i>
+					Date & Time</div>
+				<div class="os-info-value" style="font-size:13px;">{{ order.createdAt|date('M d, Y h:i A') }}</div>
+			</div>
+			<div class="os-info-item">
+				<div class="os-info-label">
+					<i class="fas fa-circle"></i>
+					Status</div>
+				<div class="os-info-value">
+					{% if order.status == 'pending' %}
+						<span class="os-badge pending">
+							<i class="fas fa-clock"></i>
+							Pending</span>
+					{% elseif order.status == 'completed' %}
+						<span class="os-badge completed">
+							<i class="fas fa-check-circle"></i>
+							Completed</span>
+					{% else %}
+						<span class="os-badge cancelled">
+							<i class="fas fa-times-circle"></i>
+							Cancelled</span>
+					{% endif %}
+				</div>
+			</div>
+			<div class="os-info-item">
+				<div class="os-info-label">
+					<i class="fas fa-peso-sign"></i>
+					Amount</div>
+				<div class="os-info-value" style="font-family:'Playfair Display',serif; font-size:18px;">₱{{ order.total|number_format(2) }}</div>
+			</div>
+			<div class="os-info-item">
+				<div class="os-info-label">
+					<i class="fas fa-credit-card"></i>
+					Payment Method</div>
+				<div class="os-info-value" style="text-transform: uppercase;">{{ order.paymentMethod|default('cash') }}</div>
+			</div>
+			{% if order.paymentMethod == 'gcash' and order.gcashNumber %}
+				<div class="os-info-item">
+					<div class="os-info-label">
+						<i class="fas fa-mobile-alt"></i>
+						GCash Number</div>
+					<div class="os-info-value">{{ order.gcashNumber }}</div>
+				</div>
+			{% elseif order.paymentMethod == 'card' and order.cardType %}
+				<div class="os-info-item">
+					<div class="os-info-label">
+						<i class="fas fa-id-card"></i>
+						Card Type</div>
+					<div class="os-info-value" style="text-transform: uppercase;">{{ order.cardType }}</div>
+				</div>
+			{% endif %}
+		</div>
 
-        <div class="os-total">
-            <span class="os-total-label">Total Paid</span>
-            <span class="os-total-value">₱{{ order.total|number_format(2) }}</span>
-        </div>
+		<div class="os-total">
+			<span class="os-total-label">Total Paid</span>
+			<span class="os-total-value">₱{{ order.total|number_format(2) }}</span>
+		</div>
 
-        <div class="os-actions">
-            {% if order.status == 'pending' %}
-                <a href="{{ path('app_order_edit', {'id': order.id}) }}" class="os-btn edit">
-                    <i class="fas fa-pen"></i> Edit Order
-                </a>
-            {% endif %}
-            <a href="{{ path('app_order_index') }}" class="os-btn back">
-                <i class="fas fa-list"></i> Back to Orders
-            </a>
-            <button onclick="window.print()" class="os-btn print">
-                <i class="fas fa-print"></i> Print Receipt
-            </button>
-        </div>
+		<div class="os-actions">
+			{% if order.status == 'pending' %}
+				<a href="{{ path('app_order_edit', {'id': order.id}) }}" class="os-btn edit">
+					<i class="fas fa-pen"></i>
+					Edit Order
+				</a>
+				<form method="post" action="{{ path('app_order_cancel', {'id': order.id}) }}" onsubmit="return confirm('Cancel this pending order?');">
+					<input type="hidden" name="_token" value="{{ csrf_token('cancel' ~ order.id) }}">
+					<button class="os-btn cancel" type="submit">
+						<i class="fas fa-ban"></i>
+						Cancel Order
+					</button>
+				</form>
+			{% endif %}
+			<a href="{{ path('app_order_index') }}" class="os-btn back">
+				<i class="fas fa-list"></i>
+				Back to Orders
+			</a>
+			<button onclick="window.print()" class="os-btn print">
+				<i class="fas fa-print"></i>
+				Print Receipt
+			</button>
+		</div>
 
-        <div class="os-footer">
-            <strong>Thank you for your order!</strong><br>
-            Carpe Diem Cafe — One cup at a time ☕<br>
-            <small>The only café with full nutrition facts on every drink.</small>
-        </div>
-    </div>
+		<div class="os-footer">
+			<strong>Thank you for your order!</strong><br>
+			Carpe Diem Cafe — One cup at a time ☕<br>
+			<small>The only café with full nutrition facts on every drink.</small>
+		</div>
+	</div>
 
-</div>
-{% endblock %}
+</div>{% endblock %}

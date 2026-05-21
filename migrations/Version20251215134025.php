@@ -19,7 +19,16 @@ final class Version20251215134025 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
+        if (!$schema->hasTable('product')) {
+            return;
+        }
+
+        $productTable = $schema->getTable('product');
+
+        if ($productTable->hasColumn('category') || !$productTable->hasColumn('type')) {
+            return;
+        }
+
         $this->addSql('ALTER TABLE product CHANGE type category VARCHAR(255) NOT NULL');
     }
 

@@ -1,29 +1,20 @@
 <?php
+
 namespace App\Controller;
 
 use App\Entity\Product;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
 
 #[Route('/api', name: 'api_')]
 class ApiAuthController extends AbstractController
 {
-    public function __construct(
-        private VerifyEmailHelperInterface $verifyEmailHelper,
-        private MailerInterface $mailer,
-    ) {
-    }
-
     private function success(string $message, array $data = [], int $status = 200): JsonResponse
     {
         return $this->json([
@@ -101,7 +92,8 @@ class ApiAuthController extends AbstractController
     public function register(
         Request $request,
         EntityManagerInterface $em,
-        UserPasswordHasherInterface $passwordHasher
+        UserPasswordHasherInterface $passwordHasher,
+        JWTTokenManagerInterface $jwtManager
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
         $email = $data['email'] ?? null;
@@ -120,35 +112,22 @@ class ApiAuthController extends AbstractController
         $user->setEmail($email);
         $user->setPassword($passwordHasher->hashPassword($user, $password));
         $user->setRoles(['ROLE_USER']);
-        $user->setIsVerified(false);
+        $user->setIsVerified(true);
         $user->setIsActive(true);
 
         $em->persist($user);
         $em->flush();
 
-        $signatureComponents = $this->verifyEmailHelper->generateSignature(
-            'app_verify_email',
-            $user->getId(),
-            $user->getEmail(),
-            ['id' => $user->getId()]
-        );
+        $token = $jwtManager->create($user);
 
-        $emailMessage = (new TemplatedEmail())
-            ->from(new Address('carpediemcafe6@gmail.com', 'Carpe Diem Coffee'))
-            ->to($user->getEmail())
-            ->subject('Please Verify Your Email')
-            ->htmlTemplate('registration/confirmation_email.html.twig')
-            ->context([
-                'signedUrl' => $signatureComponents->getSignedUrl(),
-                'expiresAt' => $signatureComponents->getExpiresAt(),
-            ]);
-
-        $this->mailer->send($emailMessage);
-
-        return $this->success('Registration successful. Please verify your email.', [
-            'userId' => $user->getId(),
-            'email' => $user->getEmail(),
-            'isVerified' => $user->isVerified(),
+        return $this->success('Registration successful.', [
+            'token' => $token,
+            'user' => [
+                'id' => $user->getId(),
+                'email' => $user->getEmail(),
+                'roles' => $user->getRoles(),
+                'isVerified' => $user->isVerified(),
+            ],
         ], 201);
     }
 

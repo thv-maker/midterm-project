@@ -19,7 +19,10 @@ final class Version20260520094050 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
+        if (!$schema->hasTable('stock') || $schema->getTable('stock')->hasColumn('created_by_id')) {
+            return;
+        }
+
         $this->addSql('ALTER TABLE stock ADD created_by_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE stock ADD CONSTRAINT FK_4B365660B03A8386 FOREIGN KEY (created_by_id) REFERENCES `user` (id)');
         $this->addSql('CREATE INDEX IDX_4B365660B03A8386 ON stock (created_by_id)');

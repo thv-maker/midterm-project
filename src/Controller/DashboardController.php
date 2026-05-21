@@ -27,50 +27,52 @@ final class DashboardController extends AbstractController
         StockRepository $stockRepository,
         CustomerRepository $customerRepository,
         OrderRepository $orderRepository
-    ): Response
-    {
+    ): Response {
         // Count total products
         $totalProducts = $productRepository->count([]);
-        
+
         // Get stock summary
         $stockSummary = $stockRepository->getStockSummary();
         $totalStocks = $stockSummary['totalItems'];
-        
+
         // Count total customers
         $totalCustomers = $customerRepository->count([]);
-        
+
         // Get total revenue
         $totalRevenue = $orderRepository->getTotalRevenue();
-        
+
         // Get revenue change data
         $revenueChangeData = $orderRepository->getRevenueChangePercentage();
         $todayRevenue = $revenueChangeData['today'];
         $yesterdayRevenue = $revenueChangeData['yesterday'];
         $revenueChange = $revenueChangeData['change'];
         $isRevenueIncrease = $revenueChangeData['isIncrease'];
-        
+
         // Get sales data for chart (last 7 days)
         $salesData = $orderRepository->getSalesDataLast7Days();
-        
+
         // Get recent orders
         $recentOrders = $orderRepository->getRecentOrders(5);
-        
+
         // Get today's orders count
         $todayOrdersCount = $orderRepository->countTodayOrders();
-        
+
         // Get recent products (last 5)
         $recentProducts = $productRepository->findBy(
             [],
             ['id' => 'DESC'],
             5
         );
-        
+
         // Get low stock items (quantity <= reorder level)
         $lowStockItems = $stockRepository->findLowStockItems(5);
-        
+
         // Get out of stock items
         $outOfStockItems = $stockRepository->findOutOfStockItems(5);
-        
+
+        // Get top ordered products by quantity
+        $topOrderedProducts = $orderRepository->getTopOrderedProducts(5);
+
         return $this->render('dashboard/index.html.twig', [
             'totalProducts' => $totalProducts,
             'totalStocks' => $totalStocks,
@@ -86,6 +88,7 @@ final class DashboardController extends AbstractController
             'outOfStockItems' => $outOfStockItems,
             'stockSummary' => $stockSummary,
             'todayOrdersCount' => $todayOrdersCount,
+            'topOrderedProducts' => $topOrderedProducts,
         ]);
     }
 

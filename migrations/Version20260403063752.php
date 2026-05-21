@@ -19,7 +19,10 @@ final class Version20260403063752 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // this up() migration is auto-generated, please modify it to your needs
+        if (!$schema->hasTable('user') || $schema->getTable('user')->hasColumn('is_verified')) {
+            return;
+        }
+
         $this->addSql('ALTER TABLE user ADD is_verified TINYINT(1) DEFAULT 0 NOT NULL');
     }
 

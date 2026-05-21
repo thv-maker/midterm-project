@@ -8,7 +8,7 @@ services:
       MYSQL_USER: dguzman
       MYSQL_PASSWORD: 1234
     ports:
-      - "3306:3306"
+      - "${MYSQL_HOST_PORT:-3307}:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -21,7 +21,7 @@ services:
       PMA_USER: dguzman
       PMA_PASSWORD: 1234
     ports:
-      - "8080:80"
+      - "${PHPMYADMIN_HOST_PORT:-8081}:80"
     depends_on:
       - mysql
     networks:

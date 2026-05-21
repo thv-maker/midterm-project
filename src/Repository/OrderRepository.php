@@ -123,31 +123,31 @@ class OrderRepository extends ServiceEntityRepository
         // Create array for all 7 days
         $salesData = [];
         $currentDate = clone $startDate;
-        
+
         for ($i = 0; $i < 7; $i++) {
             $dateString = $currentDate->format('Y-m-d');
             $dayName = $currentDate->format('D'); // Mon, Tue, etc.
-            
+
             // Find matching result
             $dayTotal = 0;
             foreach ($results as $result) {
                 // Convert string date to DateTime object for comparison
-                $resultDateString = is_string($result['date']) 
-                    ? $result['date'] 
+                $resultDateString = is_string($result['date'])
+                    ? $result['date']
                     : $result['date']->format('Y-m-d');
-                
+
                 if ($resultDateString === $dateString) {
                     $dayTotal = (float) $result['total'];
                     break;
                 }
             }
-            
+
             $salesData[] = [
                 'date' => $dateString,
                 'day' => $dayName,
                 'total' => $dayTotal
             ];
-            
+
             $currentDate->modify('+1 day');
         }
 
@@ -193,14 +193,36 @@ class OrderRepository extends ServiceEntityRepository
     {
         $todayRevenue = $this->getTodayRevenue();
         $yesterdayRevenue = $this->getYesterdayRevenue();
-        
+
         $percentageChange = $this->calculatePercentageChange($todayRevenue, $yesterdayRevenue);
-        
+
         return [
             'today' => $todayRevenue,
             'yesterday' => $yesterdayRevenue,
             'change' => $percentageChange,
             'isIncrease' => $percentageChange >= 0
         ];
+    }
+
+    /**
+     * Returns products ranked by total ordered quantity.
+     */
+    public function getTopOrderedProducts(int $limit = 5): array
+    {
+        return $this->createQueryBuilder('o')
+            ->select('p.id AS product_id')
+            ->addSelect('p.name AS product_name')
+            ->addSelect('SUM(oi.quantity) AS total_quantity')
+            ->addSelect('COUNT(DISTINCT c.id) AS customer_count')
+            ->innerJoin('o.orderItems', 'oi')
+            ->innerJoin('oi.product', 'p')
+            ->innerJoin('o.customer', 'c')
+            ->where('o.status != :cancelled')
+            ->setParameter('cancelled', 'cancelled')
+            ->groupBy('p.id, p.name')
+            ->orderBy('total_quantity', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getArrayResult();
     }
 }

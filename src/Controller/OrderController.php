@@ -6,6 +6,7 @@ use App\Entity\Order;
 use App\Repository\OrderRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\ProductRepository;
+use App\Service\OrderWorkflowService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,14 +29,17 @@ class OrderController extends AbstractController
     #[Route('/new', name: 'app_order_new', methods: ['GET', 'POST'])]
     public function new(
         Request $request,
-        EntityManagerInterface $entityManager,
         CustomerRepository $customerRepository,
-        ProductRepository $productRepository
+        ProductRepository $productRepository,
+        OrderWorkflowService $orderWorkflowService,
     ): Response {
         if ($request->isMethod('POST')) {
             $customerId = $request->request->get('customer_id');
             $products = $request->request->all('products') ?? [];
-            
+            $paymentMethod = (string) $request->request->get('payment_method', 'cash');
+            $gcashNumber = $request->request->get('gcash_number');
+            $cardType = $request->request->get('card_type');
+
             if (empty($customerId) || empty($products)) {
                 $this->addFlash('error', 'Please select a customer and at least one product.');
                 return $this->redirectToRoute('app_order_new');
@@ -47,27 +51,18 @@ class OrderController extends AbstractController
                 return $this->redirectToRoute('app_order_new');
             }
 
-            // Calculate total
-            $total = 0;
-            foreach ($products as $productData) {
-                if (!empty($productData['id']) && !empty($productData['quantity'])) {
-                    $product = $productRepository->find($productData['id']);
-                    if ($product) {
-                        $total += $product->getPrice() * (int)$productData['quantity'];
-                    }
-                }
+            try {
+                $order = $orderWorkflowService->createOrder(
+                    $customer,
+                    $products,
+                    $paymentMethod,
+                    is_string($gcashNumber) ? $gcashNumber : null,
+                    is_string($cardType) ? $cardType : null,
+                );
+            } catch (\InvalidArgumentException | \RuntimeException $exception) {
+                $this->addFlash('error', $exception->getMessage());
+                return $this->redirectToRoute('app_order_new');
             }
-
-            // Create order
-            $order = new Order();
-            $order->setOrderNumber('ORD-' . strtoupper(uniqid()));
-            $order->setCustomer($customer);
-            $order->setTotal($total);
-            $order->setStatus('pending');
-            $order->setCreatedAt(new \DateTimeImmutable());
-
-            $entityManager->persist($order);
-            $entityManager->flush();
 
             $this->addFlash('success', 'Order created successfully!');
             return $this->redirectToRoute('app_order_show', ['id' => $order->getId()]);
@@ -88,7 +83,7 @@ class OrderController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_order_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Order $order, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Order $order, OrderWorkflowService $orderWorkflowService): Response
     {
         // Only allow editing if order is pending
         if ($order->getStatus() !== 'pending') {
@@ -98,12 +93,20 @@ class OrderController extends AbstractController
 
         if ($request->isMethod('POST')) {
             $status = $request->request->get('status');
-            
-            if (in_array($status, ['pending', 'completed', 'cancelled'])) {
-                $order->setStatus($status);
-                $entityManager->flush();
 
-                $this->addFlash('success', 'Order updated successfully!');
+            if (in_array($status, ['pending', 'completed', 'cancelled'], true)) {
+                try {
+                    $orderWorkflowService->updateOrderStatus($order, $status);
+                } catch (\InvalidArgumentException | \RuntimeException $exception) {
+                    $this->addFlash('error', $exception->getMessage());
+                    return $this->redirectToRoute('app_order_show', ['id' => $order->getId()]);
+                }
+
+                $successMessage = $status === 'completed'
+                    ? 'Order completed and stock updated successfully!'
+                    : 'Order updated successfully!';
+
+                $this->addFlash('success', $successMessage);
                 return $this->redirectToRoute('app_order_show', ['id' => $order->getId()]);
             }
         }
@@ -116,7 +119,7 @@ class OrderController extends AbstractController
     #[Route('/{id}', name: 'app_order_delete', methods: ['POST'])]
     public function delete(Request $request, Order $order, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$order->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $order->getId(), $request->request->get('_token'))) {
             // Only allow deleting pending orders
             if ($order->getStatus() === 'pending') {
                 $entityManager->remove($order);
@@ -128,5 +131,28 @@ class OrderController extends AbstractController
         }
 
         return $this->redirectToRoute('app_order_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/cancel', name: 'app_order_cancel', methods: ['POST'])]
+    public function cancel(Request $request, Order $order, OrderWorkflowService $orderWorkflowService): Response
+    {
+        if (!$this->isCsrfTokenValid('cancel' . $order->getId(), $request->request->get('_token'))) {
+            return $this->redirectToRoute('app_order_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        if ($order->getStatus() !== 'pending') {
+            $this->addFlash('error', 'Only pending orders can be cancelled.');
+            return $this->redirectToRoute('app_order_show', ['id' => $order->getId()]);
+        }
+
+        try {
+            $orderWorkflowService->updateOrderStatus($order, 'cancelled');
+        } catch (\InvalidArgumentException | \RuntimeException $exception) {
+            $this->addFlash('error', $exception->getMessage());
+            return $this->redirectToRoute('app_order_show', ['id' => $order->getId()]);
+        }
+
+        $this->addFlash('success', 'Order cancelled successfully!');
+        return $this->redirectToRoute('app_order_show', ['id' => $order->getId()]);
     }
 }
