@@ -29,8 +29,9 @@ WORKDIR /app
 # Copy application files
 COPY . .
 
-# Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+# Install PHP dependencies (allow superuser and skip scripts)
+ENV COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Create necessary directories with proper permissions
 RUN mkdir -p var/cache var/log public/bundles \
