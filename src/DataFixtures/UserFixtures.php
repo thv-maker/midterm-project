@@ -23,6 +23,7 @@ class UserFixtures extends Fixture
         $admin->setEmail('admin@carpediem.com');
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setIsActive(true);
+        $admin->setIsVerified(true);
         $hashedPassword = $this->passwordHasher->hashPassword(
             $admin,
             'Admin123!'
@@ -35,6 +36,7 @@ class UserFixtures extends Fixture
         $staff->setEmail('staff@carpediem.com');
         $staff->setRoles(['ROLE_STAFF']);
         $staff->setIsActive(true);
+        $staff->setIsVerified(true);
         $hashedPassword = $this->passwordHasher->hashPassword(
             $staff,
             'Staff123!'
@@ -47,6 +49,7 @@ class UserFixtures extends Fixture
         $customer->setEmail('customer@carpediem.com');
         $customer->setRoles(['ROLE_USER']);
         $customer->setIsActive(true);
+        $customer->setIsVerified(true);
         $hashedPassword = $this->passwordHasher->hashPassword(
             $customer,
             'Customer123!'

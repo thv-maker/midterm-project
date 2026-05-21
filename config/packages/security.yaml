@@ -27,7 +27,9 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticator: App\Security\AppCustomAuthenticator
+            custom_authenticators:
+                - App\Security\AppCustomAuthenticator
+                - App\Security\GoogleAuthenticator
             entry_point: App\Security\AppCustomAuthenticator
             logout:
                 path: app_logout
@@ -45,20 +47,23 @@ security:
         # API routes
         - { path: ^/api/, roles: PUBLIC_ACCESS }
 
+        # Google OAuth routes
+        - { path: ^/connect/google, roles: PUBLIC_ACCESS }
+
         # Public pages (unsecured)
         - { path: ^/$, roles: PUBLIC_ACCESS }
         - { path: ^/(about-us|contact-us|our-products|our-things|why-choose|admins), roles: PUBLIC_ACCESS }
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
-        
+
         # Admin only routes
         - { path: ^/dashboard/product/new, roles: ROLE_ADMIN }
         - { path: ^/dashboard/product/\d+/edit, roles: ROLE_ADMIN }
         - { path: ^/dashboard/products, roles: ROLE_ADMIN }
-        
+
         # Staff and Admin routes
         - { path: ^/dashboard, roles: ROLE_STAFF }
         - { path: ^/dashboard/product/\d+, roles: ROLE_STAFF }
-        
+
         # User routes (all authenticated users)
         - { path: ^/profile, roles: ROLE_USER }

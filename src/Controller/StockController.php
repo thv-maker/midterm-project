@@ -22,26 +22,27 @@ class StockController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_dashboard_stock_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $stock = new Stock();
-        $form = $this->createForm(StockType::class, $stock);
-        $form->handleRequest($request);
+   #[Route('/new', name: 'app_dashboard_stock_new', methods: ['GET', 'POST'])]
+public function new(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $stock = new Stock();
+    $form = $this->createForm(StockType::class, $stock);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($stock);
-            $entityManager->flush();
+    if ($form->isSubmitted() && $form->isValid()) {
+        $stock->setCreatedBy($this->getUser()); // 👈 added
+        $entityManager->persist($stock);
+        $entityManager->flush();
 
-            $this->addFlash('success', 'Stock created successfully!');
-            return $this->redirectToRoute('app_dashboard_stocks', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('stock/new.html.twig', [
-            'stock' => $stock,
-            'form' => $form,
-        ]);
+        $this->addFlash('success', 'Stock created successfully!');
+        return $this->redirectToRoute('app_dashboard_stocks', [], Response::HTTP_SEE_OTHER);
     }
+
+    return $this->render('stock/new.html.twig', [
+        'stock' => $stock,
+        'form' => $form,
+    ]);
+}
 
     #[Route('/{id}', name: 'app_dashboard_stock_show', methods: ['GET'])]
     public function show(Stock $stock): Response

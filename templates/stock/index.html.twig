@@ -295,6 +295,7 @@
                             <th>Reorder Level</th>
                             <th>Status</th>
                             <th>Last Updated</th>
+                            <th>Added By</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -334,6 +335,12 @@
                                     {{ stock.lastUpdated|date('M d, Y') }}
                                 </span>
                             </td>
+                            <td>
+    <span style="color:var(--muted); font-size:13px;">
+        <i class="fas fa-user" style="margin-right:4px;"></i>
+        {{ stock.createdBy ? stock.createdBy.email : 'Unknown' }}
+    </span>
+</td>
                             <td>
                                 <div class="sm-actions">
                                     <a href="{{ path('app_dashboard_stock_show', {'id': stock.id}) }}" class="sm-btn view">

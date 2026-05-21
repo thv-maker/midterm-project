@@ -27,7 +27,6 @@
             padding: 2rem;
         }
 
-        /* Page Header */
         .page-header {
             background: white;
             padding: 1.5rem 2rem;
@@ -43,7 +42,6 @@
             margin: 0;
         }
 
-        /* Product Header Section */
         .product-header {
             background: white;
             padding: 2rem;
@@ -81,7 +79,6 @@
             margin-bottom: 2rem;
         }
 
-        /* Price Section */
         .price-section {
             background: #FAFAFA;
             padding: 2.5rem;
@@ -97,7 +94,6 @@
             margin: 0;
         }
 
-        /* Information Grid */
         .info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
@@ -148,7 +144,6 @@
             text-align: right;
         }
 
-        /* Status Badge */
         .status-badge {
             display: inline-block;
             padding: 0.35rem 0.9rem;
@@ -168,7 +163,6 @@
             color: #2E7D32;
         }
 
-        /* Edit Button Section */
         .edit-section {
             background: white;
             padding: 2rem;
@@ -201,7 +195,6 @@
             box-shadow: 0 4px 12px var(--shadow);
         }
 
-        /* Danger Zone */
         .danger-zone {
             background: #FFF5F5;
             padding: 2rem;
@@ -253,26 +246,21 @@
 
 {% block body %}
     <div class="container">
-        <!-- Page Header -->
         <div class="page-header">
             <h1>Stock Details</h1>
         </div>
 
-        <!-- Product Header -->
         <div class="product-header">
             <div class="product-title-row">
                 <h2 class="product-title">{{ stock.product.name }}</h2>
                 <span class="product-category">{{ stock.product.category ?? 'Frappe' }}</span>
             </div>
             <div class="product-id">ID: #{{ stock.id }}</div>
-
-            <!-- Price Display -->
             <div class="price-section">
                 <div class="price">₱120.00</div>
             </div>
         </div>
 
-        <!-- Information Grid -->
         <div class="info-grid">
             <!-- Product Information -->
             <div class="info-card">
@@ -313,17 +301,19 @@
                     <span class="info-label">Last Updated</span>
                     <span class="info-value">{{ stock.lastUpdated ? stock.lastUpdated|date('M d, Y - h:i A') : 'N/A' }}</span>
                 </div>
+                <div class="info-row">
+                    <span class="info-label">Added By</span>
+                    <span class="info-value">{{ stock.createdBy ? stock.createdBy.email : 'Unknown' }}</span>
+                </div>
             </div>
         </div>
 
-        <!-- Edit Button -->
         <div class="edit-section">
             <a href="{{ path('app_dashboard_stock_edit', {'id': stock.id}) }}" class="btn-edit">
                 ✏️ Edit Product
             </a>
         </div>
 
-        <!-- Danger Zone -->
         <div class="danger-zone">
             <div class="danger-header">
                 <span>⚠️</span>

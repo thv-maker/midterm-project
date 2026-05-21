@@ -22,7 +22,6 @@
 
     .pd-wrap { padding: 32px 36px; }
 
-    /* ── HEADER ── */
     .pd-header {
         background: var(--brown-dark);
         border-radius: 18px;
@@ -70,14 +69,12 @@
     }
     .pd-add-btn:hover { background: rgba(255,255,255,.2); color: #fff; }
 
-    /* ── GRID ── */
     .pd-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 22px;
     }
 
-    /* ── PRODUCT CARD ── */
     .pd-card {
         background: var(--white);
         border-radius: 18px;
@@ -128,12 +125,11 @@
         margin-bottom: 18px;
     }
 
-    /* nutrition box */
     .pd-nutrition {
         background: var(--cream);
         border-radius: 12px;
         padding: 16px;
-        margin-bottom: 20px;
+        margin-bottom: 14px;
     }
     .pd-nut-title {
         font-size: 10px;
@@ -169,7 +165,22 @@
         color: var(--text);
     }
 
-    /* actions */
+    /* ── STOCK INDICATOR ── */
+    .pd-stock {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        border-radius: 10px;
+        margin-bottom: 16px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+    .pd-stock.healthy { background: #e8f5e9; color: #2e7d32; }
+    .pd-stock.low     { background: #fff3e0; color: #e65100; }
+    .pd-stock.out     { background: #ffebee; color: #c62828; }
+    .pd-stock-left { display: flex; align-items: center; gap: 6px; }
+
     .pd-card-footer {
         display: flex;
         border-top: 1.5px solid var(--cream2);
@@ -201,7 +212,6 @@
     }
     .pd-btn.edit:hover { background: var(--brown-acc); }
 
-    /* empty */
     .pd-empty {
         background: var(--white);
         border-radius: 16px;
@@ -244,6 +254,13 @@
     {% else %}
         <div class="pd-grid">
             {% for product in products %}
+
+            {# ── compute total stock for this product ── #}
+            {% set totalStock = 0 %}
+            {% for stock in product.stocks %}
+                {% set totalStock = totalStock + stock.quantity %}
+            {% endfor %}
+
             <div class="pd-card">
                 <div class="pd-card-body">
                     <div class="pd-card-top">
@@ -270,6 +287,25 @@
                             <span class="pd-nut-value">{{ product.caffeineMg }} mg</span>
                         </div>
                     </div>
+
+                    {# ── STOCK INDICATOR ── #}
+                    {% if product.stocks is empty or totalStock == 0 %}
+                        <div class="pd-stock out">
+                            <span class="pd-stock-left"><i class="fas fa-times-circle"></i> Out of Stock</span>
+                            <span>0 units left</span>
+                        </div>
+                    {% elseif totalStock <= 20 %}
+                        <div class="pd-stock low">
+                            <span class="pd-stock-left"><i class="fas fa-exclamation-triangle"></i> Low Stock</span>
+                            <span>{{ totalStock }} units left</span>
+                        </div>
+                    {% else %}
+                        <div class="pd-stock healthy">
+                            <span class="pd-stock-left"><i class="fas fa-check-circle"></i> In Stock</span>
+                            <span>{{ totalStock }} units left</span>
+                        </div>
+                    {% endif %}
+
                 </div>
 
                 <div class="pd-card-footer">

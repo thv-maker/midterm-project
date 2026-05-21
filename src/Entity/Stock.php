@@ -14,7 +14,7 @@ class Stock
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'stocks')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]  // 👈 ADD onDelete: 'CASCADE' here!
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?Product $product = null;
 
     #[ORM\Column]
@@ -25,6 +25,10 @@ class Stock
 
     #[ORM\Column(nullable: true)]
     private ?\DateTime $lastUpdated = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $createdBy = null;
 
     public function getId(): ?int
     {
@@ -39,7 +43,6 @@ class Stock
     public function setProduct(?Product $product): static
     {
         $this->product = $product;
-
         return $this;
     }
 
@@ -51,7 +54,6 @@ class Stock
     public function setQuantity(int $quantity): static
     {
         $this->quantity = $quantity;
-
         return $this;
     }
 
@@ -63,7 +65,6 @@ class Stock
     public function setReorderLevel(int $reorderLevel): static
     {
         $this->reorderLevel = $reorderLevel;
-
         return $this;
     }
 
@@ -75,7 +76,17 @@ class Stock
     public function setLastUpdated(?\DateTime $lastUpdated): static
     {
         $this->lastUpdated = $lastUpdated;
+        return $this;
+    }
 
+    public function getCreatedBy(): ?User
+    {
+        return $this->createdBy;
+    }
+
+    public function setCreatedBy(?User $createdBy): static
+    {
+        $this->createdBy = $createdBy;
         return $this;
     }
 
