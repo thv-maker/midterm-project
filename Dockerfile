@@ -20,8 +20,9 @@ RUN docker-php-ext-install \
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 
-# Enable Apache mod_rewrite for Symfony
-RUN a2enmod rewrite
+# Configure Apache for Symfony
+RUN a2dismod mpm_event mpm_worker 2>/dev/null || true && \
+    a2enmod mpm_prefork rewrite
 
 # Set working directory
 WORKDIR /app
@@ -38,27 +39,24 @@ RUN mkdir -p var/cache var/log public/bundles \
     && chown -R www-data:www-data var public \
     && chmod -R 775 var public
 
-# Configure Apache for Symfony
-RUN echo '<Directory /app/public>\n\
-    Options FollowSymlinks\n\
-    AllowOverride All\n\
-    Require all granted\n\
-    </Directory>' > /etc/apache2/sites-available/symfony.conf
-
+# Configure Apache VirtualHost for Symfony
 RUN echo '<VirtualHost *:80>\n\
-    ServerAdmin admin@example.com\n\
+    ServerName localhost\n\
     DocumentRoot /app/public\n\
     <Directory /app/public>\n\
-    Options FollowSymlinks\n\
-    AllowOverride All\n\
-    Require all granted\n\
+        Options FollowSymlinks\n\
+        AllowOverride All\n\
+        Require all granted\n\
     </Directory>\n\
+    <FilesMatch \.php$>\n\
+        SetHandler application/x-httpd-php\n\
+    </FilesMatch>\n\
     ErrorLog ${APACHE_LOG_DIR}/symfony_error.log\n\
     CustomLog ${APACHE_LOG_DIR}/symfony_access.log combined\n\
-    </VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
 
-# Enable the site
-RUN a2dissite 000-default || true && a2ensite 000-default
+# Enable the default site
+RUN a2ensite 000-default
 
 # Expose port 80
 EXPOSE 80
