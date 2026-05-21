@@ -1,0 +1,16 @@
+{
+  "build": {
+    "builder": "dockerfile"
+  },
+  "deploy": {
+    "startCommand": "apache2-foreground"
+  },
+  "environments": {
+    "production": {
+      "variables": {
+        "APP_ENV": "prod",
+        "APP_DEBUG": "0"
+      }
+    }
+  }
+}
