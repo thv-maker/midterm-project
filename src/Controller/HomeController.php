@@ -64,7 +64,7 @@ class HomeController extends AbstractController
                     ->from(new Address('carpediemcafe6@gmail.com', 'Carpe Diem Contact Form'))
                     ->replyTo($email)
                     ->to('carpediemcafe6@gmail.com')
-                    ->subject('[Contact] ' . $subject)  
+                    ->subject('[Contact] ' . $subject)
                     ->html(sprintf(
                         '<h2>New Contact Inquiry</h2><p><strong>Name:</strong> %s</p><p><strong>Email:</strong> %s</p><p><strong>Subject:</strong> %s</p><p><strong>Message:</strong><br>%s</p>',
                         htmlspecialchars($name, ENT_QUOTES, 'UTF-8'),

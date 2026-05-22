@@ -30,8 +30,7 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
         private UrlGeneratorInterface $urlGenerator,
         private EntityManagerInterface $entityManager,
         private ActivityLoggerService $activityLogger
-    ) {
-    }
+    ) {}
 
     public function authenticate(Request $request): Passport
     {
@@ -45,14 +44,14 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
         } catch (\Throwable) {
             throw new CustomUserMessageAuthenticationException('Login is temporarily unavailable. Please try again shortly.');
         }
-        
-        if ($user && !$user->isActive()) {
-    throw new CustomUserMessageAuthenticationException('Your account has been deactivated. Please contact administrator.');
-}
 
-if ($user && !$user->isVerified()) {
-    throw new CustomUserMessageAuthenticationException('Please verify your email address before logging in. Check your inbox for the verification link.');
-}
+        if ($user && !$user->isActive()) {
+            throw new CustomUserMessageAuthenticationException('Your account has been deactivated. Please contact administrator.');
+        }
+
+        if ($user && !$user->isVerified()) {
+            throw new CustomUserMessageAuthenticationException('Please verify your email address before logging in. Check your inbox for the verification link.');
+        }
 
         return new Passport(
             new UserBadge($email),
@@ -71,7 +70,7 @@ if ($user && !$user->isVerified()) {
         if ($user instanceof User) {
             $user->setLastLogin(new \DateTime());
             $this->entityManager->flush();
-            
+
             // Log the login activity
             $this->activityLogger->logLogin($user);
         }
@@ -83,17 +82,17 @@ if ($user && !$user->isVerified()) {
         // Redirect based on role
         if ($user instanceof User) {
             $roles = $user->getRoles();
-            
+
             // Admin goes to dashboard
             if (in_array('ROLE_ADMIN', $roles)) {
                 return new RedirectResponse($this->urlGenerator->generate('app_dashboard_index'));
             }
-            
+
             // Staff goes to dashboard
             if (in_array('ROLE_STAFF', $roles)) {
                 return new RedirectResponse($this->urlGenerator->generate('app_dashboard_index'));
             }
-            
+
             // Customer goes to home page
             if (in_array('ROLE_USER', $roles)) {
                 return new RedirectResponse('/');

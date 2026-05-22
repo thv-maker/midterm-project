@@ -1,0 +1,14 @@
+HTTP/1.1 302 Found
+Cache-Control: max-age=0, must-revalidate, private
+Content-Type: text/html; charset=utf-8
+Date: Fri, 22 May 2026 02:24:16 GMT
+Expires: Fri, 22 May 2026 02:24:16 GMT
+Host: web-production-6c397.up.railway.app
+Location: /login
+Server: railway-edge
+Set-Cookie: REMEMBERME=deleted; expires=Thu, 22 May 2025 02:24:15 GMT; Max-Age=0; path=/; httponly
+X-Powered-By: PHP/8.4.2
+X-Railway-Edge: railway/us-west2
+X-Railway-Request-Id: YqncPomPTfC3aab1jq4OvQ
+Transfer-Encoding: chunked
+

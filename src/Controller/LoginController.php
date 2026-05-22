@@ -24,7 +24,7 @@ final class LoginController extends AbstractController
             return new Response('Login page is temporarily unavailable. Please try again shortly.', Response::HTTP_SERVICE_UNAVAILABLE);
         }
     }
-    
+
     #[Route('/logout', name: 'app_logout')]
     public function logout(): void
     {
