@@ -5,7 +5,7 @@
         "buildCommand": "COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-interaction --no-scripts && npm ci && npm run build"
     },
     "deploy": {
-        "startCommand": "php -S 0.0.0.0:$PORT -t public",
+        "startCommand": "sh ./bin/railway-start.sh",
         "restartPolicyType": "ON_FAILURE",
         "restartPolicyMaxRetries": 10
     }
