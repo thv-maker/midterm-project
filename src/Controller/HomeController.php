@@ -16,7 +16,20 @@ class HomeController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function index(): Response
     {
-        return $this->render('home/index.html.twig');
+        try {
+            return $this->render('home/index.html.twig');
+        } catch (\Throwable) {
+            return new Response('Service is running. Try /api for API routes.', Response::HTTP_OK);
+        }
+    }
+
+    #[Route('/health', name: 'app_health', methods: ['GET'])]
+    public function health(): Response
+    {
+        return $this->json([
+            'status' => 'ok',
+            'service' => 'midterm-project',
+        ]);
     }
 
     #[Route('/about-us', name: 'app_about')]
