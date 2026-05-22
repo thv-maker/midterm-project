@@ -6,6 +6,15 @@ export APP_DEBUG="${APP_DEBUG:-0}"
 
 echo "[railway-start] APP_ENV=${APP_ENV}"
 
+if [ ! -f ".env" ]; then
+  echo "[railway-start] Creating minimal .env for Symfony runtime"
+  {
+    echo "APP_ENV=${APP_ENV}"
+    echo "APP_DEBUG=${APP_DEBUG}"
+    echo "APP_SECRET=${APP_SECRET:-change-me-in-production}"
+  } > .env
+fi
+
 if [ -n "${DATABASE_URL}" ]; then
   echo "[railway-start] Waiting for database..."
   i=0
