@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+cd "$(dirname "$0")/.."
+
 export APP_ENV="${APP_ENV:-prod}"
 export APP_DEBUG="${APP_DEBUG:-0}"
 
