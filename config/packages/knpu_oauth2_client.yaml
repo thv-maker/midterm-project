@@ -1,9 +1,13 @@
+parameters:
+    google_client_id_default: 'missing-google-client-id'
+    google_client_secret_default: 'missing-google-client-secret'
+
 knpu_oauth2_client:
     clients:
         google:
             type: google
-            client_id: '%env(GOOGLE_CLIENT_ID)%'
-            client_secret: '%env(GOOGLE_CLIENT_SECRET)%'
+            client_id: '%env(default:google_client_id_default:GOOGLE_CLIENT_ID)%'
+            client_secret: '%env(default:google_client_secret_default:GOOGLE_CLIENT_SECRET)%'
             redirect_route: connect_google_check
             redirect_params: {}
         # configure your clients as described here: https://github.com/knpuniversity/oauth2-client-bundle#configuration

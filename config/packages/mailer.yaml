@@ -1,3 +1,6 @@
+parameters:
+    mailer_dsn_default: 'null://null'
+
 framework:
     mailer:
-        dsn: '%env(MAILER_DSN)%'
+        dsn: '%env(default:mailer_dsn_default:MAILER_DSN)%'

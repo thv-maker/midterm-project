@@ -1,6 +1,9 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
+parameters:
+    app_secret_default: 'change-me-in-production'
+
 framework:
-    secret: '%env(APP_SECRET)%'
+    secret: '%env(default:app_secret_default:APP_SECRET)%'
 
     # Note that the session will be started ONLY if you read or write from it.
     session: true
