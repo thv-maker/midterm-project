@@ -13,26 +13,17 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'app_login')]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        // If user is already logged in, redirect based on role
-        if ($this->getUser()) {
-            // Admin and Staff go to dashboard
-            if ($this->isGranted('ROLE_STAFF')) {
-                return $this->redirectToRoute('app_dashboard_index');
-            }
-            
-            // Customer goes to profile (temporary fix)
-            return $this->redirectToRoute('app_profile');
+        try {
+            $error = $authenticationUtils->getLastAuthenticationError();
+            $lastUsername = $authenticationUtils->getLastUsername();
+
+            return $this->render('security/login.html.twig', [
+                'last_username' => $lastUsername,
+                'error' => $error,
+            ]);
+        } catch (\Throwable) {
+            return new Response('Login page is temporarily unavailable. Please try again shortly.', Response::HTTP_SERVICE_UNAVAILABLE);
         }
-
-        // Get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
-        // Last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
-
-        return $this->render('security/login.html.twig', [
-            'last_username' => $lastUsername,
-            'error' => $error
-        ]);
     }
 
     #[Route('/logout', name: 'app_logout')]

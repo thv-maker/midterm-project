@@ -10,20 +10,20 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 final class LoginController extends AbstractController
 {
     #[Route('/login', name: 'app_login')]
-public function index(AuthenticationUtils $authenticationUtils): Response
-{
+    public function index(AuthenticationUtils $authenticationUtils): Response
+    {
+        try {
+            $error = $authenticationUtils->getLastAuthenticationError();
+            $lastUsername = $authenticationUtils->getLastUsername();
 
-    // Get the login error if there is one
-    $error = $authenticationUtils->getLastAuthenticationError();
-    
-    // Last username entered by the user
-    $lastUsername = $authenticationUtils->getLastUsername();
-    
-    return $this->render('security/login.html.twig', [
-        'last_username' => $lastUsername,
-        'error' => $error,
-    ]);
-}
+            return $this->render('security/login.html.twig', [
+                'last_username' => $lastUsername,
+                'error' => $error,
+            ]);
+        } catch (\Throwable) {
+            return new Response('Login page is temporarily unavailable. Please try again shortly.', Response::HTTP_SERVICE_UNAVAILABLE);
+        }
+    }
     
     #[Route('/logout', name: 'app_logout')]
     public function logout(): void

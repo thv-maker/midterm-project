@@ -39,8 +39,12 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
 
         $request->getSession()->set(SecurityRequestAttributes::LAST_USERNAME, $email);
 
-        // Check user status before authentication
-        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+        try {
+            // Check user status before authentication
+            $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+        } catch (\Throwable) {
+            throw new CustomUserMessageAuthenticationException('Login is temporarily unavailable. Please try again shortly.');
+        }
         
         if ($user && !$user->isActive()) {
     throw new CustomUserMessageAuthenticationException('Your account has been deactivated. Please contact administrator.');
