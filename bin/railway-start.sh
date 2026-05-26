@@ -17,8 +17,12 @@ if [ ! -f ".env" ]; then
   } > .env
 fi
 
-echo "[railway-start] Skipping blocking DB checks during boot"
+echo "[railway-start] Generating JWT keypair (keys are gitignored, must be created at runtime)..."
+mkdir -p config/jwt
+php bin/console lexik:jwt:generate-keypair --overwrite --no-interaction --env=prod \
+  || echo "[railway-start] WARNING: JWT keypair generation failed"
 
+echo "[railway-start] Running database setup..."
 case "${DATABASE_URL:-}" in
   sqlite:*)
     echo "[railway-start] SQLite mode: updating schema"
@@ -26,6 +30,14 @@ case "${DATABASE_URL:-}" in
 
     echo "[railway-start] SQLite mode: ensuring admin account"
     php bin/console doctrine:query:sql "INSERT INTO user (email, roles, password, is_active, is_verified, last_login, google_id) VALUES ('admin@midterm.local', '[\"ROLE_ADMIN\"]', '\$2y\$12\$XCegzkOZrLG68DcbW0MfU.rNJGVhB5I3waW.HyzJrW1N34KX6Ox0W', 1, 1, NULL, NULL) ON CONFLICT(email) DO UPDATE SET roles='[\"ROLE_ADMIN\"]', password='\$2y\$12\$XCegzkOZrLG68DcbW0MfU.rNJGVhB5I3waW.HyzJrW1N34KX6Ox0W', is_active=1, is_verified=1;" --env=prod || true
+    ;;
+  mysql:*|postgresql:*|postgres:*)
+    echo "[railway-start] MySQL/Postgres mode: running migrations"
+    php bin/console doctrine:migrations:migrate --no-interaction --env=prod \
+      || echo "[railway-start] WARNING: Migration failed (check DATABASE_URL)"
+    ;;
+  *)
+    echo "[railway-start] WARNING: DATABASE_URL is not set or unrecognized"
     ;;
 esac
 
