@@ -30,6 +30,11 @@ case "${DATABASE_URL:-}" in
 
     echo "[railway-start] SQLite mode: ensuring admin account"
     php bin/console doctrine:query:sql "INSERT INTO user (email, roles, password, is_active, is_verified, last_login, google_id) VALUES ('admin@midterm.local', '[\"ROLE_ADMIN\"]', '\$2y\$12\$XCegzkOZrLG68DcbW0MfU.rNJGVhB5I3waW.HyzJrW1N34KX6Ox0W', 1, 1, NULL, NULL) ON CONFLICT(email) DO UPDATE SET roles='[\"ROLE_ADMIN\"]', password='\$2y\$12\$XCegzkOZrLG68DcbW0MfU.rNJGVhB5I3waW.HyzJrW1N34KX6Ox0W', is_active=1, is_verified=1;" --env=prod || true
+
+    echo "[railway-start] SQLite mode: ensuring test customer account (email: customer@test.com / password: test1234)"
+    TEST_HASH=$(php -r "echo password_hash('test1234', PASSWORD_BCRYPT, ['cost' => 12]);")
+    php bin/console doctrine:query:sql "INSERT INTO user (email, roles, password, is_active, is_verified, last_login, google_id) VALUES ('customer@test.com', '[\"ROLE_USER\"]', '${TEST_HASH}', 1, 1, NULL, NULL) ON CONFLICT(email) DO UPDATE SET password='${TEST_HASH}', is_active=1, is_verified=1;" --env=prod || true
+    php bin/console doctrine:query:sql "INSERT OR IGNORE INTO customer (name, email, phone, address, fcm_token) VALUES ('Test Customer', 'customer@test.com', '09123456789', '123 Test Street', NULL);" --env=prod || true
     ;;
   mysql:*|postgresql:*|postgres:*)
     echo "[railway-start] MySQL/Postgres mode: running migrations"
