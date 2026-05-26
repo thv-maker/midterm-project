@@ -50,7 +50,7 @@ class ApiAuthController extends AbstractController
 
         return hash_hmac(
             'sha256',
-            $user->getUserIdentifier().'|'.(string) $user->getId().'|'.time(),
+            $user->getUserIdentifier() . '|' . (string) $user->getId() . '|' . time(),
             (string) $this->getParameter('kernel.secret')
         );
     }
