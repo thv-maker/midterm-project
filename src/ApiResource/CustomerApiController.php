@@ -338,6 +338,26 @@ class CustomerApiController extends AbstractController
         ]);
     }
 
+    #[Route('/fcm-token', name: 'api_customer_fcm_token', methods: ['POST'])]
+    public function storeFcmToken(Request $request, CustomerRepository $customerRepository): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true) ?? [];
+
+        if (empty($data['customer_id']) || empty($data['token'])) {
+            return $this->json(['error' => 'customer_id and token are required.'], 400);
+        }
+
+        $customer = $customerRepository->find((int) $data['customer_id']);
+        if (!$customer instanceof Customer) {
+            return $this->json(['error' => 'Customer not found.'], 404);
+        }
+
+        $customer->setFcmToken($data['token']);
+        $this->em->flush();
+
+        return $this->json(['message' => 'FCM token stored.']);
+    }
+
     private function serializeOrder(Order $order): array
     {
         return [

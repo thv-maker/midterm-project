@@ -12,6 +12,7 @@ class OrderWorkflowService
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
+        private FcmNotificationService $fcm,
     ) {}
 
     public function createOrder(
@@ -71,6 +72,16 @@ class OrderWorkflowService
 
         $this->entityManager->persist($order);
         $this->entityManager->flush();
+
+        $fcmToken = $customer->getFcmToken();
+        if ($fcmToken) {
+            $this->fcm->send(
+                $fcmToken,
+                'Order Placed!',
+                "Your order #{$order->getOrderNumber()} has been received.",
+                ['order_id' => (string) $order->getId(), 'type' => 'order_created'],
+            );
+        }
 
         return $order;
     }
@@ -161,6 +172,18 @@ class OrderWorkflowService
 
         $order->setStatus($nextStatus);
         $this->entityManager->flush();
+
+        $customer = $order->getCustomer();
+        $fcmToken = $customer?->getFcmToken();
+        if ($fcmToken) {
+            $statusLabel = $nextStatus === 'completed' ? 'completed' : 'cancelled';
+            $this->fcm->send(
+                $fcmToken,
+                'Order Update',
+                "Your order #{$order->getOrderNumber()} has been {$statusLabel}.",
+                ['order_id' => (string) $order->getId(), 'type' => 'order_status_changed'],
+            );
+        }
     }
 
     public function updatePendingOrder(

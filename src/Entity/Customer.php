@@ -28,6 +28,9 @@ class Customer
     #[ORM\Column(type: Types::TEXT)]
     private ?string $address = null;
 
+    #[ORM\Column(length: 512, nullable: true)]
+    private ?string $fcmToken = null;
+
     /**
      * @var Collection<int, Order>
      */
@@ -118,6 +121,18 @@ class Customer
                 $order->setCustomer(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFcmToken(): ?string
+    {
+        return $this->fcmToken;
+    }
+
+    public function setFcmToken(?string $fcmToken): static
+    {
+        $this->fcmToken = $fcmToken;
 
         return $this;
     }
