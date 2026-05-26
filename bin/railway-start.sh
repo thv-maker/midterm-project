@@ -46,5 +46,11 @@ case "${DATABASE_URL:-}" in
     ;;
 esac
 
+echo "[railway-start] Clearing and warming Symfony cache..."
+php bin/console cache:clear --env=prod --no-warmup --no-interaction \
+  || echo "[railway-start] WARNING: cache:clear failed"
+php bin/console cache:warmup --env=prod --no-interaction \
+  || echo "[railway-start] WARNING: cache:warmup failed"
+
 echo "[railway-start] Starting PHP server on port ${PORT:-8080}"
 exec php -S 0.0.0.0:${PORT:-8080} -t public public/index.php
