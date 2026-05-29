@@ -20,6 +20,19 @@ class OrderRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return Order[]
+     */
+    public function findCreatedAfter(\DateTimeImmutable $since): array
+    {
+        return $this->createQueryBuilder('o')
+            ->andWhere('o.createdAt > :since')
+            ->setParameter('since', $since)
+            ->orderBy('o.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * Get total revenue from all orders
      */
     public function getTotalRevenue(): float

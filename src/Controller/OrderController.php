@@ -9,6 +9,7 @@ use App\Repository\ProductRepository;
 use App\Service\OrderWorkflowService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -23,6 +24,42 @@ class OrderController extends AbstractController
     {
         return $this->render('order/index.html.twig', [
             'orders' => $orderRepository->findBy([], ['createdAt' => 'DESC']),
+            'pageLoadedAt' => (new \DateTimeImmutable())->format(DATE_ATOM),
+        ]);
+    }
+
+    #[Route('/feed', name: 'app_order_feed', methods: ['GET'])]
+    public function feed(Request $request, OrderRepository $orderRepository): JsonResponse
+    {
+        $sinceParam = $request->query->get('since');
+        if (!is_string($sinceParam) || $sinceParam === '') {
+            return $this->json(['orders' => []]);
+        }
+
+        try {
+            $since = new \DateTimeImmutable($sinceParam);
+        } catch (\Exception) {
+            return $this->json(['error' => 'Invalid since timestamp.'], 400);
+        }
+
+        $orders = $orderRepository->findCreatedAfter($since);
+
+        return $this->json([
+            'orders' => array_map(
+                static fn (Order $order) => [
+                    'type' => 'created',
+                    'orderId' => $order->getId(),
+                ],
+                $orders,
+            ),
+        ]);
+    }
+
+    #[Route('/row/{id}', name: 'app_order_row', methods: ['GET'])]
+    public function row(Order $order): Response
+    {
+        return $this->render('order/_row.html.twig', [
+            'order' => $order,
         ]);
     }
 

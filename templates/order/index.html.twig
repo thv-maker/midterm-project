@@ -50,6 +50,14 @@
 		border-left: 4px solid #f44336;
 	}
 
+	@keyframes oi-row-highlight {
+		from { background: #fff8e1; }
+		to { background: transparent; }
+	}
+	tr.oi-row-new td {
+		animation: oi-row-highlight 2.5s ease-out;
+	}
+
 	/* ── HEADER ── */
 	.oi-header {
 		background: var(--brown-dark);
@@ -390,14 +398,14 @@
 	{% set completedCount = orders|filter(o => o.status == 'completed')|length %}
 	{% set cancelledCount = orders|filter(o => o.status == 'cancelled')|length %}
 
-	<div class="oi-stats">
+	<div class="oi-stats" id="oi-stats">
 		<div class="oi-stat pending">
 			<div class="oi-stat-icon">
 				<i class="fas fa-clock"></i>
 			</div>
 			<div>
 				<div class="oi-stat-label">Pending</div>
-				<div class="oi-stat-value">{{ pendingCount }}</div>
+				<div class="oi-stat-value" id="oi-stat-pending">{{ pendingCount }}</div>
 			</div>
 		</div>
 		<div class="oi-stat completed">
@@ -406,7 +414,7 @@
 			</div>
 			<div>
 				<div class="oi-stat-label">Completed</div>
-				<div class="oi-stat-value">{{ completedCount }}</div>
+				<div class="oi-stat-value" id="oi-stat-completed">{{ completedCount }}</div>
 			</div>
 		</div>
 		<div class="oi-stat cancelled">
@@ -415,7 +423,7 @@
 			</div>
 			<div>
 				<div class="oi-stat-label">Cancelled</div>
-				<div class="oi-stat-value">{{ cancelledCount }}</div>
+				<div class="oi-stat-value" id="oi-stat-cancelled">{{ cancelledCount }}</div>
 			</div>
 		</div>
 	</div>
@@ -426,113 +434,238 @@
 			<h3>
 				<i class="fas fa-list"></i>
 				All Orders</h3>
-			<span class="oi-count">{{ orders|length }}
+			<span class="oi-count" id="oi-order-count">{{ orders|length }}
 				order{{ orders|length != 1 ? 's' : '' }}
 				found</span>
 		</div>
 
-		{% if orders is empty %}
-			<div class="oi-empty">
-				<i class="fas fa-shopping-bag"></i>
-				<p>No orders found in the system.</p>
-			</div>
-		{% else %}
-			<div style="overflow-x:auto;">
-				<table class="oi-table">
-					<thead>
-						<tr>
-							<th>Order #</th>
-							<th>Customer</th>
-							<th>Total</th>
-							<th>Payment</th>
-							<th>Status</th>
-							<th>Date</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for order in orders %}
-							<tr>
-								<td>
-									<span class="oi-order-num">#{{ order.orderNumber }}</span>
-								</td>
-								<td>
-									<div class="oi-cust-cell">
-										<div class="oi-cust-avatar">
-											<i class="fas fa-user" style="font-size:12px;"></i>
-										</div>
-										{{ order.customer.name }}
-									</div>
-								</td>
-								<td>
-									<span class="oi-total">₱{{ order.total|number_format(2) }}</span>
-								</td>
-								<td>
-									<span style="font-size:12px; font-weight:700; color:var(--brown-dark); text-transform:uppercase; display:block;">
-										{{ order.paymentMethod|default('cash') }}
-									</span>
-									{% if order.paymentMethod == 'gcash' and order.gcashNumber %}
-										<span style="font-size:11px; color:var(--muted);">{{ order.gcashNumber }}</span>
-									{% elseif order.paymentMethod == 'card' and order.cardType %}
-										<span style="font-size:11px; color:var(--muted); text-transform:uppercase;">{{ order.cardType }}</span>
-									{% endif %}
-								</td>
-								<td>
-									{% if order.status == 'pending' %}
-										<span class="oi-badge pending">
-											<i class="fas fa-clock"></i>
-											Pending</span>
-									{% elseif order.status == 'completed' %}
-										<span class="oi-badge completed">
-											<i class="fas fa-check-circle"></i>
-											Completed</span>
-									{% else %}
-										<span class="oi-badge cancelled">
-											<i class="fas fa-times-circle"></i>
-											Cancelled</span>
-									{% endif %}
-								</td>
-								<td>
-									<span style="color:var(--muted); font-size:12px;">
-										<i class="far fa-calendar" style="margin-right:4px;"></i>
-										{{ order.createdAt|date('M d, Y') }}<br>
-										<small>{{ order.createdAt|date('h:i A') }}</small>
-									</span>
-								</td>
-								<td>
-									<div class="oi-actions">
-										<a href="{{ path('app_order_show', {'id': order.id}) }}" class="oi-btn view">
-											<i class="fas fa-eye"></i>
-											View
-										</a>
-										{% if order.status == 'pending' %}
-											<a href="{{ path('app_order_edit', {'id': order.id}) }}" class="oi-btn edit">
-												<i class="fas fa-pen"></i>
-												Edit
-											</a>
-											<form method="post" action="{{ path('app_order_cancel', {'id': order.id}) }}" class="oi-btn-form" onsubmit="return confirm('Cancel this pending order?');">
-												<input type="hidden" name="_token" value="{{ csrf_token('cancel' ~ order.id) }}">
-												<button class="oi-btn delete">
-													<i class="fas fa-ban"></i>
-													Cancel
-												</button>
-											</form>
-											<form method="post" action="{{ path('app_order_delete', {'id': order.id}) }}" class="oi-btn-form" onsubmit="return confirm('Are you sure you want to delete this order?');">
-												<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ order.id) }}">
-												<button class="oi-btn delete">
-													<i class="fas fa-trash"></i>
-													Delete
-												</button>
-											</form>
-										{% endif %}
-									</div>
-								</td>
-							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			</div>
-		{% endif %}
+		<div id="oi-empty" class="oi-empty" {% if orders is not empty %}style="display:none;"{% endif %}>
+			<i class="fas fa-shopping-bag"></i>
+			<p>No orders found in the system.</p>
+		</div>
+
+		<div id="oi-table-wrap" style="overflow-x:auto;{% if orders is empty %}display:none;{% endif %}">
+			<table class="oi-table">
+				<thead>
+					<tr>
+						<th>Order #</th>
+						<th>Customer</th>
+						<th>Total</th>
+						<th>Payment</th>
+						<th>Status</th>
+						<th>Date</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody id="oi-orders-tbody">
+					{% for order in orders %}
+						{% include 'order/_row.html.twig' %}
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
 	</div>
 
-</div>{% endblock %}
+</div>
+{% endblock %}
+
+{% block javascripts %}
+	{{ parent() }}
+	<script>
+		(function () {
+			const feedUrl = {{ path('app_order_feed')|json_encode|raw }};
+			const rowUrlTemplate = {{ path('app_order_row', { id: 0 })|json_encode|raw }}.replace('/0', '/');
+			const pageLoadedAt = {{ pageLoadedAt|json_encode|raw }};
+			const knownOrderIds = new Set(
+				Array.from(document.querySelectorAll('#oi-orders-tbody tr[data-order-id]'))
+					.map((row) => parseInt(row.dataset.orderId, 10))
+					.filter((id) => !Number.isNaN(id))
+			);
+
+			const tbody = document.getElementById('oi-orders-tbody');
+			const emptyEl = document.getElementById('oi-empty');
+			const tableWrap = document.getElementById('oi-table-wrap');
+			const countEl = document.getElementById('oi-order-count');
+			const pendingEl = document.getElementById('oi-stat-pending');
+			const completedEl = document.getElementById('oi-stat-completed');
+			const cancelledEl = document.getElementById('oi-stat-cancelled');
+
+			let lastSyncAt = pageLoadedAt;
+
+			function updateOrderCount() {
+				const count = tbody ? tbody.querySelectorAll('tr[data-order-id]').length : 0;
+				if (countEl) {
+					countEl.textContent = count + ' order' + (count === 1 ? '' : 's') + ' found';
+				}
+				if (emptyEl && tableWrap) {
+					const isEmpty = count === 0;
+					emptyEl.style.display = isEmpty ? '' : 'none';
+					tableWrap.style.display = isEmpty ? 'none' : '';
+				}
+			}
+
+			function bumpStat(status) {
+				if (status === 'pending' && pendingEl) {
+					pendingEl.textContent = String(parseInt(pendingEl.textContent, 10) + 1);
+				}
+				if (status === 'completed' && completedEl) {
+					completedEl.textContent = String(parseInt(completedEl.textContent, 10) + 1);
+				}
+				if (status === 'cancelled' && cancelledEl) {
+					cancelledEl.textContent = String(parseInt(cancelledEl.textContent, 10) + 1);
+				}
+			}
+
+			function adjustStat(fromStatus, delta) {
+				const map = {
+					pending: pendingEl,
+					completed: completedEl,
+					cancelled: cancelledEl,
+				};
+				const el = map[fromStatus];
+				if (!el) {
+					return;
+				}
+				el.textContent = String(Math.max(0, parseInt(el.textContent, 10) + delta));
+			}
+
+			function showLiveToast(message) {
+				let toast = document.getElementById('oi-live-toast');
+				if (!toast) {
+					toast = document.createElement('div');
+					toast.id = 'oi-live-toast';
+					toast.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#3e1f0d;color:#fff;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);display:flex;align-items:center;gap:10px;transition:opacity .3s;';
+					document.body.appendChild(toast);
+				}
+				toast.innerHTML = '<i class="fas fa-bell"></i> ' + message;
+				toast.style.opacity = '1';
+				clearTimeout(toast._hideTimer);
+				toast._hideTimer = setTimeout(() => {
+					toast.style.opacity = '0';
+				}, 4000);
+			}
+
+			async function fetchOrderRow(orderId) {
+				const response = await fetch(rowUrlTemplate + orderId, {
+					headers: { 'X-Requested-With': 'XMLHttpRequest' },
+					credentials: 'same-origin',
+				});
+				if (!response.ok) {
+					throw new Error('Failed to load order row');
+				}
+				return response.text();
+			}
+
+			async function insertOrderRow(orderId) {
+				if (!tbody || knownOrderIds.has(orderId)) {
+					return;
+				}
+				const html = await fetchOrderRow(orderId);
+				const template = document.createElement('template');
+				template.innerHTML = html.trim();
+				const row = template.content.querySelector('tr[data-order-id]');
+				if (!row) {
+					return;
+				}
+				row.classList.add('oi-row-new');
+				tbody.insertBefore(row, tbody.firstChild);
+				knownOrderIds.add(orderId);
+				bumpStat('pending');
+				updateOrderCount();
+				showLiveToast('New order received');
+			}
+
+			async function refreshOrderRow(orderId, previousStatus) {
+				if (!tbody) {
+					return;
+				}
+				const existing = tbody.querySelector('tr[data-order-id="' + orderId + '"]');
+				if (!existing) {
+					return await insertOrderRow(orderId);
+				}
+				const html = await fetchOrderRow(orderId);
+				const template = document.createElement('template');
+				template.innerHTML = html.trim();
+				const row = template.content.querySelector('tr[data-order-id]');
+				if (!row) {
+					return;
+				}
+				const newStatus = statusFromRow(row);
+				if (previousStatus && previousStatus !== newStatus) {
+					adjustStat(previousStatus, -1);
+					bumpStat(newStatus);
+				}
+				existing.replaceWith(row);
+			}
+
+			function statusFromRow(row) {
+				if (!row) {
+					return null;
+				}
+				if (row.querySelector('.oi-badge.completed')) {
+					return 'completed';
+				}
+				if (row.querySelector('.oi-badge.cancelled')) {
+					return 'cancelled';
+				}
+				return 'pending';
+			}
+
+			async function handleOrderEvent(payload) {
+				if (!payload?.orderId) {
+					return;
+				}
+
+				if (payload.type === 'created') {
+					await insertOrderRow(payload.orderId);
+					return;
+				}
+				if (payload.type === 'updated') {
+					const existing = tbody?.querySelector('tr[data-order-id="' + payload.orderId + '"]');
+					const previousStatus = statusFromRow(existing);
+					await refreshOrderRow(payload.orderId, previousStatus);
+				}
+			}
+
+			async function pollFeed() {
+				try {
+					const response = await fetch(feedUrl + '?since=' + encodeURIComponent(lastSyncAt), {
+						headers: { 'X-Requested-With': 'XMLHttpRequest' },
+						credentials: 'same-origin',
+					});
+					if (!response.ok) {
+						return;
+					}
+					const data = await response.json();
+					for (const item of data.orders || []) {
+						await handleOrderEvent(item);
+					}
+					lastSyncAt = new Date().toISOString();
+				} catch (e) {
+					console.warn('Order feed poll failed', e);
+				}
+			}
+
+			try {
+				const mercureUrl = new URL({{ mercure('/orders')|json_encode|raw }});
+				const eventSource = new EventSource(mercureUrl);
+				eventSource.onmessage = (event) => {
+					try {
+						const payload = JSON.parse(event.data);
+						handleOrderEvent(payload);
+					} catch (e) {
+						console.warn('Invalid Mercure payload', e);
+					}
+				};
+				eventSource.onerror = () => {
+					eventSource.close();
+				};
+			} catch (e) {
+				console.warn('Mercure unavailable, using polling only', e);
+			}
+
+			setInterval(pollFeed, 5000);
+			setTimeout(pollFeed, 1500);
+		})();
+	</script>
+{% endblock %}
