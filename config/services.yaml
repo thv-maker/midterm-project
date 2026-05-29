@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    firebase.project_id_default: ''
+    firebase.service_account_default: ''
 
 services:
     # default configuration for services in *this* file
@@ -21,5 +23,5 @@ services:
 
     App\Service\FcmNotificationService:
         arguments:
-            $firebaseProjectId: '%env(default::FIREBASE_PROJECT_ID)%'
-            $firebaseServiceAccount: '%env(default::FIREBASE_SERVICE_ACCOUNT_B64)%'
+            $firebaseProjectId: '%env(default:firebase.project_id_default:FIREBASE_PROJECT_ID)%'
+            $firebaseServiceAccount: '%env(default:firebase.service_account_default:FIREBASE_SERVICE_ACCOUNT_B64)%'

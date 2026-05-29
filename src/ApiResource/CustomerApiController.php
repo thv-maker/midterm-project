@@ -30,51 +30,91 @@ class CustomerApiController extends AbstractController
     ) {}
 
     #[Route('/register', name: 'api_customer_register', methods: ['POST'])]
-    public function register(Request $request): JsonResponse
+    public function register(Request $request, CustomerRepository $customerRepository): JsonResponse
     {
         $data = json_decode($request->getContent(), true);
-
-        $required = ['name', 'email', 'password', 'phone', 'address'];
-        foreach ($required as $field) {
-            if (empty($data[$field])) {
-                return $this->json(['error' => "Field '$field' is required."], 400);
-            }
+        if (!is_array($data)) {
+            return $this->json(['error' => 'Invalid JSON body.'], 400);
         }
 
-        $existing = $this->em->getRepository(User::class)->findOneBy(['email' => $data['email']]);
-        if ($existing) {
+        $name = trim((string) ($data['name'] ?? $data['full_name'] ?? ''));
+        $email = strtolower(trim((string) ($data['email'] ?? '')));
+        $password = (string) ($data['password'] ?? '');
+        $phone = trim((string) ($data['phone'] ?? ''));
+        $address = trim((string) ($data['address'] ?? ''));
+
+        if ($name === '') {
+            return $this->json(['error' => 'Full name is required.'], 400);
+        }
+        if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return $this->json(['error' => 'A valid email is required.'], 400);
+        }
+        if (strlen($password) < 6) {
+            return $this->json(['error' => 'Password must be at least 6 characters.'], 400);
+        }
+        if ($phone === '') {
+            return $this->json(['error' => 'Phone is required.'], 400);
+        }
+        if ($address === '') {
+            return $this->json(['error' => 'Address is required.'], 400);
+        }
+
+        if ($this->em->getRepository(User::class)->findOneBy(['email' => $email])) {
+            return $this->json(['error' => 'Email already registered.'], 409);
+        }
+        if ($customerRepository->findOneBy(['email' => $email])) {
             return $this->json(['error' => 'Email already registered.'], 409);
         }
 
         $user = new User();
-        $user->setEmail($data['email']);
+        $user->setEmail($email);
         $user->setRoles(['ROLE_USER']);
-        $user->setPassword($this->passwordHasher->hashPassword($user, $data['password']));
+        $hashedPassword = $this->passwordHasher->hashPassword($user, $password);
+        $user->setPassword($hashedPassword);
         $user->setIsActive(true);
         $user->setIsVerified(true);
 
         $customer = new Customer();
-        $customer->setName($data['name']);
-        $customer->setEmail($data['email']);
-        $customer->setPhone($data['phone']);
-        $customer->setAddress($data['address']);
+        $customer->setName($name);
+        $customer->setEmail($email);
+        $customer->setPhone($phone);
+        $customer->setAddress($address);
+        $customer->setPassword($hashedPassword);
 
-        $this->em->persist($user);
-        $this->em->persist($customer);
-        $this->em->flush();
+        try {
+            $this->em->persist($user);
+            $this->em->persist($customer);
+            $this->em->flush();
+        } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+            return $this->json(['error' => 'Email already registered.'], 409);
+        } catch (\Throwable) {
+            return $this->json(['error' => 'Registration failed. Please try again.'], 500);
+        }
 
-        $token = $this->jwtManager->createFromPayload($user, [
-            'email' => $user->getEmail(),
-            'roles' => $user->getRoles(),
-            'customer_id' => $customer->getId(),
-        ]);
+        try {
+            $token = $this->jwtManager->createFromPayload($user, [
+                'email' => $user->getEmail(),
+                'roles' => $user->getRoles(),
+                'customer_id' => $customer->getId(),
+            ]);
+        } catch (\Throwable) {
+            return $this->json([
+                'message' => 'Account created but sign-in token could not be issued. Please log in.',
+                'customer_id' => $customer->getId(),
+                'name' => $customer->getName(),
+                'email' => $customer->getEmail(),
+            ], 201);
+        }
 
         return $this->json([
             'message' => 'Registration successful!',
             'token' => $token,
             'customer_id' => $customer->getId(),
+            'customerId' => $customer->getId(),
             'name' => $customer->getName(),
             'email' => $customer->getEmail(),
+            'phone' => $customer->getPhone(),
+            'address' => $customer->getAddress(),
         ], 201);
     }
 
