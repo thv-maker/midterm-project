@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Repository\CustomerRepository;
 use App\Repository\ProductRepository;
 use App\Service\ActivityLoggerService;
+use App\Service\OrderPushNotifier;
 use App\Service\OrderWorkflowService;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
@@ -27,6 +28,7 @@ class CustomerApiController extends AbstractController
         private UserPasswordHasherInterface $passwordHasher,
         private OrderWorkflowService $orderWorkflowService,
         private ActivityLoggerService $activityLogger,
+        private OrderPushNotifier $orderPushNotifier,
     ) {}
 
     #[Route('/register', name: 'api_customer_register', methods: ['POST'])]
@@ -91,6 +93,9 @@ class CustomerApiController extends AbstractController
             return $this->json(['error' => 'Registration failed. Please try again.'], 500);
         }
 
+        $this->syncFcmTokenFromRequest($request, $customer);
+        $this->em->flush();
+
         try {
             $token = $this->jwtManager->createFromPayload($user, [
                 'email' => $user->getEmail(),
@@ -142,6 +147,10 @@ class CustomerApiController extends AbstractController
         $this->activityLogger->logLogin($user);
 
         $customer = $customerRepository->findOneBy(['email' => $user->getEmail()]);
+        if ($customer instanceof Customer) {
+            $this->syncFcmTokenFromRequest($request, $customer);
+            $this->em->flush();
+        }
 
         $token = $this->jwtManager->createFromPayload($user, [
             'email' => $user->getEmail(),
@@ -382,20 +391,52 @@ class CustomerApiController extends AbstractController
     public function storeFcmToken(Request $request, CustomerRepository $customerRepository): JsonResponse
     {
         $data = json_decode($request->getContent(), true) ?? [];
+        $token = $this->extractFcmToken($data);
+        $customerId = (int) ($data['customer_id'] ?? $data['customerId'] ?? 0);
 
-        if (empty($data['customer_id']) || empty($data['token'])) {
-            return $this->json(['error' => 'customer_id and token are required.'], 400);
+        if ($token === null) {
+            return $this->json(['error' => 'token (FCM device token) is required.'], 400);
         }
 
-        $customer = $customerRepository->find((int) $data['customer_id']);
+        if ($customerId < 1) {
+            return $this->json(['error' => 'customer_id is required.'], 400);
+        }
+
+        $customer = $customerRepository->find($customerId);
         if (!$customer instanceof Customer) {
             return $this->json(['error' => 'Customer not found.'], 404);
         }
 
-        $customer->setFcmToken($data['token']);
+        $this->orderPushNotifier->storeTokenForCustomer($customer, $token);
         $this->em->flush();
 
-        return $this->json(['message' => 'FCM token stored.']);
+        return $this->json(['message' => 'FCM token stored.', 'success' => true]);
+    }
+
+    private function syncFcmTokenFromRequest(Request $request, Customer $customer): void
+    {
+        $data = json_decode($request->getContent(), true);
+        if (!is_array($data)) {
+            return;
+        }
+
+        $token = $this->extractFcmToken($data);
+        if ($token === null) {
+            return;
+        }
+
+        $this->orderPushNotifier->storeTokenForCustomer($customer, $token);
+    }
+
+    private function extractFcmToken(array $data): ?string
+    {
+        foreach (['token', 'fcm_token', 'fcmToken'] as $key) {
+            if (!empty($data[$key]) && is_string($data[$key])) {
+                return trim($data[$key]);
+            }
+        }
+
+        return null;
     }
 
     private function serializeOrder(Order $order): array

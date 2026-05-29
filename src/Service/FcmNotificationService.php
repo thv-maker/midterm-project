@@ -2,29 +2,39 @@
 
 namespace App\Service;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class FcmNotificationService
 {
     private ?string $accessToken = null;
     private int $tokenExpiresAt = 0;
+    private ?array $serviceAccount = null;
 
     public function __construct(
         private HttpClientInterface $httpClient,
         private string $firebaseProjectId,
         private string $firebaseServiceAccount,
+        private LoggerInterface $logger,
     ) {}
 
-    public function send(string $fcmToken, string $title, string $body, array $data = []): void
+    public function isConfigured(): bool
     {
-        if (!$this->firebaseProjectId || !$this->firebaseServiceAccount) {
-            return;
+        return $this->firebaseProjectId !== '' && $this->resolveServiceAccount() !== null;
+    }
+
+    public function send(string $fcmToken, string $title, string $body, array $data = []): bool
+    {
+        if (!$this->isConfigured()) {
+            $this->logger->warning('FCM skipped: FIREBASE_PROJECT_ID or FIREBASE_SERVICE_ACCOUNT_B64 is not configured.');
+
+            return false;
         }
 
         try {
             $accessToken = $this->getAccessToken();
 
-            $this->httpClient->request(
+            $response = $this->httpClient->request(
                 'POST',
                 "https://fcm.googleapis.com/v1/projects/{$this->firebaseProjectId}/messages:send",
                 [
@@ -42,13 +52,38 @@ class FcmNotificationService
                             'data' => array_map('strval', $data),
                             'android' => [
                                 'priority' => 'high',
+                                'notification' => [
+                                    'channel_id' => 'orders',
+                                    'sound' => 'default',
+                                ],
+                            ],
+                            'apns' => [
+                                'payload' => [
+                                    'aps' => [
+                                        'sound' => 'default',
+                                    ],
+                                ],
                             ],
                         ],
                     ],
                 ]
-            )->getContent(); // trigger the request
-        } catch (\Throwable) {
-            // Silently fail — notifications are non-critical
+            );
+
+            $statusCode = $response->getStatusCode();
+            if ($statusCode >= 400) {
+                $this->logger->error('FCM send failed', [
+                    'status' => $statusCode,
+                    'body' => $response->getContent(false),
+                ]);
+
+                return false;
+            }
+
+            return true;
+        } catch (\Throwable $exception) {
+            $this->logger->error('FCM send exception: ' . $exception->getMessage());
+
+            return false;
         }
     }
 
@@ -58,7 +93,10 @@ class FcmNotificationService
             return $this->accessToken;
         }
 
-        $sa = json_decode(base64_decode($this->firebaseServiceAccount), true);
+        $sa = $this->resolveServiceAccount();
+        if ($sa === null) {
+            throw new \RuntimeException('Firebase service account is not configured.');
+        }
 
         $now = time();
         $header = $this->base64url(json_encode(['alg' => 'RS256', 'typ' => 'JWT']));
@@ -85,6 +123,32 @@ class FcmNotificationService
         $this->tokenExpiresAt = $now + (int) ($response['expires_in'] ?? 3600);
 
         return $this->accessToken;
+    }
+
+    private function resolveServiceAccount(): ?array
+    {
+        if ($this->serviceAccount !== null) {
+            return $this->serviceAccount;
+        }
+
+        $raw = trim($this->firebaseServiceAccount);
+        if ($raw === '') {
+            return null;
+        }
+
+        $decoded = base64_decode($raw, true);
+        if ($decoded !== false && str_starts_with(trim($decoded), '{')) {
+            $raw = $decoded;
+        }
+
+        $parsed = json_decode($raw, true);
+        if (!is_array($parsed) || empty($parsed['client_email']) || empty($parsed['private_key'])) {
+            return null;
+        }
+
+        $this->serviceAccount = $parsed;
+
+        return $this->serviceAccount;
     }
 
     private function base64url(string $data): string

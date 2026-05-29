@@ -33,7 +33,25 @@ API_ENTRYPOINT=https://your-railway-domain.com/api
 
 # Session settings
 SESSION_HANDLER=database
+
+# Firebase Cloud Messaging (push notifications to mobile app)
+FIREBASE_PROJECT_ID=your-firebase-project-id
+FIREBASE_SERVICE_ACCOUNT_B64=base64-encoded-service-account-json
 ```
+
+### Firebase push setup
+
+1. In [Firebase Console](https://console.firebase.google.com/), open your project → **Project settings** → **Service accounts**.
+2. Click **Generate new private key** and download the JSON file.
+3. Base64-encode the entire JSON file (one line, no line breaks):
+   - **Linux/macOS:** `base64 -w0 service-account.json`
+   - **PowerShell:** `[Convert]::ToBase64String([IO.File]::ReadAllBytes("service-account.json"))`
+4. In Railway → your **web** service → **Variables**, set:
+   - `FIREBASE_PROJECT_ID` = the project ID from Firebase (e.g. `my-cafe-app`)
+   - `FIREBASE_SERVICE_ACCOUNT_B64` = the base64 string from step 3
+5. Redeploy. When staff completes or cancels an order, customers receive a push such as: **Order Update — #ORD-… is now completed.**
+
+The mobile app registers tokens via `POST /api/customer/fcm-token` with `{ "customer_id": 1, "token": "<fcm-device-token>" }`. Tokens can also be sent on login/register as `fcm_token` or `token`.
 
 ## Deployment Steps
 
