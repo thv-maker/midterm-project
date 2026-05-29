@@ -6,13 +6,17 @@ use App\Entity\Customer;
 use App\Entity\Order;
 use App\Entity\OrderItem;
 use App\Entity\Product;
+
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Mercure\HubInterface;
+use Symfony\Component\Mercure\Update;
 
 class OrderWorkflowService
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
         private FcmNotificationService $fcm,
+        private HubInterface $mercureHub,
     ) {}
 
     public function createOrder(
@@ -82,6 +86,19 @@ class OrderWorkflowService
                 ['order_id' => (string) $order->getId(), 'type' => 'order_created'],
             );
         }
+
+        // Publish Mercure update for new order
+        $update = new Update(
+            '/orders/new',
+            json_encode([
+                'orderId' => $order->getId(),
+                'orderNumber' => $order->getOrderNumber(),
+                'customer' => $customer->getId(),
+                'total' => $order->getTotal(),
+                'createdAt' => $order->getCreatedAt()->format(DATE_ATOM),
+            ])
+        );
+        $this->mercureHub->publish($update);
 
         return $order;
     }
