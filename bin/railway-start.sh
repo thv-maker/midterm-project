@@ -54,7 +54,7 @@ php bin/console cache:warmup --env=prod --no-interaction \
 
 PUBLIC_PORT="${PORT:-8080}"
 PHP_INTERNAL_PORT="${PHP_INTERNAL_PORT:-9080}"
-export WEBSOCKET_BROADCAST_URL="${WEBSOCKET_BROADCAST_URL:-http://127.0.0.1:${PUBLIC_PORT}/broadcast}"
+export WEBSOCKET_BROADCAST_URL="http://127.0.0.1:${PUBLIC_PORT}/broadcast"
 
 echo "[railway-start] Starting PHP backend on 127.0.0.1:${PHP_INTERNAL_PORT}..."
 php -S 127.0.0.1:${PHP_INTERNAL_PORT} -t public public/index.php &
