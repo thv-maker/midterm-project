@@ -1,0 +1,51 @@
+<tr data-stock-id="{{ stock.id }}">
+    <td>
+        <div class="sm-prod-cell">
+            <div class="sm-prod-icon">
+                <i class="fas fa-coffee"></i>
+            </div>
+            <div>
+                <div class="sm-prod-name">{{ stock.product.name }}</div>
+                <div class="sm-prod-id">#{{ stock.id }}</div>
+            </div>
+        </div>
+    </td>
+    <td><span class="sm-qty">{{ stock.quantity }}</span></td>
+    <td>
+        <span style="color:var(--muted); font-size:13px;">
+            <i class="fas fa-arrow-down" style="font-size:10px; margin-right:4px;"></i>
+            {{ stock.reorderLevel }}
+        </span>
+    </td>
+    <td>
+        {% if stock.quantity == 0 %}
+            <span class="sm-badge out"><i class="fas fa-times-circle"></i> Out of Stock</span>
+        {% elseif stock.quantity <= stock.reorderLevel %}
+            <span class="sm-badge low"><i class="fas fa-exclamation-triangle"></i> Low Stock</span>
+        {% else %}
+            <span class="sm-badge healthy"><i class="fas fa-check-circle"></i> Healthy</span>
+        {% endif %}
+    </td>
+    <td>
+        <span style="color:var(--muted); font-size:13px;">
+            <i class="far fa-calendar" style="margin-right:4px;"></i>
+            {{ stock.lastUpdated ? stock.lastUpdated|date('M d, Y') : '—' }}
+        </span>
+    </td>
+    <td>
+        <span style="color:var(--muted); font-size:13px;">
+            <i class="fas fa-user" style="margin-right:4px;"></i>
+            {{ stock.createdBy ? stock.createdBy.email : 'Unknown' }}
+        </span>
+    </td>
+    <td>
+        <div class="sm-actions">
+            <a href="{{ path('app_dashboard_stock_show', {'id': stock.id}) }}" class="sm-btn view">
+                <i class="fas fa-eye"></i> View
+            </a>
+            <a href="{{ path('app_dashboard_stock_edit', {'id': stock.id}) }}" class="sm-btn edit">
+                <i class="fas fa-pen"></i> Edit
+            </a>
+        </div>
+    </td>
+</tr>

@@ -4,7 +4,7 @@
 window.CafeRealtime = (function () {
     const RECONNECT_MS = 3000;
     const MAX_RECONNECT = 20;
-    const ADMIN_TOPICS = ['/orders', '/products', '/users', '/activity-logs'];
+    const ADMIN_TOPICS = ['/orders', '/products', '/users', '/activity-logs', '/stocks'];
 
     function resolveWsUrl() {
         if (window.WEBSOCKET_PUBLIC_URL && !window.WEBSOCKET_PUBLIC_URL.includes('127.0.0.1')) {

@@ -1,0 +1,40 @@
+{% if lowStockItems is empty %}
+    <div class="db-good-stock">
+        <svg fill="none" viewbox="0 0 24 24" style="width:52px;height:52px;display:block;margin:0 auto 12px;">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <p>All stock levels are good!</p>
+        <small>No items need restocking at this time.</small>
+    </div>
+{% else %}
+    <div style="overflow-x:auto;">
+        <table class="db-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Current Qty</th>
+                    <th>Reorder Level</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stock in lowStockItems %}
+                    <tr>
+                        <td>
+                            <strong>{{ stock.product.name }}</strong>
+                        </td>
+                        <td>{{ stock.quantity }}</td>
+                        <td>{{ stock.reorderLevel }}</td>
+                        <td>
+                            {% if stock.quantity == 0 %}
+                                <span class="db-badge out">Out of Stock</span>
+                            {% else %}
+                                <span class="db-badge low">Low Stock</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}

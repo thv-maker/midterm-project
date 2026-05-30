@@ -8,8 +8,25 @@
 	<script>
 		(() => {
 const statsUrl = {{ path('app_dashboard_stats')|json_encode|raw }};
+const lowStockPanelUrl = {{ path('app_dashboard_stock_low_stock_panel')|json_encode|raw }};
 let salesChart = null;
 let refreshTimer = null;
+
+const refreshLowStockPanel = async () => {
+const panel = document.getElementById('db-low-stock-panel');
+if (!panel) return;
+try {
+const response = await fetch(lowStockPanelUrl, {
+headers: { 'X-Requested-With': 'XMLHttpRequest' },
+credentials: 'same-origin',
+});
+if (!response.ok) return;
+const html = await response.text();
+panel.outerHTML = '<div id="db-low-stock-panel">' + html.trim() + '</div>';
+} catch (e) {
+console.warn('Low stock panel refresh failed', e);
+}
+};
 
 const scheduleRefresh = () => {
 if (refreshTimer) return;
@@ -39,6 +56,7 @@ salesChart.data.labels = data.salesData.map((item, i) => item.day || 'Day ' + (i
 salesChart.data.datasets[0].data = data.salesData.map(item => parseFloat(item.total) || 0);
 salesChart.update('none');
 }
+await refreshLowStockPanel();
 } catch (e) {
 console.warn('Dashboard stats refresh failed', e);
 }
@@ -46,7 +64,7 @@ console.warn('Dashboard stats refresh failed', e);
 };
 
 try {
-CafeRealtime.connect(['/orders', '/products', '/users', '/activity-logs'], () => scheduleRefresh());
+CafeRealtime.connect(['/orders', '/products', '/users', '/activity-logs', '/stocks'], () => scheduleRefresh());
 } catch (e) {
 console.warn('WebSocket unavailable for dashboard', e);
 }
@@ -501,46 +519,9 @@ if (window.salesChart) salesChart = window.salesChart;
 				<a href="{{ path('app_dashboard_stocks') }}">See all</a>
 			{% endif %}
 		</div>
-		{% if lowStockItems is empty %}
-			<div class="db-good-stock">
-				<svg fill="none" viewbox="0 0 24 24" style="width:52px;height:52px;display:block;margin:0 auto 12px;">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-				</svg>
-				<p>All stock levels are good!</p>
-				<small>No items need restocking at this time.</small>
-			</div>
-		{% else %}
-			<div style="overflow-x:auto;">
-				<table class="db-table">
-					<thead>
-						<tr>
-							<th>Product</th>
-							<th>Current Qty</th>
-							<th>Reorder Level</th>
-							<th>Status</th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for stock in lowStockItems %}
-							<tr>
-								<td>
-									<strong>{{ stock.product.name }}</strong>
-								</td>
-								<td>{{ stock.quantity }}</td>
-								<td>{{ stock.reorderLevel }}</td>
-								<td>
-									{% if stock.quantity == 0 %}
-										<span class="db-badge out">Out of Stock</span>
-									{% else %}
-										<span class="db-badge low">Low Stock</span>
-									{% endif %}
-								</td>
-							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			</div>
-		{% endif %}
+		<div id="db-low-stock-panel">
+			{% include 'dashboard/_low_stock_panel.html.twig' %}
+		</div>
 	</div>
 
 	<div class="db-card" style="margin-top: 20px;">

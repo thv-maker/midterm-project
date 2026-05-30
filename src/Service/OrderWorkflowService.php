@@ -15,6 +15,7 @@ class OrderWorkflowService
         private EntityManagerInterface $entityManager,
         private OrderPushNotifier $orderPushNotifier,
         private OrderMercurePublisher $orderMercurePublisher,
+        private StockMercurePublisher $stockMercurePublisher,
     ) {}
 
     public function createOrder(
@@ -169,6 +170,9 @@ class OrderWorkflowService
         $this->entityManager->flush();
 
         $this->orderMercurePublisher->publishUpdated($order);
+        if ($nextStatus === 'completed') {
+            $this->stockMercurePublisher->publishForOrder($order);
+        }
         $this->orderPushNotifier->notifyOrderStatusChanged($order, $currentStatus);
     }
 

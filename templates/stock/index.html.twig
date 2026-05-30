@@ -254,21 +254,21 @@
             <div class="sm-stat-icon"><i class="fas fa-times-circle"></i></div>
             <div>
                 <div class="sm-stat-label">Out of Stock</div>
-                <div class="sm-stat-value">{{ outCount }}</div>
+                <div class="sm-stat-value" id="sm-stat-out">{{ outCount }}</div>
             </div>
         </div>
         <div class="sm-stat warning">
             <div class="sm-stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
             <div>
                 <div class="sm-stat-label">Low Stock</div>
-                <div class="sm-stat-value">{{ lowCount }}</div>
+                <div class="sm-stat-value" id="sm-stat-low">{{ lowCount }}</div>
             </div>
         </div>
         <div class="sm-stat success">
             <div class="sm-stat-icon"><i class="fas fa-check-circle"></i></div>
             <div>
                 <div class="sm-stat-label">Healthy Stock</div>
-                <div class="sm-stat-value">{{ healthyCount }}</div>
+                <div class="sm-stat-value" id="sm-stat-healthy">{{ healthyCount }}</div>
             </div>
         </div>
     </div>
@@ -277,7 +277,7 @@
     <div class="sm-card">
         <div class="sm-card-head">
             <h3><i class="fas fa-list"></i> All Stock Items</h3>
-            <span class="sm-count">{{ stocks|length }} item{{ stocks|length != 1 ? 's' : '' }} found</span>
+            <span class="sm-count" id="sm-stock-count">{{ stocks|length }} item{{ stocks|length != 1 ? 's' : '' }} found</span>
         </div>
 
         {% if stocks is empty %}
@@ -299,59 +299,9 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="sm-stocks-tbody">
                         {% for stock in stocks %}
-                        <tr>
-                            <td>
-                                <div class="sm-prod-cell">
-                                    <div class="sm-prod-icon">
-                                        <i class="fas fa-coffee"></i>
-                                    </div>
-                                    <div>
-                                        <div class="sm-prod-name">{{ stock.product.name }}</div>
-                                        <div class="sm-prod-id">#{{ stock.id }}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td><span class="sm-qty">{{ stock.quantity }}</span></td>
-                            <td>
-                                <span style="color:var(--muted); font-size:13px;">
-                                    <i class="fas fa-arrow-down" style="font-size:10px; margin-right:4px;"></i>
-                                    {{ stock.reorderLevel }}
-                                </span>
-                            </td>
-                            <td>
-                                {% if stock.quantity == 0 %}
-                                    <span class="sm-badge out"><i class="fas fa-times-circle"></i> Out of Stock</span>
-                                {% elseif stock.quantity <= stock.reorderLevel %}
-                                    <span class="sm-badge low"><i class="fas fa-exclamation-triangle"></i> Low Stock</span>
-                                {% else %}
-                                    <span class="sm-badge healthy"><i class="fas fa-check-circle"></i> Healthy</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span style="color:var(--muted); font-size:13px;">
-                                    <i class="far fa-calendar" style="margin-right:4px;"></i>
-                                    {{ stock.lastUpdated|date('M d, Y') }}
-                                </span>
-                            </td>
-                            <td>
-    <span style="color:var(--muted); font-size:13px;">
-        <i class="fas fa-user" style="margin-right:4px;"></i>
-        {{ stock.createdBy ? stock.createdBy.email : 'Unknown' }}
-    </span>
-</td>
-                            <td>
-                                <div class="sm-actions">
-                                    <a href="{{ path('app_dashboard_stock_show', {'id': stock.id}) }}" class="sm-btn view">
-                                        <i class="fas fa-eye"></i> View
-                                    </a>
-                                    <a href="{{ path('app_dashboard_stock_edit', {'id': stock.id}) }}" class="sm-btn edit">
-                                        <i class="fas fa-pen"></i> Edit
-                                    </a>
-                                </div>
-                            </td>
-                        </tr>
+                        {% include 'stock/_row.html.twig' %}
                         {% endfor %}
                     </tbody>
                 </table>
@@ -360,4 +310,118 @@
     </div>
 
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (() => {
+            const rowUrlTemplate = {{ path('app_dashboard_stock_row', { id: 0 })|json_encode|raw }}.replace('/0', '/');
+            const statsUrl = {{ path('app_dashboard_stock_stats')|json_encode|raw }};
+            const tbody = document.getElementById('sm-stocks-tbody');
+            const countEl = document.getElementById('sm-stock-count');
+            const knownIds = new Set(
+                [...document.querySelectorAll('[data-stock-id]')].map(el => parseInt(el.dataset.stockId, 10))
+            );
+
+            function updateCount() {
+                if (countEl) {
+                    const n = tbody ? tbody.querySelectorAll('[data-stock-id]').length : 0;
+                    countEl.textContent = n + ' item' + (n !== 1 ? 's' : '') + ' found';
+                }
+            }
+
+            async function refreshStats() {
+                try {
+                    const response = await fetch(statsUrl, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        credentials: 'same-origin',
+                    });
+                    if (!response.ok) return;
+                    const data = await response.json();
+                    const outEl = document.getElementById('sm-stat-out');
+                    const lowEl = document.getElementById('sm-stat-low');
+                    const healthyEl = document.getElementById('sm-stat-healthy');
+                    if (outEl) outEl.textContent = data.out;
+                    if (lowEl) lowEl.textContent = data.low;
+                    if (healthyEl) healthyEl.textContent = data.healthy;
+                } catch (e) {
+                    console.warn('Stock stats refresh failed', e);
+                }
+            }
+
+            async function fetchRow(stockId) {
+                const response = await fetch(rowUrlTemplate + stockId, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin',
+                });
+                if (!response.ok) throw new Error('Failed to load stock row');
+                return response.text();
+            }
+
+            async function insertRow(stockId) {
+                if (!tbody || knownIds.has(stockId)) return;
+                const html = await fetchRow(stockId);
+                const template = document.createElement('template');
+                template.innerHTML = html.trim();
+                const row = template.content.querySelector('[data-stock-id]');
+                if (!row) return;
+                tbody.insertBefore(row, tbody.firstChild);
+                knownIds.add(stockId);
+                updateCount();
+            }
+
+            async function refreshRow(stockId) {
+                if (!tbody) return;
+                const existing = tbody.querySelector('[data-stock-id="' + stockId + '"]');
+                if (!existing) return insertRow(stockId);
+                const html = await fetchRow(stockId);
+                const template = document.createElement('template');
+                template.innerHTML = html.trim();
+                const row = template.content.querySelector('[data-stock-id]');
+                if (row) existing.replaceWith(row);
+            }
+
+            let statsTimer = null;
+            function scheduleStatsRefresh() {
+                if (statsTimer) return;
+                statsTimer = setTimeout(async () => {
+                    statsTimer = null;
+                    await refreshStats();
+                }, 500);
+            }
+
+            async function handleEvent(payload) {
+                if (!payload?.stockId && payload?.type !== 'deleted') return;
+
+                if (payload.type === 'deleted') {
+                    const el = tbody?.querySelector('[data-stock-id="' + payload.stockId + '"]');
+                    if (el) {
+                        el.remove();
+                        knownIds.delete(payload.stockId);
+                        updateCount();
+                    }
+                    scheduleStatsRefresh();
+                    return;
+                }
+
+                if (payload.type === 'created') {
+                    await insertRow(payload.stockId);
+                    scheduleStatsRefresh();
+                    return;
+                }
+
+                if (payload.type === 'updated') {
+                    await refreshRow(payload.stockId);
+                    scheduleStatsRefresh();
+                }
+            }
+
+            try {
+                CafeRealtime.connect('/stocks', (_topic, payload) => handleEvent(payload));
+            } catch (e) {
+                console.warn('WebSocket unavailable for stocks', e);
+            }
+        })();
+    </script>
 {% endblock %}

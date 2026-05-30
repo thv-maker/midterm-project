@@ -137,7 +137,7 @@ wss.on('connection', (ws, req, url) => {
   clients.set(ws, meta);
 
   if (isAdmin) {
-    for (const topic of ['/orders', '/products', '/users', '/activity-logs']) {
+    for (const topic of ['/orders', '/products', '/users', '/activity-logs', '/stocks']) {
       meta.topics.add(topic);
     }
   }
