@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Carpe Diem</title>
+    <title>Register - Bincafe</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -11,7 +11,7 @@
 
         body {
             font-family: 'DM Sans', sans-serif;
-            background: #faf7f4;
+            background: #fff7ed;
             min-height: 100vh;
         }
 
@@ -24,7 +24,7 @@
         /* LEFT SIDE */
         .login-left {
             flex: 0 0 55%;
-            background: #3e1f0d;
+            background: #c2410c;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -55,7 +55,7 @@
             margin-bottom: 10px;
             position: relative; z-index: 1;
         }
-        .login-brand span { color: #c49a6c; }
+        .login-brand span { color: #fdba74; }
         .login-tagline {
             font-size: 15px;
             color: rgba(255,255,255,.6);
@@ -97,7 +97,7 @@
             align-items: center;
             justify-content: center;
             padding: 60px 50px;
-            background: #faf7f4;
+            background: #fff7ed;
         }
         .login-card {
             width: 100%;
@@ -106,49 +106,49 @@
         .login-card h2 {
             font-family: 'Playfair Display', serif;
             font-size: 32px;
-            color: #2b1a0f;
+            color: #431407;
             margin-bottom: 6px;
         }
-        .login-card h2 span { color: #8B5E3C; }
+        .login-card h2 span { color: #f97316; }
         .login-card .sub {
             font-size: 14px;
-            color: #9e8070;
+            color: #b45309;
             margin-bottom: 36px;
         }
 
         /* Override Symfony form styles */
         .login-card label {
             display: block; font-size: 13px;
-            font-weight: 600; color: #2b1a0f;
+            font-weight: 600; color: #431407;
             margin-bottom: 7px;
         }
         .login-card input[type="email"],
         .login-card input[type="password"],
         .login-card input[type="text"] {
             width: 100%; padding: 12px 16px;
-            border: 1.5px solid #f3ece4;
+            border: 1.5px solid #ffedd5;
             border-radius: 10px; font-size: 14px;
             font-family: 'DM Sans', sans-serif;
-            color: #2b1a0f; background: #fff;
+            color: #431407; background: #fff;
             outline: none; transition: border-color .2s;
             margin-bottom: 20px;
         }
         .login-card input[type="email"]:focus,
         .login-card input[type="password"]:focus,
         .login-card input[type="text"]:focus {
-            border-color: #8B5E3C;
+            border-color: #f97316;
         }
         .login-card .form-check {
             display: flex; align-items: center;
             gap: 8px; margin-bottom: 24px;
         }
         .login-card .form-check input[type="checkbox"] {
-            accent-color: #3e1f0d;
+            accent-color: #c2410c;
             width: 15px; height: 15px;
             margin: 0;
         }
         .login-card .form-check label {
-            font-size: 13px; color: #9e8070;
+            font-size: 13px; color: #b45309;
             font-weight: 400; margin: 0;
         }
         .login-card .invalid-feedback,
@@ -160,7 +160,7 @@
 
         .btn-login {
             width: 100%; padding: 14px;
-            background: #3e1f0d; color: #fff;
+            background: #c2410c; color: #fff;
             border: none; border-radius: 40px;
             font-size: 15px; font-weight: 700;
             cursor: pointer; transition: background .2s;
@@ -168,15 +168,15 @@
             display: flex; align-items: center;
             justify-content: center; gap: 8px;
         }
-        .btn-login:hover { background: #8B5E3C; }
+        .btn-login:hover { background: #f97316; }
 
         .back-link {
             display: block; text-align: center;
             margin-top: 20px; font-size: 13px;
-            color: #9e8070; text-decoration: none;
+            color: #b45309; text-decoration: none;
             transition: color .2s;
         }
-        .back-link:hover { color: #3e1f0d; }
+        .back-link:hover { color: #c2410c; }
 
         .alert-error {
             background: #ffebee; color: #c62828;
@@ -196,7 +196,7 @@
 
     {# LEFT SIDE #}
     <div class="login-left">
-        <div class="login-brand">● Carpe <span>Diem</span></div>
+        <div class="login-brand">● Bin<span>cafe</span></div>
         <div class="login-tagline">One cup at a time.</div>
         <div class="login-features">
             <div class="login-feat">
@@ -227,7 +227,7 @@
     <div class="login-right">
         <div class="login-card">
             <h2>Create an <span>Account</span></h2>
-            <p class="sub">Join Carpe Diem and enjoy full nutrition transparency in every cup.</p>
+            <p class="sub">Join Bincafe and enjoy full nutrition transparency in every cup.</p>
 
             {{ form_errors(registrationForm) }}
 

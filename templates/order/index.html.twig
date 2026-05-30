@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+﻿{% extends 'base.html.twig' %}
 
 {% block title %}Orders Management
 {% endblock %}
@@ -7,15 +7,15 @@
 	<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 	<style>:root
 	{
-		--brown-dark: #3e1f0d;
-		--brown-mid: #6d4c41;
-		--brown-acc: #8B5E3C;
-		--brown-light: #c49a6c;
-		--cream: #faf7f4;
-		--cream2: #f3ece4;
+		--brown-dark: #c2410c;
+		--brown-mid: #ea580c;
+		--brown-acc: #f97316;
+		--brown-light: #fdba74;
+		--cream: #fff7ed;
+		--cream2: #ffedd5;
 		--white: #ffffff;
-		--text: #2b1a0f;
-		--muted: #9e8070;
+		--text: #431407;
+		--muted: #b45309;
 	}
 
 	body {
@@ -552,7 +552,7 @@
 				if (!toast) {
 					toast = document.createElement('div');
 					toast.id = 'oi-live-toast';
-					toast.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#3e1f0d;color:#fff;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);display:flex;align-items:center;gap:10px;transition:opacity .3s;';
+					toast.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;background:#c2410c;color:#fff;padding:14px 20px;border-radius:12px;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.2);display:flex;align-items:center;gap:10px;transition:opacity .3s;';
 					document.body.appendChild(toast);
 				}
 				toast.innerHTML = '<i class="fas fa-bell"></i> ' + message;
