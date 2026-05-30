@@ -6,15 +6,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
     :root {
-        --brown-dark:  #c2410c;
-        --brown-mid:   #ea580c;
-        --brown-acc:   #f97316;
-        --brown-light: #fdba74;
-        --cream:       #fff7ed;
-        --cream2:      #ffedd5;
+        --brown-dark:  #1d4ed8;
+        --brown-mid:   #2563eb;
+        --brown-acc:   #3b82f6;
+        --brown-light: #93c5fd;
+        --cream:       #eff6ff;
+        --cream2:      #dbeafe;
         --white:       #ffffff;
-        --text:        #431407;
-        --muted:       #b45309;
+        --text:        #1e293b;
+        --muted:       #64748b;
     }
 
     body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--text); }
@@ -260,9 +260,9 @@
             function setLiveBadge(state) {
                 if (!liveBadge) return;
                 const styles = {
-                    live: { color: '#a8e6cf', text: '● Live updates active' },
-                    connecting: { color: '#fde68a', text: '○ Connecting…' },
-                    polling: { color: '#c4b5fd', text: '○ Polling for new activity…' },
+                    live: { color: '#93c5fd', text: '● Live updates active' },
+                    connecting: { color: '#bfdbfe', text: '○ Connecting…' },
+                    polling: { color: '#60a5fa', text: '○ Polling for new activity…' },
                     offline: { color: '#fca5a5', text: '○ Offline — refresh page' },
                 };
                 const s = styles[state] || styles.connecting;
@@ -443,7 +443,7 @@
     <div class="al-header">
         <div>
             <h1><i class="fas fa-history"></i> Activity Logs
-                <span id="al-live-badge" style="display:inline-flex;align-items:center;gap:6px;margin-left:8px;font-size:12px;font-weight:600;color:#a8e6cf;">
+                <span id="al-live-badge" style="display:inline-flex;align-items:center;gap:6px;margin-left:8px;font-size:12px;font-weight:600;color:#93c5fd;">
                     ○ Connecting…
                 </span>
             </h1>

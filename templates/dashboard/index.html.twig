@@ -22,9 +22,9 @@ return '₱' + Number(amount || 0).toLocaleString(undefined, { minimumFractionDi
 function setRevenueLiveBadge(state) {
 if (!revenueLiveBadge) return;
 const styles = {
-live: { color: '#a8e6cf', text: '● Live' },
-connecting: { color: '#fde68a', text: '○ Updating…' },
-polling: { color: '#c4b5fd', text: '○ Polling' },
+live: { color: '#93c5fd', text: '● Live' },
+connecting: { color: '#bfdbfe', text: '○ Updating…' },
+polling: { color: '#60a5fa', text: '○ Polling' },
 };
 const s = styles[state] || styles.connecting;
 revenueLiveBadge.style.color = s.color;
@@ -50,12 +50,12 @@ labels,
 datasets: [{
 label: 'Daily Sales (₱)',
 data: values,
-borderColor: '#f97316',
-backgroundColor: 'rgba(249,115,22,.08)',
+borderColor: '#3b82f6',
+backgroundColor: 'rgba(59,130,246,.08)',
 tension: 0.4,
 fill: true,
 borderWidth: 3,
-pointBackgroundColor: '#c2410c',
+pointBackgroundColor: '#1d4ed8',
 pointBorderColor: '#fff',
 pointBorderWidth: 2,
 pointRadius: 5,
@@ -171,15 +171,15 @@ setTimeout(refreshStats, 1000);
 	<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 	<style>:root
 	{
-		--brown-dark: #c2410c;
-		--brown-mid: #ea580c;
-		--brown-acc: #f97316;
-		--brown-light: #fdba74;
-		--cream: #fff7ed;
-		--cream2: #ffedd5;
+		--brown-dark: #1d4ed8;
+		--brown-mid: #2563eb;
+		--brown-acc: #3b82f6;
+		--brown-light: #93c5fd;
+		--cream: #eff6ff;
+		--cream2: #dbeafe;
 		--white: #ffffff;
-		--text: #431407;
-		--muted: #b45309;
+		--text: #1e293b;
+		--muted: #64748b;
 	}
 
 	body {
@@ -547,7 +547,7 @@ setTimeout(refreshStats, 1000);
 			</div>
 			<div>
 				<div class="db-stat-label">Total Revenue
-					<span id="db-revenue-live-badge" style="font-size:11px;font-weight:600;color:#a8e6cf;margin-left:6px;">● Live</span>
+					<span id="db-revenue-live-badge" style="font-size:11px;font-weight:600;color:#93c5fd;margin-left:6px;">● Live</span>
 				</div>
 				<div class="db-stat-value" id="db-stat-revenue">₱{{ totalRevenue|number_format(2) }}</div>
 				<div class="db-stat-badge {% if revenueChange >= 0 %}positive{% else %}negative{% endif %}" id="db-stat-revenue-change">

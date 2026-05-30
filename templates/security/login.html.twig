@@ -12,7 +12,7 @@
 
         body {
             font-family: 'DM Sans', sans-serif;
-            background: #fff7ed;
+            background: #eff6ff;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -28,7 +28,7 @@
         /* LEFT SIDE */
         .login-left {
             flex: 0 0 55%;
-            background: #c2410c;
+            background: #1d4ed8;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -59,7 +59,7 @@
             margin-bottom: 10px;
             position: relative; z-index: 1;
         }
-        .login-brand span { color: #fdba74; }
+        .login-brand span { color: #93c5fd; }
         .login-tagline {
             font-size: 15px;
             color: rgba(255,255,255,.6);
@@ -101,7 +101,7 @@
             align-items: center;
             justify-content: center;
             padding: 60px 50px;
-            background: #fff7ed;
+            background: #eff6ff;
         }
         .login-card {
             width: 100%;
@@ -110,49 +110,49 @@
         .login-card h2 {
             font-family: 'Playfair Display', serif;
             font-size: 32px;
-            color: #431407;
+            color: #1e293b;
             margin-bottom: 6px;
         }
-        .login-card h2 span { color: #f97316; }
+        .login-card h2 span { color: #3b82f6; }
         .login-card .sub {
             font-size: 14px;
-            color: #b45309;
+            color: #64748b;
             margin-bottom: 36px;
         }
         .ct-label {
             display: block; font-size: 13px;
-            font-weight: 600; color: #431407;
+            font-weight: 600; color: #1e293b;
             margin-bottom: 7px;
         }
         .ct-input {
             width: 100%; padding: 12px 16px;
-            border: 1.5px solid #ffedd5;
+            border: 1.5px solid #dbeafe;
             border-radius: 10px; font-size: 14px;
             font-family: 'DM Sans', sans-serif;
-            color: #431407; background: #fff;
+            color: #1e293b; background: #fff;
             outline: none; transition: border-color .2s;
             margin-bottom: 20px;
         }
-        .ct-input:focus { border-color: #f97316; }
-        .ct-input::placeholder { color: #b45309; }
+        .ct-input:focus { border-color: #3b82f6; }
+        .ct-input::placeholder { color: #64748b; }
 
         .remember-row {
             display: flex; align-items: center; gap: 8px;
             margin-bottom: 24px;
         }
-        .remember-row input { accent-color: #c2410c; width: 15px; height: 15px; }
-        .remember-row label { font-size: 13px; color: #b45309; cursor: pointer; }
+        .remember-row input { accent-color: #1d4ed8; width: 15px; height: 15px; }
+        .remember-row label { font-size: 13px; color: #64748b; cursor: pointer; }
 
         .btn-login {
             width: 100%; padding: 14px;
-            background: #c2410c; color: #fff;
+            background: #1d4ed8; color: #fff;
             border: none; border-radius: 40px;
             font-size: 15px; font-weight: 700;
             cursor: pointer; transition: background .2s;
             font-family: 'DM Sans', sans-serif;
             display: flex; align-items: center; justify-content: center; gap: 8px;
         }
-        .btn-login:hover { background: #f97316; }
+        .btn-login:hover { background: #3b82f6; }
 
         .divider {
             display: flex; align-items: center; gap: 12px;
@@ -160,17 +160,17 @@
         }
         .divider::before, .divider::after {
             content: ''; flex: 1;
-            height: 1px; background: #ffedd5;
+            height: 1px; background: #dbeafe;
         }
         .divider span {
-            font-size: 12px; color: #b45309;
+            font-size: 12px; color: #64748b;
             white-space: nowrap;
         }
 
         .btn-google {
             width: 100%; padding: 13px;
-            background: #fff; color: #431407;
-            border: 1.5px solid #ffedd5;
+            background: #fff; color: #1e293b;
+            border: 1.5px solid #dbeafe;
             border-radius: 40px;
             font-size: 15px; font-weight: 600;
             cursor: pointer; transition: all .2s;
@@ -179,18 +179,18 @@
             text-decoration: none;
         }
         .btn-google:hover {
-            border-color: #f97316;
-            color: #431407;
+            border-color: #3b82f6;
+            color: #1e293b;
             box-shadow: 0 2px 8px rgba(0,0,0,.08);
         }
 
         .back-link {
             display: block; text-align: center;
             margin-top: 20px; font-size: 13px;
-            color: #b45309; text-decoration: none;
+            color: #64748b; text-decoration: none;
             transition: color .2s;
         }
-        .back-link:hover { color: #c2410c; }
+        .back-link:hover { color: #1d4ed8; }
 
         .alert-error {
             background: #ffebee; color: #c62828;
@@ -258,7 +258,7 @@
                 <div style="position:relative;">
                     <input type="password" name="password" id="password"
                            class="ct-input" placeholder="••••••••" required style="padding-right:48px; margin-bottom:0;">
-                    <span onclick="togglePass()" style="position:absolute; right:16px; top:50%; transform:translateY(-50%); cursor:pointer; color:#b45309; font-size:16px;">
+                    <span onclick="togglePass()" style="position:absolute; right:16px; top:50%; transform:translateY(-50%); cursor:pointer; color:#64748b; font-size:16px;">
                         <i class="fas fa-eye" id="eyeIcon"></i>
                     </span>
                 </div>
