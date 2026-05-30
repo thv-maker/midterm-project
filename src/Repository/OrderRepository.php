@@ -25,7 +25,7 @@ class OrderRepository extends ServiceEntityRepository
     public function findCreatedAfter(\DateTimeImmutable $since): array
     {
         return $this->createQueryBuilder('o')
-            ->andWhere('o.createdAt > :since')
+            ->andWhere('o.createdAt >= :since')
             ->setParameter('since', $since)
             ->orderBy('o.createdAt', 'DESC')
             ->getQuery()

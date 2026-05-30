@@ -26,20 +26,25 @@ class WebSocketPublisher
                     'topic' => $topic,
                     'data' => $data,
                 ],
-                'timeout' => 2,
+                'timeout' => 3,
             ]);
 
             $status = $response->getStatusCode();
+            $body = $response->getContent(false);
+
             if ($status < 200 || $status >= 300) {
                 $this->logger->warning('WebSocket broadcast failed', [
                     'topic' => $topic,
                     'status' => $status,
+                    'body' => $body,
+                    'url' => $this->broadcastUrl,
                 ]);
             }
         } catch (\Throwable $e) {
             $this->logger->warning('WebSocket broadcast error: {message}', [
                 'topic' => $topic,
                 'message' => $e->getMessage(),
+                'url' => $this->broadcastUrl,
             ]);
         }
     }

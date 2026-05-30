@@ -57,6 +57,8 @@ PHP_INTERNAL_PORT="${PHP_INTERNAL_PORT:-9080}"
 export WEBSOCKET_BROADCAST_URL="http://127.0.0.1:${PUBLIC_PORT}/broadcast"
 
 echo "[railway-start] Starting PHP backend on 127.0.0.1:${PHP_INTERNAL_PORT}..."
+WEBSOCKET_BROADCAST_URL="http://127.0.0.1:${PUBLIC_PORT}/broadcast" \
+WEBSOCKET_SECRET="${WEBSOCKET_SECRET:-dev-websocket-secret}" \
 php -S 127.0.0.1:${PHP_INTERNAL_PORT} -t public public/index.php &
 
 echo "[railway-start] Starting WebSocket + HTTP proxy on port ${PUBLIC_PORT}..."

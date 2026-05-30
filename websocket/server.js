@@ -136,6 +136,12 @@ wss.on('connection', (ws, req, url) => {
   };
   clients.set(ws, meta);
 
+  if (isAdmin) {
+    for (const topic of ['/orders', '/products', '/users', '/activity-logs']) {
+      meta.topics.add(topic);
+    }
+  }
+
   if (meta.customerId) {
     meta.topics.add(`/customer/${meta.customerId}/orders`);
     meta.topics.add('/products');

@@ -385,7 +385,11 @@
 			<h1>
 				<i class="fas fa-shopping-bag"></i>
 				Orders Management</h1>
-			<p>View and manage all customer orders.</p>
+			<p>View and manage all customer orders.
+				<span id="oi-live-badge" style="display:inline-flex;align-items:center;gap:6px;margin-left:8px;font-size:12px;font-weight:600;color:#a8e6cf;">
+					<i class="fas fa-circle" style="font-size:8px;"></i> Connecting…
+				</span>
+			</p>
 		</div>
 		<a href="{{ path('app_order_new') }}" class="oi-add-btn">
 			<i class="fas fa-plus"></i>
@@ -491,6 +495,20 @@
 			const cancelledEl = document.getElementById('oi-stat-cancelled');
 
 			let lastSyncAt = pageLoadedAt;
+			const liveBadge = document.getElementById('oi-live-badge');
+
+			function setLiveBadge(state) {
+				if (!liveBadge) return;
+				const styles = {
+					live: { color: '#a8e6cf', text: '● Live updates active' },
+					connecting: { color: '#fde68a', text: '○ Connecting…' },
+					polling: { color: '#c4b5fd', text: '○ Polling for new orders…' },
+					offline: { color: '#fca5a5', text: '○ Offline — refresh page' },
+				};
+				const s = styles[state] || styles.connecting;
+				liveBadge.style.color = s.color;
+				liveBadge.innerHTML = s.text;
+			}
 
 			function updateOrderCount() {
 				const count = tbody ? tbody.querySelectorAll('tr[data-order-id]').length : 0;
@@ -641,7 +659,9 @@
 
 			async function pollFeed() {
 				try {
-					const response = await fetch(feedUrl + '?since=' + encodeURIComponent(lastSyncAt), {
+					const sinceDate = new Date(lastSyncAt);
+					sinceDate.setSeconds(sinceDate.getSeconds() - 3);
+					const response = await fetch(feedUrl + '?since=' + encodeURIComponent(sinceDate.toISOString()), {
 						headers: { 'X-Requested-With': 'XMLHttpRequest' },
 						credentials: 'same-origin',
 					});
@@ -659,13 +679,22 @@
 			}
 
 			try {
-				CafeRealtime.connect('/orders', (_topic, payload) => handleOrderEvent(payload));
+				CafeRealtime.connect('/orders', (_topic, payload) => handleOrderEvent(payload), (status) => {
+					if (status === 'subscribed') {
+						setLiveBadge('live');
+					} else if (status === 'connected' || status === 'connecting') {
+						setLiveBadge('connecting');
+					} else if (status === 'disconnected' || status === 'error') {
+						setLiveBadge('polling');
+					}
+				});
 			} catch (e) {
 				console.warn('WebSocket unavailable, using polling only', e);
+				setLiveBadge('polling');
 			}
 
-			setInterval(pollFeed, 5000);
-			setTimeout(pollFeed, 1500);
+			setInterval(pollFeed, 3000);
+			setTimeout(pollFeed, 800);
 		})();
 	</script>
 {% endblock %}
