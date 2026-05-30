@@ -186,6 +186,85 @@
 </style>
 {% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (() => {
+            const rowUrlTemplate = {{ path('app_user_row', { id: 0 })|json_encode|raw }}.replace('/0', '/');
+            const tbody = document.getElementById('um-users-tbody');
+            const countEl = document.querySelector('.um-count');
+            const knownIds = new Set(
+                [...document.querySelectorAll('[data-user-id]')].map(el => parseInt(el.dataset.userId, 10))
+            );
+
+            function updateCount() {
+                if (countEl) {
+                    const n = tbody ? tbody.querySelectorAll('[data-user-id]').length : 0;
+                    countEl.textContent = n + ' user' + (n !== 1 ? 's' : '') + ' found';
+                }
+            }
+
+            async function fetchRow(userId) {
+                const response = await fetch(rowUrlTemplate + userId, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin',
+                });
+                if (!response.ok) throw new Error('Failed to load user row');
+                return response.text();
+            }
+
+            async function insertRow(userId) {
+                if (!tbody || knownIds.has(userId)) return;
+                const html = await fetchRow(userId);
+                const template = document.createElement('template');
+                template.innerHTML = html.trim();
+                const row = template.content.querySelector('[data-user-id]');
+                if (!row) return;
+                tbody.insertBefore(row, tbody.firstChild);
+                knownIds.add(userId);
+                updateCount();
+            }
+
+            async function refreshRow(userId) {
+                if (!tbody) return;
+                const existing = tbody.querySelector('[data-user-id="' + userId + '"]');
+                if (!existing) return insertRow(userId);
+                const html = await fetchRow(userId);
+                const template = document.createElement('template');
+                template.innerHTML = html.trim();
+                const row = template.content.querySelector('[data-user-id]');
+                if (row) existing.replaceWith(row);
+            }
+
+            async function handleEvent(payload) {
+                if (!payload?.userId) return;
+                if (payload.type === 'deleted') {
+                    const el = tbody?.querySelector('[data-user-id="' + payload.userId + '"]');
+                    if (el) {
+                        el.remove();
+                        knownIds.delete(payload.userId);
+                        updateCount();
+                    }
+                    return;
+                }
+                if (payload.type === 'created') {
+                    await insertRow(payload.userId);
+                    return;
+                }
+                if (payload.type === 'updated') {
+                    await refreshRow(payload.userId);
+                }
+            }
+
+            try {
+                CafeRealtime.connect('/users', (_topic, payload) => handleEvent(payload));
+            } catch (e) {
+                console.warn('WebSocket unavailable for users', e);
+            }
+        })();
+    </script>
+{% endblock %}
+
 {% block body %}
 <div class="um-wrap">
 
@@ -224,74 +303,9 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="um-users-tbody">
                         {% for user in users %}
-                        <tr>
-                            <td>
-                                <div class="um-user-cell">
-                                    <div class="um-avatar">
-                                        <i class="fas fa-user"></i>
-                                    </div>
-                                    <div>
-                                        <div class="um-user-email">{{ user.email }}</div>
-                                        <div class="um-user-id">#{{ user.id }}</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                {% if 'ROLE_ADMIN' in user.roles %}
-                                    <span class="um-badge admin"><i class="fas fa-crown"></i> Admin</span>
-                                {% elseif 'ROLE_STAFF' in user.roles %}
-                                    <span class="um-badge staff"><i class="fas fa-user-tie"></i> Staff</span>
-                                {% else %}
-                                    <span class="um-badge user"><i class="fas fa-user"></i> User</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                {% if user.isActive %}
-                                    <span class="um-badge active"><i class="fas fa-check-circle"></i> Active</span>
-                                {% else %}
-                                    <span class="um-badge inactive"><i class="fas fa-times-circle"></i> Inactive</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span style="color:var(--muted); font-size:13px;">
-                                    {% if user.lastLogin %}
-                                        <i class="far fa-clock" style="margin-right:4px;"></i>
-                                        {{ user.lastLogin|date('M d, Y h:i A') }}
-                                    {% else %}
-                                        <i class="fas fa-minus" style="margin-right:4px;opacity:.4;"></i> Never
-                                    {% endif %}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="um-actions">
-                                    <a href="{{ path('app_user_show', {'id': user.id}) }}" class="um-btn view">
-                                        <i class="fas fa-eye"></i> View
-                                    </a>
-                                    <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="um-btn edit">
-                                        <i class="fas fa-pen"></i> Edit
-                                    </a>
-                                    <form method="post" action="{{ path('app_user_toggle_status', {'id': user.id}) }}"
-                                          class="um-btn-form"
-                                          onsubmit="return confirm('Are you sure you want to {{ user.isActive ? 'deactivate' : 'activate' }} this user?');">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ user.id) }}">
-                                        <button class="um-btn {{ user.isActive ? 'deactivate' : 'activate' }}">
-                                            <i class="fas fa-{{ user.isActive ? 'ban' : 'check' }}"></i>
-                                            {{ user.isActive ? 'Deactivate' : 'Activate' }}
-                                        </button>
-                                    </form>
-                                    <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}"
-                                          class="um-btn-form"
-                                          onsubmit="return confirm('Are you sure you want to delete this user?');">
-                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                        <button class="um-btn delete">
-                                            <i class="fas fa-trash"></i> Delete
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
+                        {% include 'user/_row.html.twig' %}
                         {% endfor %}
                     </tbody>
                 </table>

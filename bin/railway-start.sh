@@ -52,5 +52,21 @@ php bin/console cache:clear --env=prod --no-warmup --no-interaction \
 php bin/console cache:warmup --env=prod --no-interaction \
   || echo "[railway-start] WARNING: cache:warmup failed"
 
-echo "[railway-start] Starting PHP server on port ${PORT:-8080}"
-exec php -S 0.0.0.0:${PORT:-8080} -t public public/index.php
+PUBLIC_PORT="${PORT:-8080}"
+PHP_INTERNAL_PORT="${PHP_INTERNAL_PORT:-9080}"
+export WEBSOCKET_BROADCAST_URL="${WEBSOCKET_BROADCAST_URL:-http://127.0.0.1:${PUBLIC_PORT}/broadcast}"
+
+echo "[railway-start] Starting PHP backend on 127.0.0.1:${PHP_INTERNAL_PORT}..."
+php -S 127.0.0.1:${PHP_INTERNAL_PORT} -t public public/index.php &
+
+echo "[railway-start] Starting WebSocket + HTTP proxy on port ${PUBLIC_PORT}..."
+if [ -f "websocket/server.js" ]; then
+  (cd websocket && npm install --omit=dev && \
+    PORT="${PUBLIC_PORT}" \
+    PHP_BACKEND_URL="http://127.0.0.1:${PHP_INTERNAL_PORT}" \
+    WEBSOCKET_SECRET="${WEBSOCKET_SECRET:-dev-websocket-secret}" \
+    node server.js)
+else
+  echo "[railway-start] ERROR: websocket/server.js not found"
+  exit 1
+fi

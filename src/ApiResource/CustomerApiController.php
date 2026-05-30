@@ -29,6 +29,7 @@ class CustomerApiController extends AbstractController
         private OrderWorkflowService $orderWorkflowService,
         private ActivityLoggerService $activityLogger,
         private OrderPushNotifier $orderPushNotifier,
+        private string $websocketPublicUrl,
     ) {}
 
     #[Route('/register', name: 'api_customer_register', methods: ['POST'])]
@@ -384,6 +385,25 @@ class CustomerApiController extends AbstractController
             'phone' => $customer->getPhone(),
             'address' => $customer->getAddress(),
             'total_orders' => $customer->getOrders()->count(),
+        ]);
+    }
+
+    #[Route('/realtime', name: 'api_customer_realtime', methods: ['GET'])]
+    public function realtime(Request $request, CustomerRepository $customerRepository): JsonResponse
+    {
+        $customerId = (int) $request->query->get('customer_id', 0);
+        if ($customerId <= 0) {
+            return $this->json(['error' => 'customer_id is required.'], 400);
+        }
+
+        $customer = $customerRepository->find($customerId);
+        if (!$customer instanceof Customer) {
+            return $this->json(['error' => 'Customer not found.'], 404);
+        }
+
+        return $this->json([
+            'ws_url' => $this->websocketPublicUrl . '?customer_id=' . $customerId,
+            'customer_id' => $customerId,
         ]);
     }
 

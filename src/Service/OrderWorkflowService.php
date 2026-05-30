@@ -234,6 +234,8 @@ class OrderWorkflowService
 
         $this->entityManager->flush();
 
+        $this->orderMercurePublisher->publishUpdated($order);
+
         return $order;
     }
 

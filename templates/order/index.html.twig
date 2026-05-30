@@ -616,6 +616,18 @@
 					return;
 				}
 
+				if (payload.type === 'deleted') {
+					const existing = tbody?.querySelector('tr[data-order-id="' + payload.orderId + '"]');
+					if (existing) {
+						const previousStatus = statusFromRow(existing);
+						if (previousStatus) adjustStat(previousStatus, -1);
+						existing.remove();
+						knownOrderIds.delete(payload.orderId);
+						updateOrderCount();
+					}
+					return;
+				}
+
 				if (payload.type === 'created') {
 					await insertOrderRow(payload.orderId);
 					return;
@@ -647,21 +659,9 @@
 			}
 
 			try {
-				const mercureUrl = new URL({{ mercure('/orders')|json_encode|raw }});
-				const eventSource = new EventSource(mercureUrl);
-				eventSource.onmessage = (event) => {
-					try {
-						const payload = JSON.parse(event.data);
-						handleOrderEvent(payload);
-					} catch (e) {
-						console.warn('Invalid Mercure payload', e);
-					}
-				};
-				eventSource.onerror = () => {
-					eventSource.close();
-				};
+				CafeRealtime.connect('/orders', (_topic, payload) => handleOrderEvent(payload));
 			} catch (e) {
-				console.warn('Mercure unavailable, using polling only', e);
+				console.warn('WebSocket unavailable, using polling only', e);
 			}
 
 			setInterval(pollFeed, 5000);

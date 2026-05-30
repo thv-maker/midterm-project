@@ -5,6 +5,7 @@ namespace App\Service;
 
 use App\Entity\ActivityLog;
 use App\Entity\User;
+use App\Service\ActivityLogMercurePublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -14,15 +15,18 @@ class ActivityLoggerService
     private EntityManagerInterface $entityManager;
     private Security $security;
     private RequestStack $requestStack;
+    private ActivityLogMercurePublisher $activityLogPublisher;
 
     public function __construct(
         EntityManagerInterface $entityManager,
         Security $security,
-        RequestStack $requestStack
+        RequestStack $requestStack,
+        ActivityLogMercurePublisher $activityLogPublisher
     ) {
         $this->entityManager = $entityManager;
         $this->security = $security;
         $this->requestStack = $requestStack;
+        $this->activityLogPublisher = $activityLogPublisher;
     }
 
     /**
@@ -152,6 +156,8 @@ class ActivityLoggerService
 
         $this->entityManager->persist($activityLog);
         $this->entityManager->flush();
+
+        $this->activityLogPublisher->publishCreated($activityLog);
     }
 
     /**

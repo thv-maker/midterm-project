@@ -33,6 +33,24 @@ class OrderRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return list<array{type: string, orderId: int}>
+     */
+    public function findFeedEventsAfter(\DateTimeImmutable $since): array
+    {
+        $created = $this->findCreatedAfter($since);
+        $events = [];
+
+        foreach ($created as $order) {
+            $id = $order->getId();
+            if ($id) {
+                $events[] = ['type' => 'created', 'orderId' => $id];
+            }
+        }
+
+        return $events;
+    }
+
+    /**
      * Get total revenue from all orders
      */
     public function getTotalRevenue(): float

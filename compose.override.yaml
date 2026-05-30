@@ -1,7 +1,7 @@
 
 services:
-###> symfony/mercure-bundle ###
-  mercure:
+###> websocket ###
+  websocket:
     ports:
-      - "80"
-###< symfony/mercure-bundle ###
+      - "8081:8081"
+###< websocket ###

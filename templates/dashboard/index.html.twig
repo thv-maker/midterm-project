@@ -3,6 +3,61 @@
 {% block title %}Dashboard
 {% endblock %}
 
+{% block javascripts %}
+	{{ parent() }}
+	<script>
+		(() => {
+const statsUrl = {{ path('app_dashboard_stats')|json_encode|raw }};
+let salesChart = null;
+let refreshTimer = null;
+
+const scheduleRefresh = () => {
+if (refreshTimer) return;
+refreshTimer = setTimeout(async () => {
+refreshTimer = null;
+try {
+const response = await fetch(statsUrl, {
+headers: { 'X-Requested-With': 'XMLHttpRequest' },
+credentials: 'same-origin',
+});
+if (!response.ok) return;
+const data = await response.json();
+const productsEl = document.getElementById('db-stat-products');
+const stocksEl = document.getElementById('db-stat-stocks');
+const revenueEl = document.getElementById('db-stat-revenue');
+const changeEl = document.getElementById('db-stat-revenue-change');
+if (productsEl) productsEl.textContent = data.totalProducts;
+if (stocksEl) stocksEl.textContent = data.totalStocks;
+if (revenueEl) revenueEl.textContent = '₱' + Number(data.totalRevenue).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+if (changeEl) {
+const change = Number(data.revenueChange);
+changeEl.textContent = (change >= 0 ? '+' : '') + change.toFixed(1) + '% from yesterday';
+changeEl.className = 'db-stat-badge ' + (change >= 0 ? 'positive' : 'negative');
+}
+if (salesChart && Array.isArray(data.salesData) && data.salesData.length) {
+salesChart.data.labels = data.salesData.map((item, i) => item.day || 'Day ' + (i + 1));
+salesChart.data.datasets[0].data = data.salesData.map(item => parseFloat(item.total) || 0);
+salesChart.update('none');
+}
+} catch (e) {
+console.warn('Dashboard stats refresh failed', e);
+}
+}, 800);
+};
+
+try {
+CafeRealtime.connect(['/orders', '/products', '/users', '/activity-logs'], () => scheduleRefresh());
+} catch (e) {
+console.warn('WebSocket unavailable for dashboard', e);
+}
+
+window.addEventListener('load', () => {
+if (window.salesChart) salesChart = window.salesChart;
+});
+})();
+	</script>
+{% endblock %}
+
 {% block stylesheets %}
 	<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 	<style>:root
@@ -48,7 +103,7 @@
 		width: 200px;
 		height: 200px;
 		border-radius: 50%;
-		background: rgba(255, 255, 255, .04);
+		background: rgba(255, 255, 255, 0.04);
 	}
 	.db-header-text h1 {
 		font-family: 'Playfair Display', serif;
@@ -59,7 +114,7 @@
 	}
 	.db-header-text p {
 		font-size: 13px;
-		color: rgba(255, 255, 255, .55);
+		color: rgba(255, 255, 255, 0.55);
 		margin: 0;
 	}
 	.db-user {
@@ -81,14 +136,14 @@
 	}
 	.db-user-email {
 		font-size: 13px;
-		color: rgba(255, 255, 255, .8);
+		color: rgba(255, 255, 255, 0.8);
 		font-weight: 500;
 	}
 	.db-avatar {
 		width: 46px;
 		height: 46px;
-		background: rgba(255, 255, 255, .12);
-		border: 2px solid rgba(255, 255, 255, .2);
+		background: rgba(255, 255, 255, 0.12);
+		border: 2px solid rgba(255, 255, 255, 0.2);
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
@@ -110,13 +165,13 @@
 		display: flex;
 		align-items: center;
 		gap: 18px;
-		box-shadow: 0 2px 12px rgba(0, 0, 0, .05);
+		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
 		transition: transform 0.3s, box-shadow 0.3s;
 		border-left: 4px solid var(--brown-acc);
 	}
 	.db-stat:hover {
 		transform: translateY(-4px);
-		box-shadow: 0 10px 28px rgba(0, 0, 0, .09);
+		box-shadow: 0 10px 28px rgba(0, 0, 0, 0.09);
 	}
 	.db-stat-icon {
 		width: 54px;
@@ -174,7 +229,7 @@
 		background: var(--white);
 		border-radius: 16px;
 		padding: 26px;
-		box-shadow: 0 2px 12px rgba(0, 0, 0, .05);
+		box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
 	}
 	.db-card-header {
 		display: flex;
@@ -363,7 +418,7 @@
 			</div>
 			<div>
 				<div class="db-stat-label">Total Products</div>
-				<div class="db-stat-value">{{ totalProducts }}</div>
+				<div class="db-stat-value" id="db-stat-products">{{ totalProducts }}</div>
 				<div class="db-stat-badge">Products in system</div>
 			</div>
 		</div>
@@ -373,7 +428,7 @@
 			</div>
 			<div>
 				<div class="db-stat-label">Stock Items</div>
-				<div class="db-stat-value">{{ totalStocks }}</div>
+				<div class="db-stat-value" id="db-stat-stocks">{{ totalStocks }}</div>
 				<div class="db-stat-badge">Items in inventory</div>
 			</div>
 		</div>
@@ -383,8 +438,8 @@
 			</div>
 			<div>
 				<div class="db-stat-label">Total Revenue</div>
-				<div class="db-stat-value">₱{{ totalRevenue|number_format(2) }}</div>
-				<div class="db-stat-badge {% if revenueChange >= 0 %}positive{% else %}negative{% endif %}">
+				<div class="db-stat-value" id="db-stat-revenue">₱{{ totalRevenue|number_format(2) }}</div>
+				<div class="db-stat-badge {% if revenueChange >= 0 %}positive{% else %}negative{% endif %}" id="db-stat-revenue-change">
 					{% if revenueChange >= 0 %}+
 					{% endif %}
 					{{ revenueChange|number_format(1) }}% from yesterday
@@ -532,15 +587,17 @@ const ctx = document.getElementById('salesChart');
 if (! ctx) 
 return;
 
+
 const rawData = {{ salesData|json_encode|raw }};
 if (!Array.isArray(rawData) || rawData.length === 0) 
 return;
+
 
 const labels = rawData.map((item, i) => item.day || 'Day ' + (
 i + 1
 ));
 const data = rawData.map(item => parseFloat(item.total) || 0);
-new Chart(ctx, {
+window.salesChart = new Chart(ctx, {
 type: 'line',
 data: {
 labels,

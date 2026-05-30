@@ -6,6 +6,7 @@ use App\Entity\Order;
 use App\Repository\OrderRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\ProductRepository;
+use App\Service\OrderMercurePublisher;
 use App\Service\OrderWorkflowService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -42,17 +43,9 @@ class OrderController extends AbstractController
             return $this->json(['error' => 'Invalid since timestamp.'], 400);
         }
 
-        $orders = $orderRepository->findCreatedAfter($since);
+        $orders = $orderRepository->findFeedEventsAfter($since);
 
-        return $this->json([
-            'orders' => array_map(
-                static fn (Order $order) => [
-                    'type' => 'created',
-                    'orderId' => $order->getId(),
-                ],
-                $orders,
-            ),
-        ]);
+        return $this->json(['orders' => $orders]);
     }
 
     #[Route('/row/{id}', name: 'app_order_row', methods: ['GET'])]
@@ -154,13 +147,22 @@ class OrderController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_order_delete', methods: ['POST'])]
-    public function delete(Request $request, Order $order, EntityManagerInterface $entityManager): Response
-    {
+    public function delete(
+        Request $request,
+        Order $order,
+        EntityManagerInterface $entityManager,
+        OrderMercurePublisher $orderMercurePublisher,
+    ): Response {
         if ($this->isCsrfTokenValid('delete' . $order->getId(), $request->request->get('_token'))) {
             // Only allow deleting pending orders
             if ($order->getStatus() === 'pending') {
+                $orderId = $order->getId();
+                $customerId = $order->getCustomer()?->getId();
                 $entityManager->remove($order);
                 $entityManager->flush();
+                if ($orderId) {
+                    $orderMercurePublisher->publishDeleted($orderId, $customerId);
+                }
                 $this->addFlash('success', 'Order deleted successfully!');
             } else {
                 $this->addFlash('error', 'Cannot delete completed or cancelled orders.');

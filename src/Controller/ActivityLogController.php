@@ -3,8 +3,10 @@
 
 namespace App\Controller;
 
+use App\Entity\ActivityLog;
 use App\Repository\ActivityLogRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -22,6 +24,25 @@ class ActivityLogController extends AbstractController
         return $this->render('activity_log/index.html.twig', [
             'logs' => $logs,
             'statistics' => $statistics,
+        ]);
+    }
+
+    #[Route('/row/{id}', name: 'app_activity_log_row', methods: ['GET'])]
+    public function row(ActivityLog $log): Response
+    {
+        return $this->render('activity_log/_row.html.twig', [
+            'log' => $log,
+        ]);
+    }
+
+    #[Route('/stats', name: 'app_activity_log_stats', methods: ['GET'])]
+    public function stats(ActivityLogRepository $activityLogRepository): JsonResponse
+    {
+        $statistics = $activityLogRepository->getStatistics();
+
+        return $this->json([
+            'total' => $statistics['total'],
+            'today' => $statistics['today'],
         ]);
     }
 

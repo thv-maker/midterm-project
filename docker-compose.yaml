@@ -21,42 +21,26 @@ services:
       PMA_USER: dguzman
       PMA_PASSWORD: 1234
     ports:
-      - "${PHPMYADMIN_HOST_PORT:-8081}:80"
+      - "${PHPMYADMIN_HOST_PORT:-8082}:80"
     depends_on:
       - mysql
     networks:
       - jimzcafe_default
 
-  ###> symfony/mercure-bundle ###
-  mercure:
-    image: dunglas/mercure
+  ###> websocket ###
+  websocket:
+    build: ./websocket
     restart: unless-stopped
     environment:
-      # Uncomment the following line to disable HTTPS,
-      #SERVER_NAME: ':80'
-      MERCURE_PUBLISHER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
-      MERCURE_SUBSCRIBER_JWT_KEY: '!ChangeThisMercureHubJWTSecretKey!'
-      # Set the URL of your Symfony project (without trailing slash!) as value of the cors_origins directive
-      MERCURE_EXTRA_DIRECTIVES: |
-        cors_origins http://127.0.0.1:8000
-    # Comment the following line to disable the development mode
-    command: /usr/bin/caddy run --config /etc/caddy/dev.Caddyfile
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "https://localhost/healthz" ]
-      timeout: 5s
-      retries: 5
-      start_period: 60s
-    volumes:
-      - mercure_data:/data
-      - mercure_config:/config
-###< symfony/mercure-bundle ###
+      WEBSOCKET_PORT: 8081
+      WEBSOCKET_SECRET: 'dev-websocket-secret'
+    ports:
+      - "${WEBSOCKET_HOST_PORT:-8081}:8081"
+    networks:
+      - jimzcafe_default
+  ###< websocket ###
 
 volumes:
-
-  ###> symfony/mercure-bundle ###
-  mercure_data:
-  mercure_config: ###< symfony/mercure-bundle ###
-
   mysql_data:
 
 networks:

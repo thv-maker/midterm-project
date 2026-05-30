@@ -6,6 +6,9 @@
 parameters:
     firebase.project_id_default: ''
     firebase.service_account_default: ''
+    websocket_default_broadcast_url: 'http://127.0.0.1:8081/broadcast'
+    websocket_default_public_url: 'ws://127.0.0.1:8081/ws'
+    websocket_default_secret: 'dev-websocket-secret'
 
 services:
     # default configuration for services in *this* file
@@ -25,3 +28,12 @@ services:
         arguments:
             $firebaseProjectId: '%env(default:firebase.project_id_default:FIREBASE_PROJECT_ID)%'
             $firebaseServiceAccount: '%env(default:firebase.service_account_default:FIREBASE_SERVICE_ACCOUNT_B64)%'
+
+    App\Service\WebSocketPublisher:
+        arguments:
+            $broadcastUrl: '%env(default:websocket_default_broadcast_url:WEBSOCKET_BROADCAST_URL)%'
+            $broadcastSecret: '%env(default:websocket_default_secret:WEBSOCKET_SECRET)%'
+
+    App\ApiResource\CustomerApiController:
+        arguments:
+            $websocketPublicUrl: '%env(default:websocket_default_public_url:WEBSOCKET_PUBLIC_URL)%'

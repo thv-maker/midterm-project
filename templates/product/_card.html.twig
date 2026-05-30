@@ -1,0 +1,59 @@
+<div class="pd-card" data-product-id="{{ product.id }}">
+    <div class="pd-card-body">
+        <div class="pd-card-top">
+            <h3 class="pd-card-name">{{ product.name }}</h3>
+            <span class="pd-cat-badge"><i class="fas fa-tag"></i> {{ product.category }}</span>
+        </div>
+
+        <div class="pd-price">₱{{ product.price|number_format(2) }}</div>
+
+        <div class="pd-nutrition">
+            <div class="pd-nut-title">
+                <i class="fas fa-clipboard-list"></i> Nutritional Information
+            </div>
+            <div class="pd-nut-row">
+                <span class="pd-nut-label"><i class="fas fa-fire"></i> Calories</span>
+                <span class="pd-nut-value">{{ product.calories }} kcal</span>
+            </div>
+            <div class="pd-nut-row">
+                <span class="pd-nut-label"><i class="fas fa-cubes"></i> Sugar</span>
+                <span class="pd-nut-value">{{ product.sugarGrams }} g</span>
+            </div>
+            <div class="pd-nut-row">
+                <span class="pd-nut-label"><i class="fas fa-bolt"></i> Caffeine</span>
+                <span class="pd-nut-value">{{ product.caffeineMg }} mg</span>
+            </div>
+        </div>
+
+        {% set totalStock = 0 %}
+        {% for stock in product.stocks %}
+            {% set totalStock = totalStock + stock.quantity %}
+        {% endfor %}
+
+        {% if product.stocks is empty or totalStock == 0 %}
+            <div class="pd-stock out">
+                <span class="pd-stock-left"><i class="fas fa-times-circle"></i> Out of Stock</span>
+                <span>0 units left</span>
+            </div>
+        {% elseif totalStock <= 20 %}
+            <div class="pd-stock low">
+                <span class="pd-stock-left"><i class="fas fa-exclamation-triangle"></i> Low Stock</span>
+                <span>{{ totalStock }} units left</span>
+            </div>
+        {% else %}
+            <div class="pd-stock healthy">
+                <span class="pd-stock-left"><i class="fas fa-check-circle"></i> In Stock</span>
+                <span>{{ totalStock }} units left</span>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="pd-card-footer">
+        <a href="{{ path('app_dashboard_product_show', {'id': product.id}) }}" class="pd-btn view">
+            <i class="fas fa-eye"></i> View
+        </a>
+        <a href="{{ path('app_dashboard_product_edit', {'id': product.id}) }}" class="pd-btn edit">
+            <i class="fas fa-pen"></i> Edit
+        </a>
+    </div>
+</div>

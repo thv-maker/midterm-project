@@ -252,74 +252,82 @@
             </a>
         </div>
     {% else %}
-        <div class="pd-grid">
+        <div class="pd-grid" id="pd-grid">
             {% for product in products %}
-
-            {# ── compute total stock for this product ── #}
-            {% set totalStock = 0 %}
-            {% for stock in product.stocks %}
-                {% set totalStock = totalStock + stock.quantity %}
-            {% endfor %}
-
-            <div class="pd-card">
-                <div class="pd-card-body">
-                    <div class="pd-card-top">
-                        <h3 class="pd-card-name">{{ product.name }}</h3>
-                        <span class="pd-cat-badge"><i class="fas fa-tag"></i> {{ product.category }}</span>
-                    </div>
-
-                    <div class="pd-price">₱{{ product.price|number_format(2) }}</div>
-
-                    <div class="pd-nutrition">
-                        <div class="pd-nut-title">
-                            <i class="fas fa-clipboard-list"></i> Nutritional Information
-                        </div>
-                        <div class="pd-nut-row">
-                            <span class="pd-nut-label"><i class="fas fa-fire"></i> Calories</span>
-                            <span class="pd-nut-value">{{ product.calories }} kcal</span>
-                        </div>
-                        <div class="pd-nut-row">
-                            <span class="pd-nut-label"><i class="fas fa-cubes"></i> Sugar</span>
-                            <span class="pd-nut-value">{{ product.sugarGrams }} g</span>
-                        </div>
-                        <div class="pd-nut-row">
-                            <span class="pd-nut-label"><i class="fas fa-bolt"></i> Caffeine</span>
-                            <span class="pd-nut-value">{{ product.caffeineMg }} mg</span>
-                        </div>
-                    </div>
-
-                    {# ── STOCK INDICATOR ── #}
-                    {% if product.stocks is empty or totalStock == 0 %}
-                        <div class="pd-stock out">
-                            <span class="pd-stock-left"><i class="fas fa-times-circle"></i> Out of Stock</span>
-                            <span>0 units left</span>
-                        </div>
-                    {% elseif totalStock <= 20 %}
-                        <div class="pd-stock low">
-                            <span class="pd-stock-left"><i class="fas fa-exclamation-triangle"></i> Low Stock</span>
-                            <span>{{ totalStock }} units left</span>
-                        </div>
-                    {% else %}
-                        <div class="pd-stock healthy">
-                            <span class="pd-stock-left"><i class="fas fa-check-circle"></i> In Stock</span>
-                            <span>{{ totalStock }} units left</span>
-                        </div>
-                    {% endif %}
-
-                </div>
-
-                <div class="pd-card-footer">
-                    <a href="{{ path('app_dashboard_product_show', {'id': product.id}) }}" class="pd-btn view">
-                        <i class="fas fa-eye"></i> View
-                    </a>
-                    <a href="{{ path('app_dashboard_product_edit', {'id': product.id}) }}" class="pd-btn edit">
-                        <i class="fas fa-pen"></i> Edit
-                    </a>
-                </div>
-            </div>
+            {% include 'product/_card.html.twig' %}
             {% endfor %}
         </div>
     {% endif %}
 
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (() => {
+            const cardUrlTemplate = {{ path(productCardRoute|default('app_dashboard_product_card'), { id: 0 })|json_encode|raw }}.replace('/0', '/');
+            const grid = document.getElementById('pd-grid');
+            const knownIds = new Set(
+                [...document.querySelectorAll('[data-product-id]')].map(el => parseInt(el.dataset.productId, 10))
+            );
+
+            async function fetchCard(productId) {
+                const response = await fetch(cardUrlTemplate + productId, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin',
+                });
+                if (!response.ok) throw new Error('Failed to load product card');
+                return response.text();
+            }
+
+            async function insertCard(productId) {
+                if (!grid || knownIds.has(productId)) return;
+                const html = await fetchCard(productId);
+                const template = document.createElement('template');
+                template.innerHTML = html.trim();
+                const card = template.content.querySelector('[data-product-id]');
+                if (!card) return;
+                card.classList.add('pd-card-new');
+                grid.insertBefore(card, grid.firstChild);
+                knownIds.add(productId);
+            }
+
+            async function refreshCard(productId) {
+                if (!grid) return;
+                const existing = grid.querySelector('[data-product-id="' + productId + '"]');
+                if (!existing) return insertCard(productId);
+                const html = await fetchCard(productId);
+                const template = document.createElement('template');
+                template.innerHTML = html.trim();
+                const card = template.content.querySelector('[data-product-id]');
+                if (card) existing.replaceWith(card);
+            }
+
+            async function handleEvent(payload) {
+                if (!payload?.productId) return;
+                if (payload.type === 'deleted') {
+                    const el = grid?.querySelector('[data-product-id="' + payload.productId + '"]');
+                    if (el) {
+                        el.remove();
+                        knownIds.delete(payload.productId);
+                    }
+                    return;
+                }
+                if (payload.type === 'created') {
+                    await insertCard(payload.productId);
+                    return;
+                }
+                if (payload.type === 'updated') {
+                    await refreshCard(payload.productId);
+                }
+            }
+
+            try {
+                CafeRealtime.connect('/products', (_topic, payload) => handleEvent(payload));
+            } catch (e) {
+                console.warn('WebSocket unavailable for products', e);
+            }
+        })();
+    </script>
 {% endblock %}

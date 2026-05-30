@@ -1,5 +1,7 @@
 twig:
     file_name_pattern: '*.twig'
+    globals:
+        websocket_public_url: '%env(default:websocket_default_public_url:WEBSOCKET_PUBLIC_URL)%'
 
 when@test:
     twig:

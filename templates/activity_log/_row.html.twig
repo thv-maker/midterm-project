@@ -1,0 +1,35 @@
+<tr data-log-id="{{ log.id }}">
+    <td><strong style="color:var(--muted);">#{{ log.userId }}</strong></td>
+    <td>
+        <a href="{{ path('app_activity_log_by_user', {userId: log.userId}) }}" class="al-user-link">
+            <i class="fas fa-user" style="font-size:11px;"></i>
+            {{ log.username }}
+        </a>
+    </td>
+    <td><span class="al-badge role">{{ log.formattedRole }}</span></td>
+    <td>
+        <span class="al-badge {{ log.action|lower }}">
+            {% if log.action == 'LOGIN' %}<i class="fas fa-sign-in-alt"></i>
+            {% elseif log.action == 'LOGOUT' %}<i class="fas fa-sign-out-alt"></i>
+            {% elseif log.action == 'CREATE' %}<i class="fas fa-plus"></i>
+            {% elseif log.action == 'UPDATE' %}<i class="fas fa-edit"></i>
+            {% elseif log.action == 'DELETE' %}<i class="fas fa-trash"></i>
+            {% endif %}
+            {{ log.action }}
+        </span>
+    </td>
+    <td>{{ log.targetData }}</td>
+    <td>
+        <div class="al-timestamp">
+            <i class="far fa-clock"></i>
+            {{ log.dateTime|date('M d, Y') }}<br>
+            <small>{{ log.dateTime|date('h:i:s A') }}</small>
+        </div>
+    </td>
+    <td>
+        <span class="al-ip">
+            <i class="fas fa-globe"></i>
+            {{ log.ipAddress ?? 'N/A' }}
+        </span>
+    </td>
+</tr>

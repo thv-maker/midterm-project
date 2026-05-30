@@ -227,6 +227,81 @@
 </style>
 {% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        (() => {
+            const rowUrlTemplate = {{ path('app_activity_log_row', { id: 0 })|json_encode|raw }}.replace('/0', '/');
+            const statsUrl = {{ path('app_activity_log_stats')|json_encode|raw }};
+            const tbody = document.getElementById('al-logs-tbody');
+            const knownIds = new Set(
+                [...document.querySelectorAll('[data-log-id]')].map(el => parseInt(el.dataset.logId, 10))
+            );
+
+            async function refreshStats() {
+                try {
+                    const response = await fetch(statsUrl, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        credentials: 'same-origin',
+                    });
+                    if (!response.ok) return;
+                    const data = await response.json();
+                    const totalEl = document.getElementById('al-stat-total');
+                    const todayEl = document.getElementById('al-stat-today');
+                    const recentEl = document.getElementById('al-stat-recent');
+                    if (totalEl) totalEl.textContent = data.total;
+                    if (todayEl) todayEl.textContent = data.today;
+                    if (recentEl && tbody) {
+                        recentEl.textContent = tbody.querySelectorAll('[data-log-id]').length;
+                    }
+                } catch (e) {
+                    console.warn('Failed to refresh activity stats', e);
+                }
+            }
+
+            async function fetchRow(logId) {
+                const response = await fetch(rowUrlTemplate + logId, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin',
+                });
+                if (!response.ok) throw new Error('Failed to load log row');
+                return response.text();
+            }
+
+            async function insertRow(logId) {
+                if (!tbody || knownIds.has(logId)) return;
+                const emptyRow = document.getElementById('al-empty-row');
+                if (emptyRow) emptyRow.remove();
+                const html = await fetchRow(logId);
+                const template = document.createElement('template');
+                template.innerHTML = html.trim();
+                const row = template.content.querySelector('[data-log-id]');
+                if (!row) return;
+                tbody.insertBefore(row, tbody.firstChild);
+                knownIds.add(logId);
+                while (tbody.children.length > 100) {
+                    const last = tbody.lastElementChild;
+                    if (last?.dataset?.logId) knownIds.delete(parseInt(last.dataset.logId, 10));
+                    last?.remove();
+                }
+                refreshStats();
+            }
+
+            async function handleEvent(payload) {
+                if (payload?.type === 'created' && payload.logId) {
+                    await insertRow(payload.logId);
+                }
+            }
+
+            try {
+                CafeRealtime.connect('/activity-logs', (_topic, payload) => handleEvent(payload));
+            } catch (e) {
+                console.warn('WebSocket unavailable for activity logs', e);
+            }
+        })();
+    </script>
+{% endblock %}
+
 {% block body %}
 <div class="al-wrap">
 
@@ -247,21 +322,21 @@
             <div class="al-stat-icon"><i class="fas fa-database"></i></div>
             <div>
                 <div class="al-stat-label">Total Logs</div>
-                <div class="al-stat-value">{{ statistics.total }}</div>
+                <div class="al-stat-value" id="al-stat-total">{{ statistics.total }}</div>
             </div>
         </div>
         <div class="al-stat">
             <div class="al-stat-icon"><i class="fas fa-calendar-day"></i></div>
             <div>
                 <div class="al-stat-label">Today's Activity</div>
-                <div class="al-stat-value">{{ statistics.today }}</div>
+                <div class="al-stat-value" id="al-stat-today">{{ statistics.today }}</div>
             </div>
         </div>
         <div class="al-stat">
             <div class="al-stat-icon"><i class="fas fa-chart-line"></i></div>
             <div>
                 <div class="al-stat-label">Recent Actions</div>
-                <div class="al-stat-value">{{ logs|length }}</div>
+                <div class="al-stat-value" id="al-stat-recent">{{ logs|length }}</div>
             </div>
         </div>
     </div>
@@ -311,45 +386,11 @@
                         <th>IP Address</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="al-logs-tbody">
                     {% for log in logs %}
-                    <tr>
-                        <td><strong style="color:var(--muted);">#{{ log.userId }}</strong></td>
-                        <td>
-                            <a href="{{ path('app_activity_log_by_user', {userId: log.userId}) }}" class="al-user-link">
-                                <i class="fas fa-user" style="font-size:11px;"></i>
-                                {{ log.username }}
-                            </a>
-                        </td>
-                        <td><span class="al-badge role">{{ log.formattedRole }}</span></td>
-                        <td>
-                            <span class="al-badge {{ log.action|lower }}">
-                                {% if log.action == 'LOGIN' %}<i class="fas fa-sign-in-alt"></i>
-                                {% elseif log.action == 'LOGOUT' %}<i class="fas fa-sign-out-alt"></i>
-                                {% elseif log.action == 'CREATE' %}<i class="fas fa-plus"></i>
-                                {% elseif log.action == 'UPDATE' %}<i class="fas fa-edit"></i>
-                                {% elseif log.action == 'DELETE' %}<i class="fas fa-trash"></i>
-                                {% endif %}
-                                {{ log.action }}
-                            </span>
-                        </td>
-                        <td>{{ log.targetData }}</td>
-                        <td>
-                            <div class="al-timestamp">
-                                <i class="far fa-clock"></i>
-                                {{ log.dateTime|date('M d, Y') }}<br>
-                                <small>{{ log.dateTime|date('h:i:s A') }}</small>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="al-ip">
-                                <i class="fas fa-globe"></i>
-                                {{ log.ipAddress ?? 'N/A' }}
-                            </span>
-                        </td>
-                    </tr>
+                    {% include 'activity_log/_row.html.twig' %}
                     {% else %}
-                    <tr>
+                    <tr id="al-empty-row">
                         <td colspan="7">
                             <div class="al-empty">
                                 <i class="fas fa-inbox"></i>

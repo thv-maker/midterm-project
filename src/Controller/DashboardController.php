@@ -10,8 +10,11 @@ use App\Repository\ProductRepository;
 use App\Repository\StockRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\OrderRepository;
+use App\Service\ActivityLoggerService;
+use App\Service\ProductMercurePublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -92,18 +95,52 @@ final class DashboardController extends AbstractController
         ]);
     }
 
+    #[IsGranted('ROLE_STAFF')]
+    #[Route('/stats', name: 'app_dashboard_stats', methods: ['GET'])]
+    public function stats(
+        ProductRepository $productRepository,
+        StockRepository $stockRepository,
+        OrderRepository $orderRepository,
+    ): JsonResponse {
+        $revenueChangeData = $orderRepository->getRevenueChangePercentage();
+
+        return $this->json([
+            'totalProducts' => $productRepository->count([]),
+            'totalStocks' => $stockRepository->getStockSummary()['totalItems'],
+            'totalRevenue' => $orderRepository->getTotalRevenue(),
+            'revenueChange' => $revenueChangeData['change'],
+            'todayOrdersCount' => $orderRepository->countTodayOrders(),
+            'salesData' => $orderRepository->getSalesDataLast7Days(),
+        ]);
+    }
+
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/products', name: 'app_dashboard_products', methods: ['GET'])]
     public function products(ProductRepository $productRepository): Response
     {
         return $this->render('product/index.html.twig', [
             'products' => $productRepository->findAll(),
+            'productCardRoute' => 'app_dashboard_product_card',
+        ]);
+    }
+
+    #[IsGranted('ROLE_ADMIN')]
+    #[Route('/products/card/{id}', name: 'app_dashboard_product_card', methods: ['GET'])]
+    public function productCard(Product $product): Response
+    {
+        return $this->render('product/_card.html.twig', [
+            'product' => $product,
         ]);
     }
 
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/products/new', name: 'app_dashboard_product_new', methods: ['GET', 'POST'])]
-    public function newProduct(Request $request, EntityManagerInterface $entityManager): Response
+    public function newProduct(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        ActivityLoggerService $activityLogger,
+        ProductMercurePublisher $productPublisher
+    ): Response
     {
         $product = new Product();
         $form = $this->createForm(ProductType::class, $product);
@@ -112,6 +149,9 @@ final class DashboardController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($product);
             $entityManager->flush();
+
+            $activityLogger->logCreate('Product', $product->getId(), (string) $product->getName());
+            $productPublisher->publishCreated($product);
 
             return $this->redirectToRoute('app_dashboard_products', [], Response::HTTP_SEE_OTHER);
         }
@@ -133,13 +173,22 @@ final class DashboardController extends AbstractController
 
     #[IsGranted('ROLE_ADMIN')]
     #[Route('/products/{id}/edit', name: 'app_dashboard_product_edit', methods: ['GET', 'POST'])]
-    public function editProduct(Request $request, Product $product, EntityManagerInterface $entityManager): Response
+    public function editProduct(
+        Request $request,
+        Product $product,
+        EntityManagerInterface $entityManager,
+        ActivityLoggerService $activityLogger,
+        ProductMercurePublisher $productPublisher
+    ): Response
     {
         $form = $this->createForm(ProductType::class, $product);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+
+            $activityLogger->logUpdate('Product', $product->getId(), (string) $product->getName());
+            $productPublisher->publishUpdated($product);
 
             return $this->redirectToRoute('app_dashboard_products', [], Response::HTTP_SEE_OTHER);
         }

@@ -34,6 +34,11 @@ API_ENTRYPOINT=https://your-railway-domain.com/api
 # Session settings
 SESSION_HANDLER=database
 
+# WebSocket real-time (required for live dashboard + mobile updates)
+WEBSOCKET_SECRET=your-strong-random-secret-here
+WEBSOCKET_PUBLIC_URL=wss://your-railway-domain.com/ws
+WEBSOCKET_BROADCAST_URL=http://127.0.0.1:${PORT}/broadcast
+
 # Firebase Cloud Messaging (push notifications to mobile app)
 FIREBASE_PROJECT_ID=your-firebase-project-id
 FIREBASE_SERVICE_ACCOUNT_B64=base64-encoded-service-account-json
@@ -52,6 +57,16 @@ FIREBASE_SERVICE_ACCOUNT_B64=base64-encoded-service-account-json
 5. Redeploy. When staff completes or cancels an order, customers receive a push such as: **Order Update — #ORD-… is now completed.**
 
 The mobile app registers tokens via `POST /api/customer/fcm-token` with `{ "customer_id": 1, "token": "<fcm-device-token>" }`. Tokens can also be sent on login/register as `fcm_token` or `token`.
+
+### WebSocket real-time setup
+
+The `railway-start.sh` script runs:
+1. **PHP** on `127.0.0.1:8080` (internal)
+2. **Node WebSocket + HTTP proxy** on public `$PORT` — proxies API requests to PHP and serves `/ws`
+
+Set `WEBSOCKET_PUBLIC_URL` to `wss://your-railway-domain.com/ws` (same host as your API). The mobile app derives the WebSocket URL from `API_BASE` automatically.
+
+Set `WEBSOCKET_SECRET` to a strong random string (used to authenticate broadcast requests from Symfony).
 
 ## Deployment Steps
 
@@ -81,21 +96,22 @@ The mobile app registers tokens via `POST /api/customer/fcm-token` with `{ "cust
    - Update mobile app BASE_URL to Railway domain
    - Check logs if issues occur
 
+## Mobile App Configuration
+
+After deployment, update the mobile app's API base URL in `src/app/api/config.ts`:
+
+```typescript
+export const API_BASE = 'https://your-railway-domain.com/api';
+// WS_BASE is derived automatically from API_BASE
+```
+
+Replace `your-railway-domain.com` with your actual Railway domain from the dashboard.
+
 ## Troubleshooting
 
 - **Migrations fail**: Check `DATABASE_URL` is correct
 - **JWT errors**: Ensure JWT keys are in `config/jwt/`
 - **CORS errors**: Update `CORS_ALLOW_ORIGIN` for your mobile domain
 - **Static files 404**: Check `public/` directory is accessible
-
-## Mobile App Configuration
-
-After deployment, update the mobile app's API base URL:
-
-**File: `src/app/api/orders.js`**
-
-```javascript
-const BASE_URL = 'https://your-railway-domain.com/api/customer';
-```
-
-Replace `your-railway-domain.com` with your actual Railway domain from the dashboard.
+- **WebSocket not connecting**: Ensure `WEBSOCKET_SECRET` is set and `railway-start.sh` is the start command. Test `GET /health` on your domain — should return `{ status: "ok" }` from the Node proxy
+- **Live updates not working locally**: Start the WebSocket server with `node websocket/server.js` on port 8081

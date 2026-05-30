@@ -7,6 +7,7 @@ use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
 use App\Service\ActivityLoggerService;
+use App\Service\ProductMercurePublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,10 +18,12 @@ use Symfony\Component\Routing\Attribute\Route;
 final class ProductController extends AbstractController
 {
     private ActivityLoggerService $activityLogger;
+    private ProductMercurePublisher $productPublisher;
 
-    public function __construct(ActivityLoggerService $activityLogger)
+    public function __construct(ActivityLoggerService $activityLogger, ProductMercurePublisher $productPublisher)
     {
         $this->activityLogger = $activityLogger;
+        $this->productPublisher = $productPublisher;
     }
 
     #[Route(name: 'app_product_index', methods: ['GET'])]
@@ -28,6 +31,15 @@ final class ProductController extends AbstractController
     {
         return $this->render('product/index.html.twig', [
             'products' => $productRepository->findAll(),
+            'productCardRoute' => 'app_product_card',
+        ]);
+    }
+
+    #[Route('/card/{id}', name: 'app_product_card', methods: ['GET'])]
+    public function card(Product $product): Response
+    {
+        return $this->render('product/_card.html.twig', [
+            'product' => $product,
         ]);
     }
 
@@ -48,6 +60,8 @@ final class ProductController extends AbstractController
                 $product->getId(),
                 $product->getName()
             );
+
+            $this->productPublisher->publishCreated($product);
 
             $this->addFlash('success', 'Product created successfully!');
             return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
@@ -83,6 +97,8 @@ final class ProductController extends AbstractController
                 $product->getName()
             );
 
+            $this->productPublisher->publishUpdated($product);
+
             $this->addFlash('success', 'Product updated successfully!');
             return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -110,6 +126,8 @@ final class ProductController extends AbstractController
                 $productId,
                 $productName
             );
+
+            $this->productPublisher->publishDeleted($productId, $productName);
 
             $this->addFlash('success', 'Product deleted successfully!');
         }
