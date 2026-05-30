@@ -172,6 +172,9 @@ wss.on('connection', (ws, req, url) => {
         }
         if (msg.admin === true || msg.admin === 1) {
           meta.isAdmin = true;
+          for (const topic of ['/orders', '/products', '/users', '/activity-logs', '/stocks']) {
+            meta.topics.add(topic);
+          }
         }
         sendJson(ws, { type: 'subscribed', topics: [...meta.topics] });
       }

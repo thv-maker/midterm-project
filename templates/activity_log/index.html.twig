@@ -233,12 +233,89 @@
     {{ parent() }}
     <script>
         (() => {
+            const feedUrl = {{ path('app_activity_log_feed')|json_encode|raw }};
             const rowUrlTemplate = {{ path('app_activity_log_row', { id: 0 })|json_encode|raw }}.replace('/0', '/');
+            const userUrlTemplate = {{ path('app_activity_log_by_user', { userId: 0 })|json_encode|raw }}.replace('/0', '/');
             const statsUrl = {{ path('app_activity_log_stats')|json_encode|raw }};
+            const pageLoadedAt = {{ pageLoadedAt|json_encode|raw }};
             const tbody = document.getElementById('al-logs-tbody');
+            const liveBadge = document.getElementById('al-live-badge');
             const knownIds = new Set(
-                [...document.querySelectorAll('[data-log-id]')].map(el => parseInt(el.dataset.logId, 10))
+                [...document.querySelectorAll('[data-log-id]')].map(el => parseInt(el.dataset.logId, 10)).filter(id => !Number.isNaN(id))
             );
+
+            let lastSyncAt = pageLoadedAt;
+
+            const roleLabels = { ROLE_ADMIN: 'Admin', ROLE_STAFF: 'Staff', ROLE_USER: 'User' };
+            const actionIcons = {
+                LOGIN: 'fa-sign-in-alt',
+                LOGOUT: 'fa-sign-out-alt',
+                REGISTER: 'fa-user-plus',
+                ORDER: 'fa-shopping-cart',
+                CREATE: 'fa-plus',
+                UPDATE: 'fa-edit',
+                DELETE: 'fa-trash',
+            };
+
+            function setLiveBadge(state) {
+                if (!liveBadge) return;
+                const styles = {
+                    live: { color: '#a8e6cf', text: '● Live updates active' },
+                    connecting: { color: '#fde68a', text: '○ Connecting…' },
+                    polling: { color: '#c4b5fd', text: '○ Polling for new activity…' },
+                    offline: { color: '#fca5a5', text: '○ Offline — refresh page' },
+                };
+                const s = styles[state] || styles.connecting;
+                liveBadge.style.color = s.color;
+                liveBadge.textContent = s.text;
+            }
+
+            function escapeHtml(value) {
+                return String(value ?? '')
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+
+            function formatRole(role) {
+                return roleLabels[role] || role || 'User';
+            }
+
+            function formatTimestamp(iso) {
+                if (!iso) return { date: '—', time: '' };
+                const dt = new Date(iso);
+                if (Number.isNaN(dt.getTime())) return { date: '—', time: '' };
+                return {
+                    date: dt.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }),
+                    time: dt.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit', second: '2-digit' }),
+                };
+            }
+
+            function buildRowFromPayload(payload) {
+                const logId = parseInt(payload.logId, 10);
+                const userId = payload.userId ?? '';
+                const username = escapeHtml(payload.username || 'Unknown');
+                const action = String(payload.action || '').toUpperCase();
+                const actionKey = action.toLowerCase();
+                const icon = actionIcons[action] || 'fa-circle';
+                const targetData = escapeHtml(payload.targetData || '');
+                const ts = formatTimestamp(payload.createdAt);
+                const ip = escapeHtml(payload.ipAddress || 'N/A');
+                const userHref = userId ? userUrlTemplate + userId : '#';
+
+                const row = document.createElement('tr');
+                row.dataset.logId = String(logId);
+                row.innerHTML =
+                    '<td><strong style="color:var(--muted);">#' + escapeHtml(userId) + '</strong></td>' +
+                    '<td><a href="' + userHref + '" class="al-user-link"><i class="fas fa-user" style="font-size:11px;"></i> ' + username + '</a></td>' +
+                    '<td><span class="al-badge role">' + escapeHtml(formatRole(payload.role)) + '</span></td>' +
+                    '<td><span class="al-badge ' + actionKey + '"><i class="fas ' + icon + '"></i> ' + action + '</span></td>' +
+                    '<td>' + targetData + '</td>' +
+                    '<td><div class="al-timestamp"><i class="far fa-clock"></i> ' + ts.date + '<br><small>' + ts.time + '</small></div></td>' +
+                    '<td><span class="al-ip"><i class="fas fa-globe"></i> ' + ip + '</span></td>';
+                return row;
+            }
 
             async function refreshStats() {
                 try {
@@ -270,38 +347,93 @@
                 return response.text();
             }
 
-            async function insertRow(logId) {
-                if (!tbody || knownIds.has(logId)) return;
+            async function insertRowFromPayload(payload) {
+                const logId = parseInt(payload.logId, 10);
+                if (!tbody || !logId || knownIds.has(logId)) return;
+
                 const emptyRow = document.getElementById('al-empty-row');
                 if (emptyRow) emptyRow.remove();
-                const html = await fetchRow(logId);
-                const template = document.createElement('template');
-                template.innerHTML = html.trim();
-                const row = template.content.querySelector('[data-log-id]');
+
+                let row = null;
+                if (payload.username && payload.action) {
+                    row = buildRowFromPayload(payload);
+                } else {
+                    const html = await fetchRow(logId);
+                    const template = document.createElement('template');
+                    template.innerHTML = html.trim();
+                    row = template.content.querySelector('[data-log-id]');
+                }
+
                 if (!row) return;
+
+                row.classList.add('al-row-new');
                 tbody.insertBefore(row, tbody.firstChild);
                 knownIds.add(logId);
+
                 while (tbody.children.length > 100) {
                     const last = tbody.lastElementChild;
-                    if (last?.dataset?.logId) knownIds.delete(parseInt(last.dataset.logId, 10));
+                    const lastId = parseInt(last?.dataset?.logId, 10);
+                    if (!Number.isNaN(lastId)) knownIds.delete(lastId);
                     last?.remove();
                 }
+
                 refreshStats();
             }
 
             async function handleEvent(payload) {
                 if (payload?.type === 'created' && payload.logId) {
-                    await insertRow(payload.logId);
+                    await insertRowFromPayload(payload);
+                }
+            }
+
+            async function pollFeed() {
+                try {
+                    const sinceDate = new Date(lastSyncAt);
+                    sinceDate.setSeconds(sinceDate.getSeconds() - 3);
+                    const response = await fetch(feedUrl + '?since=' + encodeURIComponent(sinceDate.toISOString()), {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                        credentials: 'same-origin',
+                    });
+                    if (!response.ok) return;
+                    const data = await response.json();
+                    for (const item of data.logs || []) {
+                        await handleEvent(item);
+                    }
+                    lastSyncAt = new Date().toISOString();
+                } catch (e) {
+                    console.warn('Activity log feed poll failed', e);
                 }
             }
 
             try {
-                CafeRealtime.connect('/activity-logs', (_topic, payload) => handleEvent(payload));
+                CafeRealtime.connect('/activity-logs', (_topic, payload) => {
+                    handleEvent(payload);
+                    lastSyncAt = new Date().toISOString();
+                }, (status) => {
+                    if (status === 'subscribed') {
+                        setLiveBadge('live');
+                    } else if (status === 'connected' || status === 'connecting') {
+                        setLiveBadge('connecting');
+                    } else if (status === 'disconnected' || status === 'error') {
+                        setLiveBadge('polling');
+                    }
+                });
             } catch (e) {
-                console.warn('WebSocket unavailable for activity logs', e);
+                console.warn('WebSocket unavailable for activity logs, using polling only', e);
+                setLiveBadge('polling');
             }
+
+            setInterval(pollFeed, 3000);
+            setTimeout(pollFeed, 800);
         })();
     </script>
+    <style>
+        @keyframes alRowFlash {
+            from { background: #fff8e1; }
+            to { background: transparent; }
+        }
+        tr.al-row-new td { animation: alRowFlash 2s ease-out; }
+    </style>
 {% endblock %}
 
 {% block body %}
@@ -310,7 +442,11 @@
     {# ── HEADER ── #}
     <div class="al-header">
         <div>
-            <h1><i class="fas fa-history"></i> Activity Logs</h1>
+            <h1><i class="fas fa-history"></i> Activity Logs
+                <span id="al-live-badge" style="display:inline-flex;align-items:center;gap:6px;margin-left:8px;font-size:12px;font-weight:600;color:#a8e6cf;">
+                    ○ Connecting…
+                </span>
+            </h1>
             <p>Monitor all system activities and user actions</p>
         </div>
         <a href="{{ path('app_dashboard_index') }}" class="al-back">

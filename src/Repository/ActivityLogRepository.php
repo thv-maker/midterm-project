@@ -46,6 +46,50 @@ class ActivityLogRepository extends ServiceEntityRepository
     }
 
     /**
+     * @return ActivityLog[]
+     */
+    public function findCreatedAfter(\DateTimeImmutable $since): array
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.dateTime >= :since')
+            ->setParameter('since', $since)
+            ->orderBy('a.dateTime', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function findFeedEventsAfter(\DateTimeImmutable $since): array
+    {
+        $events = [];
+
+        foreach ($this->findCreatedAfter($since) as $log) {
+            $id = $log->getId();
+            if (!$id) {
+                continue;
+            }
+
+            $dateTime = $log->getDateTime();
+
+            $events[] = [
+                'type' => 'created',
+                'logId' => $id,
+                'userId' => $log->getUserId(),
+                'username' => $log->getUsername(),
+                'role' => $log->getRole(),
+                'action' => $log->getAction(),
+                'targetData' => $log->getTargetData(),
+                'createdAt' => $dateTime?->format(DATE_ATOM),
+                'ipAddress' => $log->getIpAddress(),
+            ];
+        }
+
+        return $events;
+    }
+
+    /**
      * Find recent logs
      */
     public function findRecent(int $limit = 100): array

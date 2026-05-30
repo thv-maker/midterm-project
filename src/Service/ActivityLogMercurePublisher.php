@@ -25,6 +25,7 @@ class ActivityLogMercurePublisher
             'action' => $log->getAction(),
             'targetData' => $log->getTargetData(),
             'createdAt' => $createdAt?->format(DATE_ATOM),
+            'ipAddress' => $log->getIpAddress(),
         ]);
     }
 

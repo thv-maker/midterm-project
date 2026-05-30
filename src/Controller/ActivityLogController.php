@@ -7,6 +7,7 @@ use App\Entity\ActivityLog;
 use App\Repository\ActivityLogRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -24,6 +25,26 @@ class ActivityLogController extends AbstractController
         return $this->render('activity_log/index.html.twig', [
             'logs' => $logs,
             'statistics' => $statistics,
+            'pageLoadedAt' => (new \DateTimeImmutable())->format(DATE_ATOM),
+        ]);
+    }
+
+    #[Route('/feed', name: 'app_activity_log_feed', methods: ['GET'])]
+    public function feed(Request $request, ActivityLogRepository $activityLogRepository): JsonResponse
+    {
+        $sinceParam = $request->query->get('since');
+        if (!is_string($sinceParam) || $sinceParam === '') {
+            return $this->json(['logs' => []]);
+        }
+
+        try {
+            $since = new \DateTimeImmutable($sinceParam);
+        } catch (\Exception) {
+            return $this->json(['error' => 'Invalid since timestamp.'], 400);
+        }
+
+        return $this->json([
+            'logs' => $activityLogRepository->findFeedEventsAfter($since),
         ]);
     }
 
