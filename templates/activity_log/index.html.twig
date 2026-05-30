@@ -205,6 +205,8 @@
     .al-badge.create { background: #e3f2fd; color: #1565c0; }
     .al-badge.update { background: #fff3e0; color: #e65100; }
     .al-badge.delete { background: #ffebee; color: #c62828; }
+    .al-badge.order  { background: #e8eaf6; color: #3949ab; }
+    .al-badge.register { background: #e0f7fa; color: #00838f; }
 
     .al-user-link {
         color: var(--brown-acc);
@@ -355,6 +357,12 @@
             </a>
             <a href="{{ path('app_activity_log_by_action', {action: 'logout'}) }}" class="al-filter-btn f-logout">
                 <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+            <a href="{{ path('app_activity_log_by_action', {action: 'register'}) }}" class="al-filter-btn f-register">
+                <i class="fas fa-user-plus"></i> Register
+            </a>
+            <a href="{{ path('app_activity_log_by_action', {action: 'order'}) }}" class="al-filter-btn f-order">
+                <i class="fas fa-shopping-cart"></i> Orders
             </a>
             <a href="{{ path('app_activity_log_by_action', {action: 'create'}) }}" class="al-filter-btn f-create">
                 <i class="fas fa-plus"></i> Create

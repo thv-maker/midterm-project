@@ -6,6 +6,7 @@ use App\Entity\Order;
 use App\Repository\OrderRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\ProductRepository;
+use App\Service\ActivityLoggerService;
 use App\Service\OrderMercurePublisher;
 use App\Service\OrderWorkflowService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -152,15 +153,18 @@ class OrderController extends AbstractController
         Order $order,
         EntityManagerInterface $entityManager,
         OrderMercurePublisher $orderMercurePublisher,
+        ActivityLoggerService $activityLogger,
     ): Response {
         if ($this->isCsrfTokenValid('delete' . $order->getId(), $request->request->get('_token'))) {
             // Only allow deleting pending orders
             if ($order->getStatus() === 'pending') {
                 $orderId = $order->getId();
+                $orderNumber = (string) $order->getOrderNumber();
                 $customerId = $order->getCustomer()?->getId();
                 $entityManager->remove($order);
                 $entityManager->flush();
                 if ($orderId) {
+                    $activityLogger->logOrderDeleted($orderId, $orderNumber);
                     $orderMercurePublisher->publishDeleted($orderId, $customerId);
                 }
                 $this->addFlash('success', 'Order deleted successfully!');

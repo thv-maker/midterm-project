@@ -16,6 +16,7 @@ class OrderWorkflowService
         private OrderPushNotifier $orderPushNotifier,
         private OrderMercurePublisher $orderMercurePublisher,
         private StockMercurePublisher $stockMercurePublisher,
+        private ActivityLoggerService $activityLogger,
     ) {}
 
     public function createOrder(
@@ -78,6 +79,7 @@ class OrderWorkflowService
 
         $this->orderPushNotifier->notifyOrderCreated($order);
         $this->orderMercurePublisher->publishCreated($order);
+        $this->activityLogger->logOrderPlaced($order);
 
         return $order;
     }
@@ -174,6 +176,7 @@ class OrderWorkflowService
             $this->stockMercurePublisher->publishForOrder($order);
         }
         $this->orderPushNotifier->notifyOrderStatusChanged($order, $currentStatus);
+        $this->activityLogger->logOrderStatusChange($order, $currentStatus, $nextStatus);
     }
 
     public function updatePendingOrder(
@@ -239,6 +242,7 @@ class OrderWorkflowService
         $this->entityManager->flush();
 
         $this->orderMercurePublisher->publishUpdated($order);
+        $this->activityLogger->logOrderUpdated($order);
 
         return $order;
     }

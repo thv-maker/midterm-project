@@ -3,7 +3,6 @@
 namespace App\Security;
 
 use App\Entity\User;
-use App\Service\ActivityLoggerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,7 +28,6 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
     public function __construct(
         private UrlGeneratorInterface $urlGenerator,
         private EntityManagerInterface $entityManager,
-        private ActivityLoggerService $activityLogger
     ) {}
 
     public function authenticate(Request $request): Passport
@@ -65,15 +63,7 @@ class AppCustomAuthenticator extends AbstractLoginFormAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        // Update last login time
         $user = $token->getUser();
-        if ($user instanceof User) {
-            $user->setLastLogin(new \DateTime());
-            $this->entityManager->flush();
-
-            // Log the login activity
-            $this->activityLogger->logLogin($user);
-        }
 
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);

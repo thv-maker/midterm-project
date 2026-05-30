@@ -170,6 +170,8 @@ class ActivityLog
         return match($this->action) {
             'LOGIN' => 'success',
             'LOGOUT' => 'secondary',
+            'REGISTER' => 'info',
+            'ORDER' => 'primary',
             'CREATE' => 'primary',
             'UPDATE' => 'warning',
             'DELETE' => 'danger',

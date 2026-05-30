@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Stock;
 use App\Form\StockType;
 use App\Repository\StockRepository;
+use App\Service\ActivityLoggerService;
 use App\Service\StockMercurePublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -20,6 +21,7 @@ class StockController extends AbstractController
 {
     public function __construct(
         private StockMercurePublisher $stockPublisher,
+        private ActivityLoggerService $activityLogger,
     ) {}
 
     #[Route('', name: 'app_dashboard_stocks', methods: ['GET'])]
@@ -44,6 +46,11 @@ class StockController extends AbstractController
             $entityManager->flush();
 
             $this->stockPublisher->publishCreated($stock);
+            $this->activityLogger->logCreate(
+                'Stock',
+                (int) $stock->getId(),
+                (string) ($stock->getProduct()?->getName() ?? 'Unknown product')
+            );
 
             $this->addFlash('success', 'Stock created successfully!');
 
@@ -120,6 +127,11 @@ class StockController extends AbstractController
             $entityManager->flush();
 
             $this->stockPublisher->publishUpdated($stock);
+            $this->activityLogger->logUpdate(
+                'Stock',
+                (int) $stock->getId(),
+                (string) ($stock->getProduct()?->getName() ?? 'Unknown product')
+            );
 
             $this->addFlash('success', 'Stock updated successfully!');
 
@@ -138,11 +150,13 @@ class StockController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$stock->getId(), $request->request->get('_token'))) {
             $stockId = (int) $stock->getId();
             $productId = $stock->getProduct()?->getId();
+            $productName = (string) ($stock->getProduct()?->getName() ?? 'Unknown product');
 
             $entityManager->remove($stock);
             $entityManager->flush();
 
             $this->stockPublisher->publishDeleted($stockId, $productId);
+            $this->activityLogger->logDelete('Stock', $stockId, $productName);
 
             $this->addFlash('success', 'Stock deleted successfully!');
         }

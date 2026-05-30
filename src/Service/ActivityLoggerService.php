@@ -1,153 +1,182 @@
 <?php
-// src/Service/ActivityLoggerService.php
 
 namespace App\Service;
 
 use App\Entity\ActivityLog;
+use App\Entity\Customer;
+use App\Entity\Order;
 use App\Entity\User;
-use App\Service\ActivityLogMercurePublisher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class ActivityLoggerService
 {
-    private EntityManagerInterface $entityManager;
-    private Security $security;
-    private RequestStack $requestStack;
-    private ActivityLogMercurePublisher $activityLogPublisher;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
-        Security $security,
-        RequestStack $requestStack,
-        ActivityLogMercurePublisher $activityLogPublisher
-    ) {
-        $this->entityManager = $entityManager;
-        $this->security = $security;
-        $this->requestStack = $requestStack;
-        $this->activityLogPublisher = $activityLogPublisher;
-    }
+        private EntityManagerInterface $entityManager,
+        private Security $security,
+        private RequestStack $requestStack,
+        private ActivityLogMercurePublisher $activityLogPublisher,
+    ) {}
 
-    /**
-     * Log user login
-     */
-    public function logLogin(User $user): void
+    public function logLogin(User $user, string $source = 'web'): void
     {
-        $this->log(
+        $this->logAs(
             $user,
             'LOGIN',
-            "User login"
+            sprintf('User login (%s)', $source)
         );
     }
 
-    /**
-     * Log user logout
-     */
-    public function logLogout(User $user): void
+    public function logLogout(User $user, string $source = 'web'): void
     {
-        $this->log(
+        $this->logAs(
             $user,
             'LOGOUT',
-            "User logout"
+            sprintf('User logout (%s)', $source)
         );
     }
 
-    /**
-     * Log user creation (Admin creates user)
-     */
+    public function logRegister(User $user): void
+    {
+        $this->logAs(
+            $user,
+            'REGISTER',
+            sprintf('New account registered: %s', $user->getEmail())
+        );
+    }
+
     public function logUserCreate(User $createdUser): void
     {
-        $this->log(
-            $this->security->getUser(),
+        $this->logAs(
+            $this->getCurrentUser(),
             'CREATE',
-            "User: {$createdUser->getEmail()} (ID: {$createdUser->getId()})"
+            sprintf('User: %s (ID: %d)', $createdUser->getEmail(), $createdUser->getId())
         );
     }
 
-    /**
-     * Log user deletion (Admin deletes user)
-     */
     public function logUserDelete(int $deletedUserId, string $deletedUserEmail): void
     {
-        $this->log(
-            $this->security->getUser(),
+        $this->logAs(
+            $this->getCurrentUser(),
             'DELETE',
-            "User: {$deletedUserEmail} (ID: {$deletedUserId})"
+            sprintf('User: %s (ID: %d)', $deletedUserEmail, $deletedUserId)
         );
     }
 
-    /**
-     * Log user update (Admin updates user)
-     */
     public function logUserUpdate(User $updatedUser): void
     {
-        $this->log(
-            $this->security->getUser(),
+        $this->logAs(
+            $this->getCurrentUser(),
             'UPDATE',
-            "User: {$updatedUser->getEmail()} (ID: {$updatedUser->getId()})"
+            sprintf('User: %s (ID: %d)', $updatedUser->getEmail(), $updatedUser->getId())
         );
     }
 
-    /**
-     * Log record creation (Staff creates record)
-     */
     public function logCreate(string $entityType, int $entityId, string $entityName): void
     {
-        $this->log(
-            $this->security->getUser(),
+        $this->logAs(
+            $this->getCurrentUser(),
             'CREATE',
-            "{$entityType}: {$entityName} (ID: {$entityId})"
+            sprintf('%s: %s (ID: %d)', $entityType, $entityName, $entityId)
         );
     }
 
-    /**
-     * Log record update (Staff/Admin updates record)
-     */
     public function logUpdate(string $entityType, int $entityId, string $entityName): void
     {
-        $this->log(
-            $this->security->getUser(),
+        $this->logAs(
+            $this->getCurrentUser(),
             'UPDATE',
-            "{$entityType}: {$entityName} (ID: {$entityId})"
+            sprintf('%s: %s (ID: %d)', $entityType, $entityName, $entityId)
         );
     }
 
-    /**
-     * Log record deletion (Staff/Admin deletes record)
-     */
     public function logDelete(string $entityType, int $entityId, string $entityName): void
     {
-        $this->log(
-            $this->security->getUser(),
+        $this->logAs(
+            $this->getCurrentUser(),
             'DELETE',
-            "{$entityType}: {$entityName} (ID: {$entityId})"
+            sprintf('%s: %s (ID: %d)', $entityType, $entityName, $entityId)
         );
     }
 
-    /**
-     * Main logging method - stores all required fields
-     */
-    private function log(?User $user, string $action, string $targetData): void
+    public function logOrderPlaced(Order $order, ?User $actor = null): void
     {
+        $customer = $order->getCustomer();
+        $customerName = $customer?->getName() ?? 'Unknown customer';
+
+        $this->logAs(
+            $actor ?? $this->resolveActorForCustomer($customer) ?? $this->getCurrentUser(),
+            'ORDER',
+            sprintf(
+                'Order %s (ID: %d) placed by %s — Total: ₱%.2f',
+                $order->getOrderNumber(),
+                $order->getId(),
+                $customerName,
+                (float) $order->getTotal()
+            )
+        );
+    }
+
+    public function logOrderUpdated(Order $order, ?User $actor = null): void
+    {
+        $this->logAs(
+            $actor ?? $this->resolveActorForCustomer($order->getCustomer()) ?? $this->getCurrentUser(),
+            'UPDATE',
+            sprintf(
+                'Order %s (ID: %d) updated — Total: ₱%.2f',
+                $order->getOrderNumber(),
+                $order->getId(),
+                (float) $order->getTotal()
+            )
+        );
+    }
+
+    public function logOrderStatusChange(
+        Order $order,
+        string $fromStatus,
+        string $toStatus,
+        ?User $actor = null,
+    ): void {
+        $this->logAs(
+            $actor ?? $this->resolveActorForCustomer($order->getCustomer()) ?? $this->getCurrentUser(),
+            'UPDATE',
+            sprintf(
+                'Order %s (ID: %d): status changed from %s to %s',
+                $order->getOrderNumber(),
+                $order->getId(),
+                $fromStatus,
+                $toStatus
+            )
+        );
+    }
+
+    public function logOrderDeleted(int $orderId, string $orderNumber, ?User $actor = null): void
+    {
+        $this->logAs(
+            $actor ?? $this->getCurrentUser(),
+            'DELETE',
+            sprintf('Order %s (ID: %d) deleted', $orderNumber, $orderId)
+        );
+    }
+
+    private function logAs(?User $user, string $action, string $targetData): void
+    {
+        $user ??= $this->getCurrentUser();
+
         if (!$user instanceof User) {
-            return; // Can't log without a user
+            return;
         }
 
         $activityLog = new ActivityLog();
-        
-        // Required fields
         $activityLog->setUserId($user->getId());
-        $activityLog->setUsername($user->getEmail());
+        $activityLog->setUsername((string) $user->getEmail());
         $activityLog->setRole($this->getUserPrimaryRole($user));
         $activityLog->setAction($action);
         $activityLog->setTargetData($targetData);
         $activityLog->setDateTime(new \DateTime());
-
-        // Optional fields - Keep user relationship
         $activityLog->setUser($user);
 
-        // Add IP and User Agent if available
         $request = $this->requestStack->getCurrentRequest();
         if ($request) {
             $activityLog->setIpAddress($request->getClientIp());
@@ -160,21 +189,41 @@ class ActivityLoggerService
         $this->activityLogPublisher->publishCreated($activityLog);
     }
 
-    /**
-     * Get user's primary role
-     */
+    private function getCurrentUser(): ?User
+    {
+        $user = $this->security->getUser();
+
+        return $user instanceof User ? $user : null;
+    }
+
+    private function resolveActorForCustomer(?Customer $customer): ?User
+    {
+        if (!$customer instanceof Customer) {
+            return null;
+        }
+
+        $email = $customer->getEmail();
+        if (!$email) {
+            return null;
+        }
+
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+
+        return $user instanceof User ? $user : null;
+    }
+
     private function getUserPrimaryRole(User $user): string
     {
         $roles = $user->getRoles();
-        
-        if (in_array('ROLE_ADMIN', $roles)) {
+
+        if (in_array('ROLE_ADMIN', $roles, true)) {
             return 'ROLE_ADMIN';
         }
-        
-        if (in_array('ROLE_STAFF', $roles)) {
+
+        if (in_array('ROLE_STAFF', $roles, true)) {
             return 'ROLE_STAFF';
         }
-        
+
         return 'ROLE_USER';
     }
 }

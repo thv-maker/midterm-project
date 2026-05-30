@@ -97,6 +97,8 @@ class CustomerApiController extends AbstractController
         $this->syncFcmTokenFromRequest($request, $customer);
         $this->em->flush();
 
+        $this->activityLogger->logRegister($user);
+
         try {
             $token = $this->jwtManager->createFromPayload($user, [
                 'email' => $user->getEmail(),
@@ -145,7 +147,7 @@ class CustomerApiController extends AbstractController
 
         $user->setLastLogin(new \DateTime());
         $this->em->flush();
-        $this->activityLogger->logLogin($user);
+        $this->activityLogger->logLogin($user, 'mobile app');
 
         $customer = $customerRepository->findOneBy(['email' => $user->getEmail()]);
         if ($customer instanceof Customer) {
@@ -184,7 +186,7 @@ class CustomerApiController extends AbstractController
 
         $user = $this->em->getRepository(User::class)->findOneBy(['email' => $customer->getEmail()]);
         if ($user instanceof User) {
-            $this->activityLogger->logLogout($user);
+            $this->activityLogger->logLogout($user, 'mobile app');
         }
 
         return $this->json(['message' => 'Logout recorded.']);

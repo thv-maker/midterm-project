@@ -33,6 +33,6 @@ class LogoutListener
         }
 
         // Log the logout activity
-        $this->activityLogger->logLogout($user);
+        $this->activityLogger->logLogout($user, 'web');
     }
 }

@@ -36,6 +36,6 @@ class LoginSuccessListener
         $this->entityManager->flush();
 
         // Log the login activity
-        $this->activityLogger->logLogin($user);
+        $this->activityLogger->logLogin($user, 'web');
     }
 }
