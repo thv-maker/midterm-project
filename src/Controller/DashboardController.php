@@ -106,6 +106,7 @@ final class DashboardController extends AbstractController
             'totalProducts' => $productRepository->count([]),
             'totalStocks' => $stockRepository->getStockSummary()['totalItems'],
             'totalRevenue' => $orderRepository->getTotalRevenue(),
+            'todayRevenue' => $revenueChangeData['today'],
             'revenueChange' => $revenueChangeData['change'],
             'todayOrdersCount' => $orderRepository->countTodayOrders(),
             'salesData' => $orderRepository->getSalesDataLast7Days(),

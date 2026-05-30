@@ -6,7 +6,6 @@ namespace App\Repository;
 use App\Entity\Order;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -51,62 +50,66 @@ class OrderRepository extends ServiceEntityRepository
     }
 
     /**
-     * Get total revenue from all orders
+     * Revenue counts completed orders only (recognized sales).
+     */
+    private function revenueQueryBuilder(): QueryBuilder
+    {
+        return $this->createQueryBuilder('o')
+            ->andWhere('o.status = :completed')
+            ->setParameter('completed', 'completed');
+    }
+
+    /**
+     * Get total revenue from completed orders.
      */
     public function getTotalRevenue(): float
     {
-        $result = $this->createQueryBuilder('o')
-            ->select('SUM(o.total) as totalRevenue')
-            ->where('o.status != :cancelled')
-            ->setParameter('cancelled', 'cancelled')
+        $result = $this->revenueQueryBuilder()
+            ->select('COALESCE(SUM(o.total), 0)')
             ->getQuery()
             ->getSingleScalarResult();
 
-        return $result ?? 0;
+        return (float) $result;
     }
 
     /**
-     * Get today's revenue
+     * Get today's revenue from completed orders.
      */
     public function getTodayRevenue(): float
     {
-        $today = new \DateTime('today');
-        $tomorrow = new \DateTime('tomorrow');
+        $today = new \DateTimeImmutable('today');
+        $tomorrow = new \DateTimeImmutable('tomorrow');
 
-        $result = $this->createQueryBuilder('o')
-            ->select('SUM(o.total) as todayRevenue')
-            ->where('o.createdAt >= :start')
+        $result = $this->revenueQueryBuilder()
+            ->select('COALESCE(SUM(o.total), 0)')
+            ->andWhere('o.createdAt >= :start')
             ->andWhere('o.createdAt < :end')
-            ->andWhere('o.status != :cancelled')
             ->setParameter('start', $today)
             ->setParameter('end', $tomorrow)
-            ->setParameter('cancelled', 'cancelled')
             ->getQuery()
             ->getSingleScalarResult();
 
-        return $result ?? 0;
+        return (float) $result;
     }
 
     /**
-     * Get yesterday's revenue
+     * Get yesterday's revenue from completed orders.
      */
     public function getYesterdayRevenue(): float
     {
-        $yesterday = new \DateTime('yesterday');
-        $today = new \DateTime('today');
+        $yesterday = new \DateTimeImmutable('yesterday');
+        $today = new \DateTimeImmutable('today');
 
-        $result = $this->createQueryBuilder('o')
-            ->select('SUM(o.total) as yesterdayRevenue')
-            ->where('o.createdAt >= :start')
+        $result = $this->revenueQueryBuilder()
+            ->select('COALESCE(SUM(o.total), 0)')
+            ->andWhere('o.createdAt >= :start')
             ->andWhere('o.createdAt < :end')
-            ->andWhere('o.status != :cancelled')
             ->setParameter('start', $yesterday)
             ->setParameter('end', $today)
-            ->setParameter('cancelled', 'cancelled')
             ->getQuery()
             ->getSingleScalarResult();
 
-        return $result ?? 0;
+        return (float) $result;
     }
 
     /**
@@ -122,64 +125,46 @@ class OrderRepository extends ServiceEntityRepository
     }
 
     /**
-     * Get sales data for the last 7 days
-     * Returns array with days and total revenue per day
+     * Get sales data for the last 7 days (completed orders only).
+     *
+     * @return list<array{date: string, day: string, total: float}>
      */
     public function getSalesDataLast7Days(): array
     {
-        $endDate = new \DateTime('today');
-        $startDate = new \DateTime('7 days ago');
-        $startDate->setTime(0, 0, 0);
+        $startDate = new \DateTimeImmutable('6 days ago midnight');
+        $endDate = new \DateTimeImmutable('tomorrow midnight');
 
-        $rsm = new ResultSetMapping();
-        $rsm->addScalarResult('date', 'date');
-        $rsm->addScalarResult('total', 'total');
+        /** @var Order[] $orders */
+        $orders = $this->revenueQueryBuilder()
+            ->andWhere('o.createdAt >= :start')
+            ->andWhere('o.createdAt < :end')
+            ->setParameter('start', $startDate)
+            ->setParameter('end', $endDate)
+            ->getQuery()
+            ->getResult();
 
-        $query = $this->getEntityManager()->createNativeQuery('
-            SELECT DATE(o.created_at) as date, SUM(o.total) as total
-            FROM `order` o
-            WHERE o.created_at >= :startDate
-            AND o.created_at <= :endDate
-            AND o.status != :cancelled
-            GROUP BY DATE(o.created_at)
-            ORDER BY date ASC
-        ', $rsm);
+        $totalsByDate = [];
+        foreach ($orders as $order) {
+            $createdAt = $order->getCreatedAt();
+            if (!$createdAt instanceof \DateTimeImmutable) {
+                continue;
+            }
 
-        $query->setParameter('startDate', $startDate);
-        $query->setParameter('endDate', $endDate);
-        $query->setParameter('cancelled', 'cancelled');
+            $dateString = $createdAt->format('Y-m-d');
+            $totalsByDate[$dateString] = ($totalsByDate[$dateString] ?? 0.0) + (float) ($order->getTotal() ?? 0);
+        }
 
-        $results = $query->getResult();
-
-        // Create array for all 7 days
         $salesData = [];
-        $currentDate = clone $startDate;
+        $currentDate = $startDate;
 
         for ($i = 0; $i < 7; $i++) {
             $dateString = $currentDate->format('Y-m-d');
-            $dayName = $currentDate->format('D'); // Mon, Tue, etc.
-
-            // Find matching result
-            $dayTotal = 0;
-            foreach ($results as $result) {
-                // Convert string date to DateTime object for comparison
-                $resultDateString = is_string($result['date'])
-                    ? $result['date']
-                    : $result['date']->format('Y-m-d');
-
-                if ($resultDateString === $dateString) {
-                    $dayTotal = (float) $result['total'];
-                    break;
-                }
-            }
-
             $salesData[] = [
                 'date' => $dateString,
-                'day' => $dayName,
-                'total' => $dayTotal
+                'day' => $currentDate->format('D'),
+                'total' => $totalsByDate[$dateString] ?? 0.0,
             ];
-
-            $currentDate->modify('+1 day');
+            $currentDate = $currentDate->modify('+1 day');
         }
 
         return $salesData;
